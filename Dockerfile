@@ -25,7 +25,6 @@ RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client and push schema
 RUN npx prisma generate
-RUN npx prisma db push
 
 RUN pnpm run build
 
