@@ -41,6 +41,10 @@ export interface ProductWithDetails {
       hex: string | null
     }
   }[]
+  sizes: {
+    id: string
+    label: string
+  }[]
   base_price: number
   current_price: number
   discount_percentage: number
@@ -49,22 +53,32 @@ export interface ProductWithDetails {
   status: "in_stock" | "low_stock" | "out_of_stock"
 }
 
+// Category interface for the shop page
+export interface Category {
+  id: string
+  name: string
+  slug: string
+  parentId: string | null
+  parent?: Category | null
+  children?: Category[]
+}
+
+// Other existing interfaces...
 export interface ProductCardProps {
   product: ProductWithDetails
   isInWishlist?: boolean
 }
 
-// For wishlist actions
 export interface WishlistResponse {
   success: boolean
   message: string
 }
 
-// For cart actions
 export interface CartResponse {
   success: boolean
   message: string
 }
+
 export interface Product {
   id: string
   name: string
@@ -75,13 +89,6 @@ export interface Product {
   created_at: string
   category_id: string
   ref_code: string
-}
-
-export interface Category {
-  id: string
-  name: string
-  slug: string
-  parentId: string | null
 }
 
 export interface Color {
@@ -112,7 +119,6 @@ export interface ProductImage {
   image_url: string
   is_primary: boolean
 }
-
 
 export interface CartItem {
   id: string

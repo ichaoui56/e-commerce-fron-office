@@ -254,6 +254,13 @@ const transformProductsData = (products: any[]): ProductWithDetails[] => {
       })),
     )
 
+    const sizes = product.productColors.flatMap((pc: any) =>
+      pc.productSizeStocks.map((pss: any) => ({
+        id: pss.size_id,
+        label: pss.size.label,
+      }))
+    )
+
     // Calculate pricing
     const basePrices = variants.map((v: any) => v.price).filter((price: any) => price > 0)
     const basePrice = basePrices.length > 0 ? Math.min(...basePrices) : 0
@@ -286,6 +293,7 @@ const transformProductsData = (products: any[]): ProductWithDetails[] => {
       colors: colors,
       images: images,
       variants: variants,
+      sizes: sizes,
       base_price: basePrice,
       current_price: currentPrice,
       discount_percentage: discountPercentage,

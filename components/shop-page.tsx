@@ -5,11 +5,23 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { X, ChevronDown, Grid3X3, List, Heart, ShoppingCart, Star, SlidersHorizontal } from "lucide-react"
 import ProductCard from "./product-card"
+import Link from "next/link"
 import type { ProductWithDetails } from "@/lib/types"
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  parentId: string | null
+  parent?: Category | null
+  children?: Category[]
+}
 
 interface ShopPageProps {
   products: ProductWithDetails[]
   wishlist: string[]
+  category?: Category | null
+  subCategories?: Category[]
 }
 
 interface FilterState {
@@ -20,7 +32,7 @@ interface FilterState {
   priceRange: [number, number]
 }
 
-export default function ShopPage({ products, wishlist }: ShopPageProps) {
+export default function ShopPage({ products, wishlist, category, subCategories = [] }: ShopPageProps) {
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [sortBy, setSortBy] = useState("most-popular")
@@ -36,11 +48,7 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
 
   // Get unique categories, brands, etc. from products
   const categories = Array.from(new Set(products.map((p) => p.category?.name).filter(Boolean)))
-  
-  // Fix: Use the sizes array directly from ProductWithDetails instead of trying to access variant.size.label
   const sizes = Array.from(new Set(products.flatMap((p) => p.sizes?.map((s) => s.label) || [])))
-  
-  // Fix: Use the colors array directly from ProductWithDetails
   const colors = Array.from(
     new Set(products.flatMap((p) => p.colors?.map((c) => ({ name: c.name, value: c.hex_code })) || [])),
   )
@@ -52,15 +60,10 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
     const matchesPrice =
       product.current_price >= filters.priceRange[0] && product.current_price <= filters.priceRange[1]
     const matchesCategory = filters.categories.length === 0 || (product.category?.name && filters.categories.includes(product.category.name))
-    
-    // Fix: Check against the sizes array in ProductWithDetails
     const matchesSize =
       filters.sizes.length === 0 || (product.sizes && filters.sizes.some((size) => product.sizes.some((s) => s.label === size)))
-    
-    // Fix: Check against the colors array in ProductWithDetails  
     const matchesColor =
       filters.colors.length === 0 || (product.colors && filters.colors.some((color) => product.colors.some((c) => c.hex_code === color)))
-    
     const matchesBrand = filters.brands.length === 0 || filters.brands.includes("Next") // Mock brand matching
 
     return matchesSearch && matchesPrice && matchesCategory && matchesSize && matchesColor && matchesBrand
@@ -138,6 +141,36 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
     ))
   }
 
+  // Generate breadcrumb path
+  const generateBreadcrumb = () => {
+    const breadcrumbItems = [
+      { label: "Home", href: "/" },
+      { label: "Shop", href: "/shop" }
+    ]
+
+    if (category) {
+      // If category has a parent, add parent first
+      if (category.parent) {
+        breadcrumbItems.push({
+          label: category.parent.name,
+          href: `/shop/${category.parent.slug}`
+        })
+      }
+      
+      // Add current category
+      breadcrumbItems.push({
+        label: category.name,
+        href: `/shop/${category.slug}`,
+      })
+    } else {
+      breadcrumbItems.push({ label: "All Products", href: "/shop" })
+    }
+
+    return breadcrumbItems
+  }
+
+  const breadcrumbItems = generateBreadcrumb()
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
@@ -145,18 +178,53 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
         <div className="container mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-3 text-sm mb-6">
-            <a href="/" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Home
-            </a>
-            <span className="text-gray-300">›</span>
-            <a href="/shop" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Shop
-            </a>
-            <span className="text-gray-300">›</span>
-            <span className="text-gray-800">No Sidebar</span>
-            <span className="text-gray-300">›</span>
-            <span className="text-[#e94491]">Boxed</span>
+            {breadcrumbItems.map((item, index) => (
+              <div key={index} className="flex items-center gap-3">
+                {item.href ? (
+                  <Link href={item.href} className="text-gray-500 hover:text-[#e94491] transition-colors">
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span className="text-[#e94491] font-medium">
+                    {item.label}
+                  </span>
+                )}
+                {index < breadcrumbItems.length - 1 && (
+                  <span className="text-gray-300">›</span>
+                )}
+              </div>
+            ))}
           </nav>
+
+          {/* Category Header */}
+          {category && (
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">{category.name}</h1>
+              {category.parent && (
+                <p className="text-gray-600">
+                  Category in <Link href={`/shop/${category.parent.slug}`} className="text-[#e94491] hover:underline">{category.parent.name}</Link>
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Subcategories */}
+          {subCategories.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Shop by Category</h3>
+              <div className="flex flex-wrap gap-3">
+                {subCategories.map((subCategory) => (
+                  <Link
+                    key={subCategory.id}
+                    href={`/shop/${subCategory.slug}`}
+                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-[#e94491] hover:text-[#e94491] transition-colors text-sm font-medium"
+                  >
+                    {subCategory.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Header Controls */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -174,6 +242,7 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
               <div className="text-sm text-gray-600">
                 Showing <span className="font-medium">{sortedProducts.length}</span> of{" "}
                 <span className="font-medium">{products.length}</span> Products
+                {category && <span className="ml-1">in {category.name}</span>}
               </div>
             </div>
 
@@ -313,7 +382,9 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
         {/* No Products Found */}
         {sortedProducts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No products found matching your filters.</p>
+            <p className="text-gray-500 text-lg">
+              No products found {category ? `in ${category.name}` : ""} matching your filters.
+            </p>
             <Button onClick={clearAllFilters} className="mt-4 bg-[#e94491] hover:bg-[#d63384] text-white">
               Clear All Filters
             </Button>
@@ -333,7 +404,7 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
         )}
       </div>
 
-      {/* Filter Sidebar */}
+      {/* Filter Sidebar - keeping your existing filter sidebar code */}
       {showFilters && (
         <>
           {/* Backdrop */}
@@ -377,29 +448,29 @@ export default function ShopPage({ products, wishlist }: ShopPageProps) {
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="space-y-3">
-                    {categories.map((category) => (
-                      <div key={category} className="flex items-center justify-between">
+                    {categories.filter((c): c is string => !!c).map((categoryName) => (
+                      <div key={categoryName} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Checkbox
-                            id={category}
-                            checked={tempFilters.categories.includes(category)}
+                            id={categoryName}
+                            checked={tempFilters.categories.includes(categoryName)}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                updateTempFilter("categories", [...tempFilters.categories, category])
+                                updateTempFilter("categories", [...tempFilters.categories, categoryName])
                               } else {
                                 updateTempFilter(
                                   "categories",
-                                  tempFilters.categories.filter((c) => c !== category),
+                                  tempFilters.categories.filter((c) => c !== categoryName),
                                 )
                               }
                             }}
                           />
-                          <label htmlFor={category} className="text-sm text-gray-700 cursor-pointer">
-                            {category}
+                          <label htmlFor={categoryName} className="text-sm text-gray-700 cursor-pointer">
+                            {categoryName}
                           </label>
                         </div>
                         <span className="text-xs text-gray-500">
-                          {products.filter((p) => p.category?.name === category).length}
+                          {products.filter((p) => p.category?.name === categoryName).length}
                         </span>
                       </div>
                     ))}

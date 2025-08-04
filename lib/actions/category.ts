@@ -161,3 +161,56 @@ export const getCategoryHierarchy = async (categorySlug: string): Promise<{
     return null
   }
 }
+
+export const getCategories = async () => {
+  try {
+    const categories = await prisma.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    })
+    return categories
+  } catch (error) {
+    console.error("Get categories error:", error)
+    return []
+  }
+}
+
+// Get subcategories by parent category ID
+export const getSubCategories = async (parentId: string) => {
+  try {
+    const subCategories = await prisma.category.findMany({
+      where: {
+        parentId: parentId,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+    return subCategories
+  } catch (error) {
+    console.error("Get subcategories error:", error)
+    return []
+  }
+}
+
+// Get main categories (categories without parent)
+export const getMainCategories = async () => {
+  try {
+    const mainCategories = await prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+      include: {
+        children: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+    return mainCategories
+  } catch (error) {
+    console.error("Get main categories error:", error)
+    return []
+  }
+}

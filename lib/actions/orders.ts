@@ -2,9 +2,9 @@
 
 import { readFileSync, writeFileSync } from "fs"
 import { join } from "path"
-import { getGuestSession } from "./session"
 import { getCart, clearCart } from "./cart"
 import { v4 as uuidv4 } from "uuid"
+import { getGuestSessionId } from "./session"
 
 export interface Order {
   id: string
@@ -117,7 +117,7 @@ export async function placeOrder(orderData: {
   order_notes?: string
 }): Promise<{ success: boolean; message: string; order_ref?: string }> {
   try {
-    const sessionId = await getGuestSession()
+    const sessionId = await getGuestSessionId()
     const cartItems = await getCart()
 
     if (cartItems.length === 0) {
@@ -181,7 +181,7 @@ export async function placeOrder(orderData: {
 // Get user's orders
 export async function getUserOrders(): Promise<Order[]> {
   try {
-    const sessionId = await getGuestSession()
+    const sessionId = await getGuestSessionId()
     const orders = readOrders()
 
     return orders.filter((order) => order.guest_session_id === sessionId)

@@ -1,10 +1,10 @@
 import ShopPage from "@/components/shop-page"
 import { getProductsWithDetails } from "@/lib/actions/products"
-import { getWishlist } from "@/lib/actions/wishlist"
+import { getWishlistProductIds } from "@/lib/actions/wishlist"
 
 export default async function Shop() {
   const products = await getProductsWithDetails()
-  const wishlist = await getWishlist()
+  const wishlistProductIds = await getWishlistProductIds()
 
-  return <ShopPage products={products} wishlist={wishlist} />
+  return <ShopPage products={products} wishlist={wishlistProductIds} />
 }

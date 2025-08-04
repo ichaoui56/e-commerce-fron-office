@@ -271,6 +271,13 @@ const transformProductsData = (products: any[]): ProductWithDetails[] => {
       }))
     )
 
+    const sizes = product.productColors.flatMap((pc: any) =>
+      pc.productSizeStocks.map((pss: any) => ({
+        id: pss.size_id,
+        label: pss.size.label,
+      }))
+    )
+
     // Extract unique sizes from variants
     const uniqueSizes = Array.from(
       new Map(variants.map((v: any) => [v.size.id, v.size])).values()
@@ -308,7 +315,7 @@ const transformProductsData = (products: any[]): ProductWithDetails[] => {
       colors: colors,
       images: images,
       variants: variants,
-      sizes: uniqueSizes, // Add the sizes array
+      sizes: sizes, // Add the sizes array
       base_price: basePrice,
       current_price: currentPrice,
       discount_percentage: discountPercentage,
