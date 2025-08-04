@@ -26,11 +26,6 @@ export default function WishlistPage({ products }: WishlistPageProps) {
     if (!isLiked) {
       // Remove from local state immediately
       setWishlistProducts((prev) => prev.filter((p) => p.id !== productId))
-      
-      // Dispatch custom event to update navbar count
-      window.dispatchEvent(new CustomEvent('wishlistUpdated', { 
-        detail: { count: wishlistProducts.length - 1 } 
-      }))
     }
   }
 
@@ -45,11 +40,6 @@ export default function WishlistPage({ products }: WishlistPageProps) {
             title: result.message,
             variant: "success",
           })
-          
-          // Dispatch custom event to update navbar count
-          window.dispatchEvent(new CustomEvent('wishlistUpdated', { 
-            detail: { count: result.count || 0 } 
-          }))
         } else {
           toast({
             title: "Error",
@@ -70,7 +60,7 @@ export default function WishlistPage({ products }: WishlistPageProps) {
   const handleAddToCart = (product: ProductWithDetails) => {
     startTransition(async () => {
       try {
-        const firstVariant = product.variants.find(v => v.stock_quantity > 0)
+        const firstVariant = product.variants[0]
         if (!firstVariant) {
           toast({
             title: "Error",
@@ -87,9 +77,6 @@ export default function WishlistPage({ products }: WishlistPageProps) {
             title: result.message,
             variant: "success",
           })
-          
-          // Dispatch custom event to update navbar cart count
-          window.dispatchEvent(new CustomEvent('cartUpdated'))
         } else {
           toast({
             title: "Error",
@@ -122,7 +109,6 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                 variant={viewMode === "grid" ? "default" : "outline"}
                 size="icon"
                 onClick={() => setViewMode("grid")}
-                className={viewMode === "grid" ? "bg-[#e94491] hover:bg-[#d63384]" : ""}
               >
                 <Grid className="h-4 w-4" />
               </Button>
@@ -130,7 +116,6 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                 variant={viewMode === "list" ? "default" : "outline"}
                 size="icon"
                 onClick={() => setViewMode("list")}
-                className={viewMode === "list" ? "bg-[#e94491] hover:bg-[#d63384]" : ""}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -190,14 +175,12 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                             {product.name}
                           </h3>
                         </Link>
-                        {product.category && (
-                          <p className="text-sm text-gray-500 mt-1">{product.category.name}</p>
-                        )}
+                        <p className="text-sm text-gray-500 mt-1">{product.category?.name}</p>
                       </div>
                       <button
                         onClick={() => handleRemoveFromWishlist(product.id)}
                         disabled={isPending}
-                        className="p-2 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -208,55 +191,19 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                       {product.discount_percentage > 0 && (
                         <span className="text-sm text-gray-400 line-through">${product.base_price.toFixed(2)}</span>
                       )}
-                      {product.discount_percentage > 0 && (
-                        <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
-                          -{product.discount_percentage}% OFF
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Stock Status */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <div
-                        className={`w-2 h-2 rounded-full ${
-                          product.status === "in_stock" 
-                            ? "bg-green-500" 
-                            : product.status === "low_stock" 
-                            ? "bg-yellow-500" 
-                            : "bg-red-500"
-                        }`}
-                      />
-                      <span
-                        className={`text-sm font-medium ${
-                          product.status === "in_stock" 
-                            ? "text-green-600" 
-                            : product.status === "low_stock" 
-                            ? "text-yellow-600" 
-                            : "text-red-600"
-                        }`}
-                      >
-                        {product.status === "in_stock" 
-                          ? "In Stock" 
-                          : product.status === "low_stock" 
-                          ? "Low Stock" 
-                          : "Out of Stock"}
-                      </span>
-                      {product.status === "low_stock" && (
-                        <span className="text-sm text-gray-500">({product.total_stock} left)</span>
-                      )}
                     </div>
 
                     <div className="flex items-center gap-4">
                       <Button
                         onClick={() => handleAddToCart(product)}
-                        disabled={isPending || product.status === "out_of_stock"}
-                        className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isPending}
+                        className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-lg"
                       >
                         <ShoppingCart className="h-4 w-4 mr-2" />
-                        {isPending ? "Adding..." : product.status === "out_of_stock" ? "Out of Stock" : "Add to Cart"}
+                        {isPending ? "Adding..." : "Add to Cart"}
                       </Button>
                       <Link href={`/product/${product.id}`}>
-                        <Button variant="outline" className="px-6 py-2 rounded-lg bg-transparent border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white">
+                        <Button variant="outline" className="px-6 py-2 rounded-lg bg-transparent">
                           View Details
                         </Button>
                       </Link>

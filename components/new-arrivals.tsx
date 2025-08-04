@@ -1,16 +1,16 @@
 import ProductCard from "./product-card"
 import { getFeaturedProducts } from "@/lib/actions/products"
+import { getWishlistProductIds } from "@/lib/actions/wishlist"
 
 export default async function NewArrivals() {
   console.log("NewArrivals: Starting to fetch data...")
-  
-  try {
-    // Get top 4 featured products (where top_price is true)
-    const featuredProducts = await getFeaturedProducts()
-    console.log("NewArrivals: Featured products count:", featuredProducts.length)
-    console.log("NewArrivals: First product:", featuredProducts[0])
-    
 
+  try {
+    // Get both featured products and wishlist data
+    const [featuredProducts, wishlistProductIds] = await Promise.all([getFeaturedProducts(), getWishlistProductIds()])
+
+    console.log("NewArrivals: Featured products count:", featuredProducts.length)
+    console.log("NewArrivals: Wishlist items count:", wishlistProductIds.length)
 
     // If no featured products, show message
     if (featuredProducts.length === 0) {
@@ -42,24 +42,15 @@ export default async function NewArrivals() {
             <p className="text-gray-600 max-w-2xl mx-auto">
               Discover our latest collection of premium fashion pieces, carefully curated for the modern lifestyle.
             </p>
-            <p className="text-sm text-gray-400 mt-2">
-              Showing {featuredProducts.length} featured products
-            </p>
+            <p className="text-sm text-gray-400 mt-2">Showing {featuredProducts.length} featured products</p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map((product) => {
               console.log("NewArrivals: Rendering product:", product.id, product.name)
-              return (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  isInWishlist={wishlist.includes(product.id)} 
-                />
-              )
+              const isInWishlist = wishlistProductIds.includes(product.id)
+              return <ProductCard key={product.id} product={product} isInWishlist={isInWishlist} />
             })}
           </div>
-
           {/* Show "View All" button if there are featured products */}
           {featuredProducts.length > 0 && (
             <div className="text-center mt-12">
@@ -76,7 +67,7 @@ export default async function NewArrivals() {
     )
   } catch (error) {
     console.error("NewArrivals: Error fetching data:", error)
-    
+
     return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">

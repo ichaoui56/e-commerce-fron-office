@@ -1,16 +1,14 @@
-"use server"
-
 import { cookies } from "next/headers"
 import { v4 as uuidv4 } from "uuid"
 
-export interface GuestSession {
-  session_id: string
-  created_at: string
-  last_active: string
+// Get existing guest session (read-only)
+export async function getGuestSessionId(): Promise<string | null> {
+  const cookieStore = await cookies()
+  return cookieStore.get("guest_session_id")?.value || null
 }
 
-// Get or create guest session
-export async function getGuestSession(): Promise<string> {
+// Get or create guest session (for use in Server Actions only)
+export async function getOrCreateGuestSession(): Promise<string> {
   const cookieStore = await cookies()
   let sessionId = cookieStore.get("guest_session_id")?.value
 

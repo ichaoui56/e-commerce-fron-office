@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, ShoppingCart } from "lucide-react"
@@ -89,7 +91,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     startTransition(async () => {
       try {
         const result = isLiked ? await removeFromWishlist(product.id) : await addToWishlist(product.id)
@@ -97,19 +99,21 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
         if (result.success) {
           const newLikedState = !isLiked
           setIsLiked(newLikedState)
-          
+
           // Call the callback to update parent component
           onWishlistChange?.(product.id, newLikedState)
-          
+
           toast({
             title: result.message,
             variant: "success",
           })
 
           // Dispatch custom event to update navbar count
-          window.dispatchEvent(new CustomEvent('wishlistUpdated', { 
-            detail: { count: result.count || 0 } 
-          }))
+          window.dispatchEvent(
+            new CustomEvent("wishlistUpdated", {
+              detail: { count: result.count || 0 },
+            }),
+          )
         } else {
           toast({
             title: "Error",
@@ -130,7 +134,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     startTransition(async () => {
       try {
         // Find first available variant for selected color
@@ -154,9 +158,9 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             title: result.message,
             variant: "success",
           })
-          
+
           // Dispatch custom event to update navbar cart count
-          window.dispatchEvent(new CustomEvent('cartUpdated'))
+          window.dispatchEvent(new CustomEvent("cartUpdated"))
         } else {
           toast({
             title: "Error",
@@ -184,12 +188,12 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
       <Link href={`/product/${product.id}`}>
         <div className="relative aspect-[4/5] overflow-hidden bg-gray-50 cursor-pointer">
           <Image
-            src={currentImage}
+            src={currentImage || "/placeholder.svg"}
             alt={product.name}
             fill
-            className={`object-cover transition-transform duration-300 ${!isMobile ? "group-hover:scale-105" : ""} ${
-              isOutOfStock ? "grayscale opacity-75" : ""
-            }`}
+            className={`object-cover transition-transform duration-300 ${
+              !isMobile ? "group-hover:scale-105" : ""
+            } ${isOutOfStock ? "grayscale opacity-75" : ""}`}
           />
 
           {/* Discount Badge */}
@@ -253,9 +257,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
       <div className="p-4">
         {/* Category */}
         {product.category && (
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">
-            {product.category.name}
-          </p>
+          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">{product.category.name}</p>
         )}
 
         {/* Product Name */}
@@ -267,13 +269,9 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
 
         {/* Pricing */}
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg font-bold text-[#e94491]">
-            ${product.current_price.toFixed(2)}
-          </span>
+          <span className="text-lg font-bold text-[#e94491]">${product.current_price.toFixed(2)}</span>
           {product.discount_percentage > 0 && (
-            <span className="text-sm text-gray-400 line-through">
-              ${product.base_price.toFixed(2)}
-            </span>
+            <span className="text-sm text-gray-400 line-through">${product.base_price.toFixed(2)}</span>
           )}
         </div>
 
@@ -290,8 +288,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
                 }}
                 className={cn(
                   "w-6 h-6 rounded-full border-2 transition-all duration-200 hover:scale-110",
-                  selectedColorId === color.id 
-                    ? "border-[#000000] ring-1 ring-[#000000]/30 scale-110" 
+                  selectedColorId === color.id
+                    ? "border-[#000000] ring-1 ring-[#000000]/30 scale-110"
                     : "border-gray-300 hover:border-gray-400",
                 )}
                 style={{ backgroundColor: color.hex_code }}
@@ -310,37 +308,33 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             <div
               className={cn(
                 "w-2 h-2 rounded-full",
-                product.status === "in_stock" 
-                  ? "bg-green-500" 
-                  : product.status === "low_stock" 
-                  ? "bg-yellow-500" 
-                  : "bg-red-500"
+                product.status === "in_stock"
+                  ? "bg-green-500"
+                  : product.status === "low_stock"
+                    ? "bg-yellow-500"
+                    : "bg-red-500",
               )}
             />
             <span
               className={cn(
                 "text-xs font-medium",
-                product.status === "in_stock" 
-                  ? "text-green-600" 
-                  : product.status === "low_stock" 
-                  ? "text-yellow-600" 
-                  : "text-red-600"
+                product.status === "in_stock"
+                  ? "text-green-600"
+                  : product.status === "low_stock"
+                    ? "text-yellow-600"
+                    : "text-red-600",
               )}
             >
-              {product.status === "in_stock" 
-                ? "In Stock" 
-                : product.status === "low_stock" 
-                ? "Low Stock" 
-                : "Out of Stock"}
+              {product.status === "in_stock"
+                ? "In Stock"
+                : product.status === "low_stock"
+                  ? "Low Stock"
+                  : "Out of Stock"}
             </span>
           </div>
-          
+
           {/* Show stock count for low stock items */}
-          {product.status === "low_stock" && (
-            <span className="text-xs text-gray-500">
-              {product.total_stock} left
-            </span>
-          )}
+          {product.status === "low_stock" && <span className="text-xs text-gray-500">{product.total_stock} left</span>}
         </div>
       </div>
     </div>
