@@ -33,7 +33,6 @@ COPY --from=builder /app/package.json ./package.json
 
 # Copy Prisma runtime files (should exist now)
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Copy standalone Next.js output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
