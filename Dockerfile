@@ -3,12 +3,17 @@ FROM node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Dependencies (just copy lockfiles)
+# Dependencies layer: copy only lockfiles first
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
 
-# Builder - install all dependencies, generate Prisma client, build app
+# Builder layer
 FROM base AS builder
+
+# Accept build argument for DATABASE_URL
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 RUN npm install -g pnpm
 WORKDIR /app
 
@@ -16,32 +21,38 @@ COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY . .
 
-RUN pnpm install --frozen-lockfile   # installs dev + prod deps
+RUN pnpm install --frozen-lockfile
+
+# Generate Prisma client and push schema
 RUN npx prisma generate
 RUN npx prisma db push
+
 RUN pnpm run build
 
-# Runner - production image
+# Production runner layer
 FROM base AS runner
+
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+# DATABASE_URL must be set in Railway environment variables
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Copy Prisma runtime files (should exist now)
+# Copy Prisma runtime files
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy standalone Next.js output
+# Copy Next.js standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-RUN mkdir -p .next && chown nextjs:nodejs .next
-
 USER nextjs
+
 EXPOSE 3000
 
 CMD ["node", "server.js"]
