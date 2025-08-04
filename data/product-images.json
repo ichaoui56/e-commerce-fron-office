@@ -1,0 +1,93 @@
+[
+  {
+    "id": "img-1",
+    "product_id": "prod-1",
+    "color_id": "color-2",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/70eb6aff-71b4-4751-8420-c1a968acde38.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-2",
+    "product_id": "prod-1",
+    "color_id": "color-3",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/548a33e0-6695-4372-b3ce-061b22fabb7e.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-3",
+    "product_id": "prod-2",
+    "color_id": "color-2",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/16263e88-0619-4b66-87e5-a5e7da71ffbe.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-4",
+    "product_id": "prod-2",
+    "color_id": "color-1",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/447ec0dc-6eea-41b4-b393-591d3266fb24.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-5",
+    "product_id": "prod-3",
+    "color_id": "color-3",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/811be89c-6603-4b77-a543-f54a88cf12bc.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-6",
+    "product_id": "prod-3",
+    "color_id": "color-1",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/cf3230ff-4730-4e3f-b61b-b6da3f1dc9fd.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-7",
+    "product_id": "prod-4",
+    "color_id": "color-2",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/86b23f93-f41c-4663-94de-b17dcd99495c.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-8",
+    "product_id": "prod-4",
+    "color_id": "color-1",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/86b23f93-f41c-4663-94de-b17dcd99495c.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-9",
+    "product_id": "prod-4",
+    "color_id": "color-4",
+    "image_url": "/woman-pink-sportswear.png",
+    "is_primary": true
+  },
+  {
+    "id": "img-10",
+    "product_id": "prod-5",
+    "color_id": "color-3",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/86b23f93-f41c-4663-94de-b17dcd99495c.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-11",
+    "product_id": "prod-5",
+    "color_id": "color-2",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/4204091b-c81c-4d78-97e8-e7aba28b26ed.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-12",
+    "product_id": "prod-7",
+    "color_id": "color-6",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/48564440-91bf-4e8e-9ab9-70e8571e78b3.jpeg",
+    "is_primary": true
+  },
+  {
+    "id": "img-13",
+    "product_id": "prod-8",
+    "color_id": "color-6",
+    "image_url": "https://backend.twistana.ma/storage/pos-images/f6f3bea1-cb80-4e1c-8a2c-fefcc70372c2.jpeg",
+    "is_primary": true
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "size-1",
+    "label": "XS",
+    "sort_order": 1
+  },
+  {
+    "id": "size-2",
+    "label": "S",
+    "sort_order": 2
+  },
+  {
+    "id": "size-3",
+    "label": "M",
+    "sort_order": 3
+  },
+  {
+    "id": "size-4",
+    "label": "L",
+    "sort_order": 4
+  },
+  {
+    "id": "size-5",
+    "label": "XL",
+    "sort_order": 5
+  },
+  {
+    "id": "size-6",
+    "label": "XXL",
+    "sort_order": 6
+  }
+]

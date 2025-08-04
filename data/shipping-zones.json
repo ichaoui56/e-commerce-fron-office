@@ -1,0 +1,30 @@
+[
+  {
+    "id": "zone-1",
+    "name": "North America",
+    "countries": ["US", "CA", "MX"],
+    "base_cost": 9.99,
+    "cost_per_item": 2.5
+  },
+  {
+    "id": "zone-2",
+    "name": "Europe",
+    "countries": ["FR", "DE", "IT", "ES", "UK", "NL", "BE"],
+    "base_cost": 12.99,
+    "cost_per_item": 3.0
+  },
+  {
+    "id": "zone-3",
+    "name": "Asia Pacific",
+    "countries": ["JP", "AU", "SG", "HK", "KR"],
+    "base_cost": 15.99,
+    "cost_per_item": 4.0
+  },
+  {
+    "id": "zone-4",
+    "name": "Rest of World",
+    "countries": ["*"],
+    "base_cost": 19.99,
+    "cost_per_item": 5.0
+  }
+]

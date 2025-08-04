@@ -1,0 +1,114 @@
+[
+  {
+    "id": "var-prod-1-color-2-size-2",
+    "product_id": "prod-1",
+    "color_id": "color-2",
+    "size_id": "size-2",
+    "stock_quantity": 15,
+    "sku": "ESD-001-WHT-S"
+  },
+  {
+    "id": "var-prod-1-color-2-size-3",
+    "product_id": "prod-1",
+    "color_id": "color-2",
+    "size_id": "size-3",
+    "stock_quantity": 20,
+    "sku": "ESD-001-WHT-M"
+  },
+  {
+    "id": "var-prod-1-color-3-size-2",
+    "product_id": "prod-1",
+    "color_id": "color-3",
+    "size_id": "size-2",
+    "stock_quantity": 12,
+    "sku": "ESD-001-BLU-S"
+  },
+  {
+    "id": "var-prod-1-color-3-size-3",
+    "product_id": "prod-1",
+    "color_id": "color-3",
+    "size_id": "size-3",
+    "stock_quantity": 18,
+    "sku": "ESD-001-BLU-M"
+  },
+  {
+    "id": "var-prod-2-color-2-size-2",
+    "product_id": "prod-2",
+    "color_id": "color-2",
+    "size_id": "size-2",
+    "stock_quantity": 25,
+    "sku": "CWS-002-WHT-S"
+  },
+  {
+    "id": "var-prod-2-color-2-size-3",
+    "product_id": "prod-2",
+    "color_id": "color-2",
+    "size_id": "size-3",
+    "stock_quantity": 30,
+    "sku": "CWS-002-WHT-M"
+  },
+  {
+    "id": "var-prod-2-color-1-size-2",
+    "product_id": "prod-2",
+    "color_id": "color-1",
+    "size_id": "size-2",
+    "stock_quantity": 20,
+    "sku": "CWS-002-BLK-S"
+  },
+  {
+    "id": "var-prod-3-color-3-size-3",
+    "product_id": "prod-3",
+    "color_id": "color-3",
+    "size_id": "size-3",
+    "stock_quantity": 22,
+    "sku": "DJ-003-BLU-M"
+  },
+  {
+    "id": "var-prod-3-color-1-size-3",
+    "product_id": "prod-3",
+    "color_id": "color-1",
+    "size_id": "size-3",
+    "stock_quantity": 18,
+    "sku": "DJ-003-BLK-M"
+  },
+  {
+    "id": "var-prod-4-color-2-size-2",
+    "product_id": "prod-4",
+    "color_id": "color-2",
+    "size_id": "size-2",
+    "stock_quantity": 35,
+    "sku": "CT-004-WHT-S"
+  },
+  {
+    "id": "var-prod-4-color-1-size-2",
+    "product_id": "prod-4",
+    "color_id": "color-1",
+    "size_id": "size-2",
+    "stock_quantity": 40,
+    "sku": "CT-004-BLK-S"
+  },
+  {
+    "id": "var-prod-4-color-4-size-2",
+    "product_id": "prod-4",
+    "color_id": "color-4",
+    "size_id": "size-2",
+    "stock_quantity": 28,
+    "sku": "CT-004-RED-S"
+  },
+  {
+    "id": "var-prod-5-color-3-size-3",
+    "product_id": "prod-5",
+    "color_id": "color-3",
+    "size_id": "size-3",
+    "stock_quantity": 16,
+    "sku": "MPS-005-BLU-M"
+  },
+  {
+    "id": "var-prod-5-color-2-size-3",
+    "product_id": "prod-5",
+    "color_id": "color-2",
+    "size_id": "size-3",
+    "stock_quantity": 14,
+    "sku": "MPS-005-WHT-M"
+  }
+]

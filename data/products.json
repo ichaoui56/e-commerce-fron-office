@@ -1,0 +1,90 @@
+[
+  {
+    "id": "prod-1",
+    "name": "Elegant Summer Dress",
+    "base_price": 89.99,
+    "discount_percentage": 15,
+    "description": "A beautiful flowing summer dress perfect for any occasion. Made with premium cotton blend for comfort and style. Features a flattering silhouette that works for both casual and formal events.",
+    "is_featured": true,
+    "created_at": "2024-01-15T10:00:00Z",
+    "category_id": "cat-4",
+    "ref_code": "ESD-001"
+  },
+  {
+    "id": "prod-2",
+    "name": "Classic White Shirt",
+    "base_price": 49.99,
+    "discount_percentage": 0,
+    "description": "Timeless white shirt that goes with everything. Professional and casual wear. Made from high-quality cotton with a comfortable fit.",
+    "is_featured": false,
+    "created_at": "2024-01-16T10:00:00Z",
+    "category_id": "cat-5",
+    "ref_code": "CWS-002"
+  },
+  {
+    "id": "prod-3",
+    "name": "Denim Jeans",
+    "base_price": 79.99,
+    "discount_percentage": 20,
+    "description": "Premium denim jeans with perfect fit and comfort. Available in multiple washes. Classic 5-pocket design with modern styling.",
+    "is_featured": true,
+    "created_at": "2024-01-17T10:00:00Z",
+    "category_id": "cat-6",
+    "ref_code": "DJ-003"
+  },
+  {
+    "id": "prod-4",
+    "name": "Casual T-Shirt",
+    "base_price": 24.99,
+    "discount_percentage": 10,
+    "description": "Comfortable cotton t-shirt for everyday wear. Soft and breathable fabric. Perfect for layering or wearing alone.",
+    "is_featured": false,
+    "created_at": "2024-01-18T10:00:00Z",
+    "category_id": "cat-5",
+    "ref_code": "CT-004"
+  },
+  {
+    "id": "prod-5",
+    "name": "Men's Polo Shirt",
+    "base_price": 39.99,
+    "discount_percentage": 0,
+    "description": "Classic polo shirt for men. Perfect for casual and semi-formal occasions. Made with premium pique cotton.",
+    "is_featured": true,
+    "created_at": "2024-01-19T10:00:00Z",
+    "category_id": "cat-7",
+    "ref_code": "MPS-005"
+  },
+  {
+    "id": "prod-6",
+    "name": "Chino Pants",
+    "base_price": 59.99,
+    "discount_percentage": 25,
+    "description": "Versatile chino pants that work for both casual and business casual settings. Comfortable fit with modern styling.",
+    "is_featured": false,
+    "created_at": "2024-01-20T10:00:00Z",
+    "category_id": "cat-8",
+    "ref_code": "CP-006"
+  },
+  {
+    "id": "prod-7",
+    "name": "Silk Scarf",
+    "base_price": 34.99,
+    "discount_percentage": 0,
+    "description": "Luxurious silk scarf with elegant patterns. Perfect accessory for any outfit. Adds sophistication to any look.",
+    "is_featured": true,
+    "created_at": "2024-01-21T10:00:00Z",
+    "category_id": "cat-9",
+    "ref_code": "SS-007"
+  },
+  {
+    "id": "prod-8",
+    "name": "Floral Blouse",
+    "base_price": 44.99,
+    "discount_percentage": 15,
+    "description": "Beautiful floral blouse with delicate patterns. Perfect for spring and summer. Lightweight and comfortable fabric.",
+    "is_featured": false,
+    "created_at": "2024-01-22T10:00:00Z",
+    "category_id": "cat-5",
+    "ref_code": "FB-008"
+  }
+]

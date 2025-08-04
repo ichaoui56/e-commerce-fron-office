@@ -1,0 +1,56 @@
+[
+  {
+    "id": "cat-1",
+    "name": "Women",
+    "slug": "women",
+    "parent_id": null
+  },
+  {
+    "id": "cat-2",
+    "name": "Men",
+    "slug": "men",
+    "parent_id": null
+  },
+  {
+    "id": "cat-3",
+    "name": "Kids",
+    "slug": "kids",
+    "parent_id": null
+  },
+  {
+    "id": "cat-4",
+    "name": "Dresses",
+    "slug": "dresses",
+    "parent_id": "cat-1"
+  },
+  {
+    "id": "cat-5",
+    "name": "Tops",
+    "slug": "tops",
+    "parent_id": "cat-1"
+  },
+  {
+    "id": "cat-6",
+    "name": "Bottoms",
+    "slug": "bottoms",
+    "parent_id": "cat-1"
+  },
+  {
+    "id": "cat-7",
+    "name": "Shirts",
+    "slug": "shirts",
+    "parent_id": "cat-2"
+  },
+  {
+    "id": "cat-8",
+    "name": "Pants",
+    "slug": "pants",
+    "parent_id": "cat-2"
+  },
+  {
+    "id": "cat-9",
+    "name": "Accessories",
+    "slug": "accessories",
+    "parent_id": null
+  }
+]

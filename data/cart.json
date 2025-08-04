@@ -1,0 +1,30 @@
+[
+  {
+    "id": "4a784cd8-a427-457c-b5fb-35d8e20dc881",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_variant_id": "var-prod-2-color-1-size-2",
+    "quantity": 3,
+    "added_at": "2025-07-30T00:15:30.853Z"
+  },
+  {
+    "id": "1af54f6e-9f9c-459d-b90c-13eb9b9d4bdb",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_variant_id": "var-prod-3-color-1-size-3",
+    "quantity": 1,
+    "added_at": "2025-07-30T13:30:35.688Z"
+  },
+  {
+    "id": "848e7e03-9520-4ee6-bf9a-4425131cf559",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_variant_id": "var-prod-1-color-2-size-2",
+    "quantity": 1,
+    "added_at": "2025-07-30T15:14:15.475Z"
+  },
+  {
+    "id": "00d7dd12-6e23-4c44-89cd-8b4bc59df63c",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_variant_id": "var-prod-2-color-1-size-2",
+    "quantity": 1,
+    "added_at": "2025-08-01T18:22:12.255Z"
+  }
+]

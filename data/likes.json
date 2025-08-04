@@ -1,0 +1,80 @@
+[
+  {
+    "id": "fe4be07a-bac9-405f-ab2d-ba34a4d7a8ec",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-2",
+    "liked_at": "2025-07-27T03:43:14.671Z"
+  },
+  {
+    "id": "65a60ec2-8fbb-4744-b812-4cfae60e2f54",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-3",
+    "liked_at": "2025-07-27T03:43:43.903Z"
+  },
+  {
+    "id": "0669ba59-d976-4940-a2a0-eec0b42cf479",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-1",
+    "liked_at": "2025-07-27T03:44:17.225Z"
+  },
+  {
+    "id": "5b5617b2-bf09-45f9-a230-5feb3ca812fe",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-5",
+    "liked_at": "2025-07-29T11:16:46.034Z"
+  },
+  {
+    "id": "d4b81d18-bae0-4de0-b63b-ab614877d34a",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-7",
+    "liked_at": "2025-07-30T00:15:45.926Z"
+  },
+  {
+    "id": "ee245d61-7d24-43cb-ac16-e9ba49d8d7bb",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "prod-8",
+    "liked_at": "2025-07-30T00:18:38.736Z"
+  },
+  {
+    "id": "02512c7d-fc36-4c80-9abb-3e0790b876e9",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_id": "prod-5",
+    "liked_at": "2025-08-01T18:21:42.163Z"
+  },
+  {
+    "id": "92d8679e-dac8-41de-a243-79becc27e6c3",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "1772d704-bf92-43b2-8d6c-551a5bfc0840",
+    "liked_at": "2025-08-03T22:22:13.694Z"
+  },
+  {
+    "id": "abafc9a4-c41a-422a-a31e-2a785bad1e3b",
+    "guest_session_id": "7977f526-c886-4d43-997c-8f0127c04c4a",
+    "product_id": "bd481962-2b42-4344-9f5f-38d650fd4928",
+    "liked_at": "2025-08-03T23:05:16.473Z"
+  },
+  {
+    "id": "827d84b9-7381-42a8-bc43-657c15b80bef",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_id": "bd481962-2b42-4344-9f5f-38d650fd4928",
+    "liked_at": "2025-08-03T23:21:14.796Z"
+  },
+  {
+    "id": "662fdf0c-d547-412c-9a74-343c002eece0",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_id": "1772d704-bf92-43b2-8d6c-551a5bfc0840",
+    "liked_at": "2025-08-03T23:21:16.008Z"
+  },
+  {
+    "id": "19db3549-acc8-4f64-8eb4-c47efe8a03fd",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_id": "13eb0a39-700d-49ed-b573-e4aa6609ec64",
+    "liked_at": "2025-08-03T23:21:17.237Z"
+  },
+  {
+    "id": "a9194aa4-2e90-4ab0-9c04-d65ef7b61ab5",
+    "guest_session_id": "80fb1223-e055-4fb5-a8e3-655ebdb1b56e",
+    "product_id": "cc9801a2-0820-46df-90d0-1de49e4218ed",
+    "liked_at": "2025-08-03T23:21:18.689Z"
+  }
+]
