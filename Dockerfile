@@ -18,6 +18,7 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile   # installs dev + prod deps
 RUN npx prisma generate
+RUN npx prisma db push
 RUN pnpm run build
 
 # Runner - production image
