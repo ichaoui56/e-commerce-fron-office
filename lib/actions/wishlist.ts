@@ -3,6 +3,7 @@
 import { PrismaClient } from "@prisma/client"
 import { getGuestSessionId, getOrCreateGuestSession } from "@/lib/actions/session"
 import type { ProductWithDetails } from "@/lib/types"
+import { log } from "console"
 
 const prisma = new PrismaClient()
 
@@ -15,6 +16,7 @@ export interface WishlistResponse {
 // Add product to wishlist
 export async function addToWishlist(productId: string): Promise<WishlistResponse> {
   try {
+    console.log("SessionId" + getGuestSessionId)
     const sessionId = await getOrCreateGuestSession()
 
     // Check if already in wishlist

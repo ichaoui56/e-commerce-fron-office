@@ -5,13 +5,15 @@ import {
   Heart,
   ShoppingCart,
   ChevronDown,
-  Lightbulb,
   X,
   ChevronRight,
   Facebook,
   Twitter,
   Instagram,
   Youtube,
+  Plus,
+  Minus,
+  Lightbulb,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -19,9 +21,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { getCartWithDetails, getCartCount } from "@/lib/actions/cart"
+import { getCartWithDetails, getCartCount, removeFromCart, updateCartQuantity } from "@/lib/actions/cart"
 import { getWishlistCount } from "@/lib/actions/wishlist"
-import { removeFromCart } from "@/lib/actions/cart"
 import { getCategoriesWithSubcategories } from "@/lib/actions/category"
 import { useToast } from "@/hooks/use-toast"
 import type { CartItemWithDetails } from "@/lib/types"
@@ -48,6 +49,7 @@ export default function Navbar() {
   const [cartItems, setCartItems] = useState<CartItemWithDetails[]>([])
   const [cartCount, setCartCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
+  const [isUpdatingCart, setIsUpdatingCart] = useState(false)
 
   // Categories state
   const [categories, setCategories] = useState<CategoryWithSubcategories[]>([])
@@ -152,7 +154,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
-      if (!target.closest("[data-cart-dropdown]") && !target.closest("[data-remove-item]")) {
+      if (!target.closest("[data-cart-dropdown]") && !target.closest("[data-cart-action]")) {
         setShowCartDropdown(false)
       }
     }
@@ -179,7 +181,93 @@ export default function Navbar() {
     }
   }, [showMobileSidebar])
 
-  // Main navigation category handlers
+  // Cart management functions
+  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+    if (isUpdatingCart) return
+
+    setIsUpdatingCart(true)
+    try {
+      const result = await updateCartQuantity(itemId, newQuantity)
+
+      if (result.success) {
+        if (newQuantity === 0) {
+          setCartItems((prev) => prev.filter((item) => item.id !== itemId))
+          setCartCount((prev) => Math.max(0, prev - 1))
+        } else {
+          setCartItems((prev) =>
+            prev.map((item) =>
+              item.id === itemId ? { ...item, quantity: newQuantity } : item
+            )
+          )
+        }
+
+        // Dispatch custom event for other components
+        window.dispatchEvent(new CustomEvent("cartUpdated"))
+
+        toast({
+          title: result.message,
+          variant: "default",
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update cart",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUpdatingCart(false)
+    }
+  }
+
+  const handleRemoveFromCart = async (itemId: string) => {
+    if (isUpdatingCart) return
+
+    setIsUpdatingCart(true)
+    try {
+      const result = await removeFromCart(itemId)
+      if (result.success) {
+        // Update local state immediately
+        const removedItem = cartItems.find(item => item.id === itemId)
+        setCartItems((prev) => prev.filter((item) => item.id !== itemId))
+        setCartCount((prev) => Math.max(0, prev - (removedItem?.quantity || 1)))
+
+        // Dispatch custom event for other components
+        window.dispatchEvent(new CustomEvent("cartUpdated"))
+
+        toast({
+          title: result.message,
+          variant: "default",
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove item",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUpdatingCart(false)
+    }
+  }
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.product.base_price * item.quantity, 0)
+  }
+
+  // Navigation handlers
   const handleMainCategoriesMouseEnter = () => {
     if (!isScrolled) {
       setShowMainCategories(true)
@@ -192,7 +280,6 @@ export default function Navbar() {
     }
   }
 
-  // Sticky navigation category handlers
   const handleStickyCategoriesMouseEnter = () => {
     if (isScrolled) {
       setShowStickyCategories(true)
@@ -261,37 +348,6 @@ export default function Navbar() {
     }, 600)
   }
 
-  const handleRemoveFromCart = async (itemId: string) => {
-    try {
-      const result = await removeFromCart(itemId)
-      if (result.success) {
-        // Update local state
-        setCartItems((prev) => prev.filter((item) => item.id !== itemId))
-        setCartCount((prev) => Math.max(0, prev - 1))
-        toast({
-          title: result.message,
-          variant: "success",
-        })
-      } else {
-        toast({
-          title: "Error",
-          description: result.message,
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to remove item",
-        variant: "destructive",
-      })
-    }
-  }
-
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.product.base_price * item.quantity, 0)
-  }
-
   // Create main menu items with dynamic categories
   const mainMenuItems = [
     { name: "HOME", href: "/", hasSubmenu: false },
@@ -317,23 +373,20 @@ export default function Navbar() {
                 <div className="relative w-8 h-8 flex items-center justify-center">
                   <div className="absolute inset-0 flex flex-col justify-center items-center gap-1.5">
                     <div
-                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-700 ease-in-out transform origin-center ${
-                        showMobileSidebar && !isClosing
+                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-700 ease-in-out transform origin-center ${showMobileSidebar && !isClosing
                           ? "rotate-45 translate-y-2 bg-[#e94491]"
                           : "rotate-0 translate-y-0"
-                      }`}
+                        }`}
                     />
                     <div
-                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-500 ease-in-out ${
-                        showMobileSidebar && !isClosing ? "opacity-0 scale-0" : "opacity-100 scale-100"
-                      }`}
+                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-500 ease-in-out ${showMobileSidebar && !isClosing ? "opacity-0 scale-0" : "opacity-100 scale-100"
+                        }`}
                     />
                     <div
-                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-700 ease-in-out transform origin-center ${
-                        showMobileSidebar && !isClosing
+                      className={`w-6 h-0.5 bg-gray-800 transition-all duration-700 ease-in-out transform origin-center ${showMobileSidebar && !isClosing
                           ? "-rotate-45 -translate-y-2 bg-[#e94491]"
                           : "rotate-0 translate-y-0"
-                      }`}
+                        }`}
                     />
                   </div>
                 </div>
@@ -387,9 +440,9 @@ export default function Navbar() {
                   )}
                 </button>
 
-                {/* Cart Dropdown */}
+                {/* Enhanced Cart Dropdown */}
                 {showCartDropdown && (
-                  <div className="absolute top-full right-0 mt-1 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 animate-in slide-in-from-top-2 duration-200">
+                  <div className="absolute top-full right-0 mt-1 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 animate-in slide-in-from-top-2 duration-200">
                     {cartItems.length === 0 ? (
                       <div className="p-8 text-center">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
@@ -397,53 +450,108 @@ export default function Navbar() {
                         </div>
                         <p className="text-gray-600 mb-4">No products selected</p>
                         <Link href="/shop">
-                          <Button className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-xl">
+                          <Button
+                            className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-xl"
+                            onClick={() => setShowCartDropdown(false)}
+                          >
                             Continue Shopping
                           </Button>
                         </Link>
                       </div>
                     ) : (
                       <>
-                        <div className="p-4 max-h-80 overflow-y-auto">
+                        <div className="p-4 border-b border-gray-200">
+                          <h3 className="text-lg font-medium text-gray-800">Shopping Cart ({cartCount})</h3>
+                        </div>
+
+                        <div className="max-h-80 overflow-y-auto">
                           {cartItems.map((item) => (
                             <div
                               key={item.id}
-                              className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-b-0"
+                              className="flex items-center gap-3 p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
                             >
-                              <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <Image
-                                  src={item.image.image_url || "/placeholder.svg"}
-                                  alt={item.product.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="text-sm font-medium text-gray-800 mb-1 line-clamp-1">
-                                  {item.product.name}
-                                </h4>
-                                <p className="text-xs text-gray-500 mb-1">
+                              <Link href={`/product/${item.product.id}`} onClick={() => setShowCartDropdown(false)}>
+                                <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-200">
+                                  <Image
+                                    src={item.image.image_url || "/placeholder.svg"}
+                                    alt={item.product.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              </Link>
+
+                              <div className="flex-1 min-w-0">
+                                <Link href={`/product/${item.product.id}`} onClick={() => setShowCartDropdown(false)}>
+                                  <h4 className="text-sm font-medium text-gray-800 mb-1 line-clamp-1 hover:text-[#e94491] transition-colors cursor-pointer">
+                                    {item.product.name}
+                                  </h4>
+                                </Link>
+                                <p className="text-xs text-gray-500 mb-2">
                                   {item.color.name} • {item.size.label}
                                 </p>
-                                <p className="text-sm text-gray-600">
-                                  {item.quantity} x ${item.product.base_price.toFixed(2)}
-                                </p>
+
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden">
+                                    <button
+                                      data-cart-action
+                                      onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleUpdateQuantity(item.id, item.quantity - 1)
+                                      }}
+                                      disabled={isUpdatingCart}
+                                      className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </button>
+                                    <span className="px-2 py-1 min-w-[30px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-sm">
+                                      {item.quantity}
+                                    </span>
+                                    <button
+                                      data-cart-action
+                                      onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleUpdateQuantity(item.id, item.quantity + 1)
+                                      }}
+                                      disabled={isUpdatingCart}
+                                      className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </button>
+                                  </div>
+
+                                  <div className="text-right">
+                                    <p className="text-sm font-medium text-[#e94491]">
+                                      ${(item.product.base_price * item.quantity).toFixed(2)}
+                                    </p>
+                                    {item.quantity > 1 && (
+                                      <p className="text-xs text-gray-500">
+                                        ${item.product.base_price.toFixed(2)} each
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
+
                               <button
-                                data-remove-item
+                                data-cart-action
                                 onClick={(e) => {
                                   e.preventDefault()
                                   e.stopPropagation()
                                   handleRemoveFromCart(item.id)
                                 }}
-                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                disabled={isUpdatingCart}
+                                className="text-gray-400 h-full hover:text-red-500 transition-colors disabled:opacity-50"
                               >
                                 <X className="h-4 w-4" />
                               </button>
                             </div>
                           ))}
                         </div>
-                        <div className="p-4 border-t border-gray-200">
+
+                        <div className="p-4 border-t border-gray-200 bg-gray-50">
                           <div className="flex justify-between items-center mb-4">
                             <span className="text-lg font-medium text-gray-800">TOTAL</span>
                             <span className="text-lg font-medium text-[#e94491]">${getTotalPrice().toFixed(2)}</span>
@@ -460,8 +568,7 @@ export default function Navbar() {
                             </Link>
                             <Link href="/checkout" className="flex-1">
                               <Button
-                                variant="outline"
-                                className="w-full border-2 border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white rounded-xl bg-transparent"
+                                className="w-full bg-[#e94491] hover:bg-[#d63384] text-white rounded-xl"
                                 onClick={() => setShowCartDropdown(false)}
                               >
                                 Checkout →
@@ -487,26 +594,22 @@ export default function Navbar() {
                   onMouseLeave={handleMainCategoriesMouseLeave}
                 >
                   <button
-                    className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${
-                      showMainCategories ? "bg-[#e94491]" : ""
-                    }`}
+                    className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showMainCategories ? "bg-[#e94491]" : ""
+                      }`}
                   >
                     <div className="relative w-5 h-5 flex items-center justify-center">
                       <div className="absolute inset-0 flex flex-col justify-center items-center gap-1">
                         <div
-                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                            showMainCategories ? "rotate-45 translate-y-1.5 text-white" : ""
-                          }`}
+                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${showMainCategories ? "rotate-45 translate-y-1.5 text-white" : ""
+                            }`}
                         ></div>
                         <div
-                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                            showMainCategories ? "opacity-0" : ""
-                          }`}
+                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${showMainCategories ? "opacity-0" : ""
+                            }`}
                         ></div>
                         <div
-                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                            showMainCategories ? "-rotate-45 -translate-y-1.5 text-white" : ""
-                          }`}
+                          className={`w-4 h-0.5 bg-current transition-all duration-300 ${showMainCategories ? "-rotate-45 -translate-y-1.5 text-white" : ""
+                            }`}
                         ></div>
                       </div>
                     </div>
@@ -541,11 +644,10 @@ export default function Navbar() {
                 <div className="flex gap-8">
                   <Link
                     href="/"
-                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                      isActiveLink("/")
+                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/")
                         ? "border-[#e94491] text-[#e94491]"
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                    }`}
+                      }`}
                   >
                     Home
                   </Link>
@@ -553,11 +655,10 @@ export default function Navbar() {
                   <div className="relative" onMouseEnter={handleShopMouseEnter} onMouseLeave={handleShopMouseLeave}>
                     <Link
                       href="/shop"
-                      className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                        isActiveLink("/shop")
+                      className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/shop")
                           ? "border-[#e94491] text-[#e94491]"
                           : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                      }`}
+                        }`}
                     >
                       Shop <ChevronDown className="h-4 w-4" />
                     </Link>
@@ -584,11 +685,10 @@ export default function Navbar() {
                                   >
                                     <Link
                                       href={`/shop/${category.slug}`}
-                                      className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        hoveredCategory === category.name
+                                      className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${hoveredCategory === category.name
                                           ? "bg-[#e94491] text-white"
                                           : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center justify-between">
                                         <span>{category.name}</span>
@@ -622,10 +722,10 @@ export default function Navbar() {
                                     ))}
                                   {categories.find((cat: CategoryWithSubcategories) => cat.name === hoveredCategory)?.subcategories.length ===
                                     0 && (
-                                    <p className="text-sm text-gray-500 italic px-3 py-2">
-                                      Explore our {hoveredCategory.toLowerCase()} collection
-                                    </p>
-                                  )}
+                                      <p className="text-sm text-gray-500 italic px-3 py-2">
+                                        Explore our {hoveredCategory.toLowerCase()} collection
+                                      </p>
+                                    )}
                                 </div>
                               </div>
                             )}
@@ -659,33 +759,30 @@ export default function Navbar() {
 
                   <Link
                     href="/faq"
-                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                      isActiveLink("/faq")
+                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/faq")
                         ? "border-[#e94491] text-[#e94491]"
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                    }`}
+                      }`}
                   >
                     FAQ
                   </Link>
 
                   <Link
                     href="/about"
-                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                      isActiveLink("/about")
+                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/about")
                         ? "border-[#e94491] text-[#e94491]"
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                    }`}
+                      }`}
                   >
                     About
                   </Link>
 
                   <Link
                     href="/contact"
-                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                      isActiveLink("/contact")
+                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/contact")
                         ? "border-[#e94491] text-[#e94491]"
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                    }`}
+                      }`}
                   >
                     Contact
                   </Link>
@@ -705,17 +802,15 @@ export default function Navbar() {
           <>
             {/* Backdrop with smooth fade */}
             <div
-              className={`fixed inset-0 bg-black z-50 lg:hidden transition-all duration-600 ease-in-out ${
-                isClosing ? "bg-opacity-0" : "bg-opacity-50"
-              }`}
+              className={`fixed inset-0 bg-black z-50 lg:hidden transition-all duration-600 ease-in-out ${isClosing ? "bg-opacity-0" : "bg-opacity-50"
+                }`}
               onClick={closeSidebar}
             />
 
             {/* Sidebar with enhanced slide animation */}
             <div
-              className={`fixed top-0 left-0 h-full w-80 bg-white z-50 lg:hidden shadow-2xl transition-all duration-600 ease-out transform ${
-                isClosing ? "-translate-x-full opacity-0 scale-95" : "translate-x-0 opacity-100 scale-100"
-              }`}
+              className={`fixed top-0 left-0 h-full w-80 bg-white z-50 lg:hidden shadow-2xl transition-all duration-600 ease-out transform ${isClosing ? "-translate-x-full opacity-0 scale-95" : "translate-x-0 opacity-100 scale-100"
+                }`}
               style={{
                 transformOrigin: "left center",
               }}
@@ -758,11 +853,10 @@ export default function Navbar() {
                 <div className="flex border-b border-gray-200 bg-gray-50">
                   <button
                     onClick={() => setActiveTab("menu")}
-                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${
-                      activeTab === "menu"
+                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${activeTab === "menu"
                         ? "text-[#e94491] bg-white"
                         : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     MENU
                     {activeTab === "menu" && (
@@ -771,11 +865,10 @@ export default function Navbar() {
                   </button>
                   <button
                     onClick={() => setActiveTab("categories")}
-                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${
-                      activeTab === "categories"
+                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${activeTab === "categories"
                         ? "text-[#e94491] bg-white"
                         : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     CATEGORIES
                     {activeTab === "categories" && (
@@ -793,9 +886,8 @@ export default function Navbar() {
                           <div className="flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-all duration-200 group">
                             <Link
                               href={item.href}
-                              className={`flex-1 font-medium text-base group-hover:text-[#e94491] transition-colors duration-200 ${
-                                isActiveLink(item.href) ? "text-[#e94491]" : "text-gray-700"
-                              }`}
+                              className={`flex-1 font-medium text-base group-hover:text-[#e94491] transition-colors duration-200 ${isActiveLink(item.href) ? "text-[#e94491]" : "text-gray-700"
+                                }`}
                               onClick={() => !item.hasSubmenu && closeSidebar()}
                             >
                               {item.name}
@@ -810,9 +902,8 @@ export default function Navbar() {
                                 className="p-2 hover:bg-gray-200 rounded-full transition-all duration-200 group-hover:scale-110"
                               >
                                 <ChevronDown
-                                  className={`h-5 w-5 text-gray-500 transition-all duration-300 ${
-                                    expandedMenuItem === item.name ? "rotate-180 text-[#e94491] scale-110" : ""
-                                  }`}
+                                  className={`h-5 w-5 text-gray-500 transition-all duration-300 ${expandedMenuItem === item.name ? "rotate-180 text-[#e94491] scale-110" : ""
+                                    }`}
                                 />
                               </button>
                             )}
@@ -820,9 +911,8 @@ export default function Navbar() {
 
                           {/* Enhanced Submenu with better animations */}
                           <div
-                            className={`overflow-hidden transition-all duration-700 ease-in-out ${
-                              expandedMenuItem === item.name ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-                            }`}
+                            className={`overflow-hidden transition-all duration-700 ease-in-out ${expandedMenuItem === item.name ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                              }`}
                           >
                             {item.hasSubmenu && expandedMenuItem === item.name && (
                               <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-[#e94491] ml-4 mr-2 rounded-r-lg">
@@ -851,11 +941,10 @@ export default function Navbar() {
                                             className="p-1 hover:bg-gray-200 rounded-full transition-all duration-300 group-hover:scale-110"
                                           >
                                             <ChevronDown
-                                              className={`h-4 w-4 text-gray-400 transition-all duration-500 ${
-                                                expandedSubMenus.has(`${item.name}-${category.name}`)
+                                              className={`h-4 w-4 text-gray-400 transition-all duration-500 ${expandedSubMenus.has(`${item.name}-${category.name}`)
                                                   ? "rotate-180 text-[#e94491]"
                                                   : ""
-                                              }`}
+                                                }`}
                                             />
                                           </button>
                                         )}
@@ -863,11 +952,10 @@ export default function Navbar() {
 
                                       {/* Enhanced Sub-subcategories with better animations */}
                                       <div
-                                        className={`overflow-hidden transition-all duration-600 ease-in-out ${
-                                          expandedSubMenus.has(`${item.name}-${category.name}`)
+                                        className={`overflow-hidden transition-all duration-600 ease-in-out ${expandedSubMenus.has(`${item.name}-${category.name}`)
                                             ? "max-h-96 opacity-100"
                                             : "max-h-0 opacity-0"
-                                        }`}
+                                          }`}
                                       >
                                         {category.subcategories.length > 0 &&
                                           expandedSubMenus.has(`${item.name}-${category.name}`) && (
@@ -945,9 +1033,8 @@ export default function Navbar() {
 
         {/* Sticky Second Navigation - Desktop Only */}
         <div
-          className={`fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40 transition-transform duration-300 hidden lg:block ${
-            isScrolled ? "translate-y-0" : "-translate-y-full"
-          }`}
+          className={`fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40 transition-transform duration-300 hidden lg:block ${isScrolled ? "translate-y-0" : "-translate-y-full"
+            }`}
         >
           <div className="container mx-auto px-4 flex justify-between items-center">
             <nav className="flex-1 flex items-center justify-between gap-8">
@@ -957,26 +1044,22 @@ export default function Navbar() {
                 onMouseLeave={handleStickyCategoriesMouseLeave}
               >
                 <button
-                  className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${
-                    showStickyCategories ? "bg-[#e94491]" : ""
-                  }`}
+                  className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showStickyCategories ? "bg-[#e94491]" : ""
+                    }`}
                 >
                   <div className="relative w-5 h-5 flex items-center justify-center">
                     <div className="absolute inset-0 flex flex-col justify-center items-center gap-1">
                       <div
-                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                          showStickyCategories ? "rotate-45 translate-y-1.5 text-white" : ""
-                        }`}
+                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${showStickyCategories ? "rotate-45 translate-y-1.5 text-white" : ""
+                          }`}
                       ></div>
                       <div
-                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                          showStickyCategories ? "opacity-0" : ""
-                        }`}
+                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${showStickyCategories ? "opacity-0" : ""
+                          }`}
                       ></div>
                       <div
-                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${
-                          showStickyCategories ? "-rotate-45 -translate-y-1.5 text-white" : ""
-                        }`}
+                        className={`w-4 h-0.5 bg-current transition-all duration-300 ${showStickyCategories ? "-rotate-45 -translate-y-1.5 text-white" : ""
+                          }`}
                       ></div>
                     </div>
                   </div>
@@ -1011,11 +1094,10 @@ export default function Navbar() {
               <div className="flex gap-8">
                 <Link
                   href="/"
-                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                    isActiveLink("/")
+                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/")
                       ? "border-[#e94491] text-[#e94491]"
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                  }`}
+                    }`}
                 >
                   Home
                 </Link>
@@ -1027,11 +1109,10 @@ export default function Navbar() {
                 >
                   <Link
                     href="/shop"
-                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                      isActiveLink("/shop")
+                    className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/shop")
                         ? "border-[#e94491] text-[#e94491]"
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                    }`}
+                      }`}
                   >
                     Shop <ChevronDown className="h-4 w-4" />
                   </Link>
@@ -1058,11 +1139,10 @@ export default function Navbar() {
                                 >
                                   <Link
                                     href={`/shop/${category.slug}`}
-                                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                      hoveredCategory === category.name
+                                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${hoveredCategory === category.name
                                         ? "bg-[#e94491] text-white"
                                         : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
-                                    }`}
+                                      }`}
                                   >
                                     <div className="flex items-center justify-between">
                                       <span>{category.name}</span>
@@ -1132,33 +1212,30 @@ export default function Navbar() {
 
                 <Link
                   href="/faq"
-                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                    isActiveLink("/faq")
+                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/faq")
                       ? "border-[#e94491] text-[#e94491]"
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                  }`}
+                    }`}
                 >
                   FAQ
                 </Link>
 
                 <Link
                   href="/about"
-                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                    isActiveLink("/about")
+                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/about")
                       ? "border-[#e94491] text-[#e94491]"
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                  }`}
+                    }`}
                 >
                   About
                 </Link>
 
                 <Link
                   href="/contact"
-                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${
-                    isActiveLink("/contact")
+                  className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/contact")
                       ? "border-[#e94491] text-[#e94491]"
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
-                  }`}
+                    }`}
                 >
                   Contact
                 </Link>

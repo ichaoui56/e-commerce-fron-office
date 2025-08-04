@@ -1,201 +1,302 @@
 "use server"
 
-import { readFileSync, writeFileSync } from "fs"
-import { join } from "path"
-import { getCart, clearCart } from "./cart"
-import { v4 as uuidv4 } from "uuid"
-import { getGuestSessionId } from "./session"
+import { PrismaClient } from "@prisma/client"
+import { cookies } from "next/headers"
+import type { Order, OrderItem } from "@/lib/types"
 
-export interface Order {
-  id: string
-  guest_session_id: string
-  order_ref: string
-  first_name: string
-  last_name: string
-  email: string
-  phone: string
-  address: string
-  city: string
-  postal_code: string
-  country: string
-  shipping_cost: number
-  order_notes?: string
-  status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  created_at: string
-  total_amount: number
-}
+const prisma = new PrismaClient()
 
-export interface OrderItem {
-  id: string
-  order_id: string
-  product_variant_id: string
-  quantity: number
-  unit_price: number
-  color_id: string
-  size_id: string
-}
+// Get or create guest session
+async function getGuestSession(): Promise<string> {
+  const cookieStore = await cookies()
+  let sessionId = cookieStore.get("guest_session_id")?.value
 
-export interface ShippingZone {
-  id: string
-  name: string
-  countries: string[]
-  base_cost: number
-  cost_per_item: number
-}
-
-// Helper functions
-function getOrdersFilePath() {
-  return join(process.cwd(), "data", "orders.json")
-}
-
-function getOrderItemsFilePath() {
-  return join(process.cwd(), "data", "order-items.json")
-}
-
-function readOrders(): Order[] {
-  try {
-    const content = readFileSync(getOrdersFilePath(), "utf-8")
-    return JSON.parse(content)
-  } catch {
-    return []
-  }
-}
-
-function writeOrders(orders: Order[]) {
-  writeFileSync(getOrdersFilePath(), JSON.stringify(orders, null, 2))
-}
-
-function readOrderItems(): OrderItem[] {
-  try {
-    const content = readFileSync(getOrderItemsFilePath(), "utf-8")
-    return JSON.parse(content)
-  } catch {
-    return []
-  }
-}
-
-function writeOrderItems(orderItems: OrderItem[]) {
-  writeFileSync(getOrderItemsFilePath(), JSON.stringify(orderItems, null, 2))
-}
-
-function readShippingZones(): ShippingZone[] {
-  const content = readFileSync(join(process.cwd(), "data", "shipping-zones.json"), "utf-8")
-  return JSON.parse(content)
-}
-
-// Calculate shipping cost
-export async function calculateShipping(country: string, itemCount: number): Promise<number> {
-  const zones = readShippingZones()
-
-  let zone = zones.find((z) => z.countries.includes(country))
-  if (!zone) {
-    zone = zones.find((z) => z.countries.includes("*")) // Rest of world
+  if (!sessionId) {
+    throw new Error("No guest session found")
   }
 
-  if (!zone) return 0
-
-  return zone.base_cost + zone.cost_per_item * itemCount
+  return sessionId
 }
 
 // Generate order reference
 function generateOrderRef(): string {
-  const timestamp = Date.now().toString(36)
-  const random = Math.random().toString(36).substr(2, 5)
-  return `ORD-${timestamp}-${random}`.toUpperCase()
+  const timestamp = Date.now().toString().slice(-6)
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase()
+  return `ORD-${timestamp}-${random}`
 }
 
-// Place order
-export async function placeOrder(orderData: {
-  first_name: string
-  last_name: string
-  email: string
+// Create order from cart
+export async function createOrder(orderData: {
+  name: string
   phone: string
   address: string
-  city: string
-  postal_code: string
-  country: string
-  order_notes?: string
-}): Promise<{ success: boolean; message: string; order_ref?: string }> {
+  shippingCost?: number
+}) {
   try {
-    const sessionId = await getGuestSessionId()
-    const cartItems = await getCart()
+    const sessionId = await getGuestSession()
+
+    // Get cart items
+    const cartItems = await prisma.panelItem.findMany({
+      where: { guest_session_id: sessionId },
+      include: {
+        productSizeStock: {
+          include: {
+            productColor: {
+              include: {
+                product: true,
+                color: true,
+              },
+            },
+            size: true,
+          },
+        },
+      },
+    })
 
     if (cartItems.length === 0) {
       return { success: false, message: "Cart is empty" }
     }
 
-    // Calculate totals (simplified - in real app you'd get actual product prices)
-    const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-    const subtotal = itemCount * 50 // Simplified calculation
-    const shippingCost = await calculateShipping(orderData.country, itemCount)
-    const totalAmount = subtotal + shippingCost
-
-    // Create order
-    const orderId = uuidv4()
-    const orderRef = generateOrderRef()
-
-    const order: Order = {
-      id: orderId,
-      guest_session_id: sessionId,
-      order_ref: orderRef,
-      ...orderData,
-      shipping_cost: shippingCost,
-      status: "PENDING",
-      created_at: new Date().toISOString(),
-      total_amount: totalAmount,
+    // Check stock availability
+    for (const item of cartItems) {
+      if (item.productSizeStock.stock < item.quantity) {
+        return {
+          success: false,
+          message: `Insufficient stock for ${item.productSizeStock.productColor.product.name}`,
+        }
+      }
     }
 
-    // Create order items
-    const orderItems: OrderItem[] = cartItems.map((cartItem) => ({
-      id: uuidv4(),
-      order_id: orderId,
-      product_variant_id: cartItem.product_variant_id,
-      quantity: cartItem.quantity,
-      unit_price: 50, // Simplified
-      color_id: "color-1", // Simplified
-      size_id: "size-3", // Simplified
-    }))
+    // Calculate total
+    const subtotal = cartItems.reduce((total, item) => {
+      return total + Number(item.productSizeStock.price) * item.quantity
+    }, 0)
 
-    // Save to files
-    const orders = readOrders()
-    orders.push(order)
-    writeOrders(orders)
+    const shippingCost = orderData.shippingCost || 0
+    const total = subtotal + shippingCost
 
-    const allOrderItems = readOrderItems()
-    allOrderItems.push(...orderItems)
-    writeOrderItems(allOrderItems)
+    // Create order in transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create order
+      const order = await tx.order.create({
+        data: {
+          guest_session_id: sessionId,
+          ref_id: generateOrderRef(),
+          name: orderData.name,
+          phone: orderData.phone,
+          address: orderData.address,
+          status: "pending",
+        },
+      })
 
-    // Clear cart
-    await clearCart()
+      // Create order items and update stock
+      for (const item of cartItems) {
+        await tx.orderItem.create({
+          data: {
+            order_id: order.id,
+            product_size_stock_id: item.product_size_stock_id,
+            quantity: item.quantity,
+            price_at_purchase: item.productSizeStock.price,
+          },
+        })
+
+        // Update stock
+        await tx.productSizeStock.update({
+          where: { id: item.product_size_stock_id },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        })
+      }
+
+      // Clear cart
+      await tx.panelItem.deleteMany({
+        where: { guest_session_id: sessionId },
+      })
+
+      return order
+    })
 
     return {
       success: true,
-      message: "Order placed successfully!",
-      order_ref: orderRef,
+      message: "Order created successfully",
+      orderId: result.id,
+      orderRef: result.ref_id,
     }
   } catch (error) {
-    return { success: false, message: "Failed to place order" }
+    console.error("Create order error:", error)
+    return { success: false, message: "Failed to create order" }
   }
 }
 
-// Get user's orders
-export async function getUserOrders(): Promise<Order[]> {
+// Get order by ID
+export async function getOrderById(orderId: string) {
   try {
-    const sessionId = await getGuestSessionId()
-    const orders = readOrders()
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: {
+              include: {
+                productColor: {
+                  include: {
+                    product: true,
+                    color: true,
+                  },
+                },
+                size: true,
+              },
+            },
+          },
+        },
+      },
+    })
 
-    return orders.filter((order) => order.guest_session_id === sessionId)
-  } catch {
-    return []
+    if (!order) {
+      return null
+    }
+
+    return {
+      id: order.id,
+      guest_session_id: order.guest_session_id,
+      order_ref: order.ref_id,
+      first_name: order.name.split(" ")[0] || order.name,
+      last_name: order.name.split(" ").slice(1).join(" ") || "",
+      email: "", // You might want to add email to your schema
+      phone: order.phone,
+      address: order.address,
+      city: "", // You might want to add city to your schema
+      postal_code: "", // You might want to add postal_code to your schema
+      country: "", // You might want to add country to your schema
+      shipping_cost: 0, // You might want to add shipping_cost to your schema
+      order_notes: "", // You might want to add order_notes to your schema
+      status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+      created_at: order.created_at.toISOString(),
+      total_amount: order.orderItems.reduce((total, item) => {
+        return total + Number(item.price_at_purchase) * item.quantity
+      }, 0),
+      items: order.orderItems.map((item) => ({
+        id: item.id,
+        order_id: item.order_id,
+        product_variant_id: item.product_size_stock_id,
+        quantity: item.quantity,
+        unit_price: Number(item.price_at_purchase),
+        color_id: item.productSizeStock.productColor.color_id,
+        size_id: item.productSizeStock.size_id,
+        product: {
+          id: item.productSizeStock.productColor.product.id,
+          name: item.productSizeStock.productColor.product.name,
+          image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
+        },
+        color: {
+          id: item.productSizeStock.productColor.color.id,
+          name: item.productSizeStock.productColor.color.name,
+          hex_code: item.productSizeStock.productColor.color.hex || "#000000",
+        },
+        size: {
+          id: item.productSizeStock.size.id,
+          label: item.productSizeStock.size.label,
+        },
+      })),
+    }
+  } catch (error) {
+    console.error("Get order by ID error:", error)
+    return null
   }
 }
 
 // Get order by reference
-export async function getOrderByRef(orderRef: string): Promise<Order | null> {
+export async function getOrderByRef(orderRef: string) {
   try {
-    const orders = readOrders()
-    return orders.find((order) => order.order_ref === orderRef) || null
-  } catch {
+    const order = await prisma.order.findUnique({
+      where: { ref_id: orderRef },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: {
+              include: {
+                productColor: {
+                  include: {
+                    product: true,
+                    color: true,
+                  },
+                },
+                size: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!order) {
+      return null
+    }
+
+    return await getOrderById(order.id)
+  } catch (error) {
+    console.error("Get order by ref error:", error)
     return null
+  }
+}
+
+// Get user orders
+export async function getUserOrders() {
+  try {
+    const sessionId = await getGuestSession()
+
+    const orders = await prisma.order.findMany({
+      where: { guest_session_id: sessionId },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: {
+              include: {
+                productColor: {
+                  include: {
+                    product: true,
+                    color: true,
+                  },
+                },
+                size: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { created_at: "desc" },
+    })
+
+    return orders.map((order) => ({
+      id: order.id,
+      order_ref: order.ref_id,
+      status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+      created_at: order.created_at.toISOString(),
+      total_amount: order.orderItems.reduce((total, item) => {
+        return total + Number(item.price_at_purchase) * item.quantity
+      }, 0),
+      items_count: order.orderItems.reduce((total, item) => total + item.quantity, 0),
+    }))
+  } catch (error) {
+    console.error("Get user orders error:", error)
+    return []
+  }
+}
+
+// Update order status (admin function)
+export async function updateOrderStatus(orderId: string, status: "pending" | "shipped" | "delivered" | "cancelled") {
+  try {
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+    })
+
+    return { success: true, message: "Order status updated successfully" }
+  } catch (error) {
+    console.error("Update order status error:", error)
+    return { success: false, message: "Failed to update order status" }
   }
 }

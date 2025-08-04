@@ -1,3 +1,5 @@
+"use server"
+
 import { cookies } from "next/headers"
 import { v4 as uuidv4 } from "uuid"
 
@@ -7,22 +9,19 @@ export async function getGuestSessionId(): Promise<string | null> {
   return cookieStore.get("guest_session_id")?.value || null
 }
 
-// Get or create guest session (for use in Server Actions only)
-export async function getOrCreateGuestSession(): Promise<string> {
+// Create a new guest session (only for Server Actions)
+export async function createGuestSession(): Promise<string> {
   const cookieStore = await cookies()
-  let sessionId = cookieStore.get("guest_session_id")?.value
+  const sessionId = uuidv4()
 
-  if (!sessionId) {
-    sessionId = uuidv4()
-    cookieStore.set("guest_session_id", sessionId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
-  }
+  cookieStore.set("guest_session_id", sessionId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+  })
 
-  // Update last active (in a real app, you'd update the database)
+  // Update last active
   cookieStore.set("last_active", new Date().toISOString(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -31,4 +30,29 @@ export async function getOrCreateGuestSession(): Promise<string> {
   })
 
   return sessionId
+}
+
+// Update last active timestamp (only for Server Actions)
+export async function updateLastActive(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.set("last_active", new Date().toISOString(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  })
+}
+
+// Get or create guest session (only for Server Actions)
+export async function getOrCreateGuestSession(): Promise<string> {
+  const existingSessionId = await getGuestSessionId()
+
+  if (existingSessionId) {
+    // Update last active for existing session
+    await updateLastActive()
+    return existingSessionId
+  }
+
+  // Create new session
+  return await createGuestSession()
 }

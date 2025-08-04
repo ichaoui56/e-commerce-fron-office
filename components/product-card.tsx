@@ -151,7 +151,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
           return
         }
 
-        const result = await addToCart(product.id, selectedColorId, availableVariant.size_id, 1)
+        // Use the ProductSizeStock ID directly from the variant
+        const result = await addToCart(availableVariant.id, 1)
 
         if (result.success) {
           toast({

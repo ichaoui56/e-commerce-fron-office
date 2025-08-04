@@ -27,23 +27,24 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
   }
 
   const shippingCost = shippingCosts[selectedShipping as keyof typeof shippingCosts]
-  const subtotal = cartItems.reduce((total, item) => total + item.product.current_price * item.quantity, 0)
+  const subtotal = cartItems.reduce((total, item) => total + item.product.base_price * item.quantity, 0)
   const total = subtotal + shippingCost
 
   const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
     startTransition(async () => {
       try {
         const result = await updateCartQuantity(itemId, newQuantity)
-
         if (result.success) {
           if (newQuantity === 0) {
             setCartItems((prev) => prev.filter((item) => item.id !== itemId))
           } else {
             setCartItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)))
           }
+          // Dispatch event to update navbar cart count
+          window.dispatchEvent(new CustomEvent("cartUpdated"))
           toast({
             title: result.message,
-            variant: "success",
+            variant: "default",
           })
         } else {
           toast({
@@ -66,12 +67,13 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
     startTransition(async () => {
       try {
         const result = await removeFromCart(itemId)
-
         if (result.success) {
           setCartItems((prev) => prev.filter((item) => item.id !== itemId))
+          // Dispatch event to update navbar cart count
+          window.dispatchEvent(new CustomEvent("cartUpdated"))
           toast({
             title: result.message,
-            variant: "success",
+            variant: "default",
           })
         } else {
           toast({
@@ -182,48 +184,55 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                           <p className="text-gray-500 text-xs md:text-sm">
                             {item.color.name} • {item.size.label}
                           </p>
+                          <p className="text-gray-400 text-xs mt-1">SKU: {item.variant.sku}</p>
                         </div>
                       </div>
-
                       <div className="col-span-2 flex justify-center">
-                        <span className="text-gray-800 font-normal text-sm md:text-lg">
-                          ${item.product.current_price.toFixed(2)}
-                        </span>
+                        <div className="text-center">
+                          <span className="text-gray-800 font-normal text-sm md:text-lg">
+                            ${item.product.base_price.toFixed(2)}
+                          </span>
+                          {item.product.discount_percentage > 0 && (
+                            <div className="text-xs text-gray-400 line-through">
+                              ${item.product.base_price.toFixed(2)}
+                            </div>
+                          )}
+                        </div>
                       </div>
-
                       <div className="col-span-3 flex justify-center">
                         <div className="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                             disabled={isPending}
-                            className="p-2 md:p-4 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center"
+                            className="w-10 h-10 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                           >
-                            <Minus className="h-3 w-3 md:h-4 md:w-4" />
+                            <Minus className="h-4 w-4" />
                           </button>
-                          <span className="px-3 md:px-4 py-2 min-w-[50px] md:min-w-[60px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-sm md:text-base">
+                          <div className="px-4 py-2 min-w-[10px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-base border-l border-r border-gray-300">
                             {item.quantity}
-                          </span>
+                          </div>
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                            disabled={isPending}
-                            className="p-2 md:p-4 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center"
+                            disabled={isPending || item.quantity >= item.variant.stock_quantity}
+                            className="w-10 h-10 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                           >
-                            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+                            <Plus className="h-4 w-4" />
                           </button>
                         </div>
+                        <div className="ml-3 text-xs text-gray-500 self-center">
+                          {item.variant.stock_quantity} available
+                        </div>
                       </div>
-
                       <div className="col-span-1 flex justify-center">
                         <span className="text-[#e94491] font-normal text-sm md:text-lg">
-                          ${(item.product.current_price * item.quantity).toFixed(2)}
+                          ${(item.product.base_price * item.quantity).toFixed(2)}
                         </span>
                       </div>
-
                       <div className="col-span-1 flex justify-center">
                         <button
                           onClick={() => handleRemoveItem(item.id)}
                           disabled={isPending}
-                          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm"
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm disabled:opacity-50"
                         >
                           <X className="h-4 w-4 md:h-5 md:w-5" />
                         </button>
@@ -243,7 +252,6 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                             />
                           </div>
                         </Link>
-
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1 min-w-0 pr-2">
@@ -255,51 +263,55 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                               <p className="text-gray-500 text-xs mt-1">
                                 {item.color.name} • {item.size.label}
                               </p>
+                              <p className="text-gray-400 text-xs">SKU: {item.variant.sku}</p>
                             </div>
                             <button
                               onClick={() => handleRemoveItem(item.id)}
                               disabled={isPending}
-                              className="w-8 h-8 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm flex-shrink-0"
+                              className="w-8 h-8 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center shadow-sm flex-shrink-0 disabled:opacity-50"
                             >
                               <X className="h-4 w-4" />
                             </button>
                           </div>
-
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500">Price</span>
                               <span className="text-gray-800 font-medium text-sm">
-                                ${item.product.current_price.toFixed(2)}
+                                ${item.product.base_price.toFixed(2)}
                               </span>
+                              {item.product.discount_percentage > 0 && (
+                                <span className="text-xs text-gray-400 line-through">
+                                  ${item.product.base_price.toFixed(2)}
+                                </span>
+                              )}
                             </div>
-
                             <div className="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                               <button
                                 onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                                 disabled={isPending}
-                                className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center"
+                                className="w-8 h-8 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                               >
                                 <Minus className="h-3 w-3" />
                               </button>
-                              <span className="px-3 py-2 min-w-[40px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-sm">
+                              <div className="px-3 py-2 min-w-[48px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-sm border-l border-r border-gray-300">
                                 {item.quantity}
-                              </span>
+                              </div>
                               <button
                                 onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                                disabled={isPending}
-                                className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center"
+                                disabled={isPending || item.quantity >= item.variant.stock_quantity}
+                                className="w-8 h-8 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                               >
                                 <Plus className="h-3 w-3" />
                               </button>
                             </div>
-
                             <div className="flex flex-col text-right">
                               <span className="text-xs text-gray-500">Total</span>
                               <span className="text-[#e94491] font-medium text-sm">
-                                ${(item.product.current_price * item.quantity).toFixed(2)}
+                                ${(item.product.base_price * item.quantity).toFixed(2)}
                               </span>
                             </div>
                           </div>
+                          <div className="mt-2 text-xs text-gray-500">{item.variant.stock_quantity} available</div>
                         </div>
                       </div>
                     </div>
@@ -316,12 +328,31 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                   <div className="w-12 md:w-16 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto rounded-full"></div>
                 </div>
 
-                <div className="flex justify-between items-center py-3 md:py-4 border-b border-gray-200">
-                  <span className="text-gray-600 font-medium text-sm md:text-base">Subtotal:</span>
-                  <span className="font-normal text-base md:text-lg text-gray-800">${subtotal.toFixed(2)}</span>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-gray-600 font-medium text-sm md:text-base">
+                      Items ({cartItems.reduce((acc, item) => acc + item.quantity, 0)}):
+                    </span>
+                    <span className="font-normal text-base md:text-lg text-gray-800">${subtotal.toFixed(2)}</span>
+                  </div>
+
+                  {cartItems.some((item) => item.product.discount_percentage > 0) && (
+                    <div className="flex justify-between items-center py-2 text-green-600">
+                      <span className="text-sm">You save:</span>
+                      <span className="font-medium">
+                        $
+                        {cartItems
+                          .reduce(
+                            (acc, item) => acc + (item.product.base_price - item.product.base_price) * item.quantity,
+                            0,
+                          )
+                          .toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="py-4 md:py-6 border-b border-gray-200">
+                <div className="py-4 md:py-6 border-t border-gray-200">
                   <div className="flex items-center gap-2 mb-3 md:mb-4">
                     <Truck className="h-4 w-4 md:h-5 md:w-5 text-[#e94491]" />
                     <span className="text-gray-700 font-medium text-sm md:text-base">Shipping:</span>
@@ -351,28 +382,50 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                           </div>
                         </div>
                         <span className="font-normal text-[#e94491] text-sm md:text-base">
-                          ${option.price.toFixed(2)}
+                          {option.price === 0 ? "Free" : `$${option.price.toFixed(2)}`}
                         </span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                <div className="py-4 md:py-6">
+                <div className="py-4 md:py-6 border-t border-gray-200">
                   <div className="flex justify-between items-center mb-4 md:mb-6">
-                    <span className="text-sm md:text-base font-normal text-gray-800">Total:</span>
-                    <span className="text-lg md:text-xl font-normal text-[#e94491]">${total.toFixed(2)}</span>
+                    <span className="text-base md:text-lg font-semibold text-gray-800">Total:</span>
+                    <span className="text-xl md:text-2xl font-bold text-[#e94491]">${total.toFixed(2)}</span>
                   </div>
 
                   <Link href="/checkout">
-                    <Button className="w-full bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white py-3 md:py-4 text-base md:text-lg font-semibold tracking-wider rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
-                      PROCEED TO CHECKOUT
+                    <Button
+                      className="w-full bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white py-3 md:py-4 text-base md:text-lg font-semibold tracking-wider rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                      disabled={isPending}
+                    >
+                      {isPending ? "UPDATING..." : "PROCEED TO CHECKOUT"}
                     </Button>
                   </Link>
+
+                  <div className="mt-4 space-y-2">
+                    <Link href="/shop">
+                      <Button
+                        variant="outline"
+                        className="w-full text-[#e94491] border-[#e94491] hover:bg-[#e94491] hover:text-white bg-transparent"
+                      >
+                        Continue Shopping
+                      </Button>
+                    </Link>
+                  </div>
 
                   <p className="text-center text-xs text-gray-500 mt-3 md:mt-4">
                     Secure checkout powered by SSL encryption
                   </p>
+
+                  {subtotal >= 100 && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-xs text-green-700 text-center font-medium">
+                        🎉 You qualify for free shipping!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
