@@ -22,74 +22,10 @@ import { usePathname } from "next/navigation"
 import { getCartWithDetails, getCartCount } from "@/lib/actions/cart"
 import { getWishlistCount } from "@/lib/actions/wishlist"
 import { removeFromCart } from "@/lib/actions/cart"
+import { getCategoriesWithSubcategories } from "@/lib/actions/category"
 import { useToast } from "@/hooks/use-toast"
 import type { CartItemWithDetails } from "@/lib/types"
-
-const clothingCategories = [
-  "Daily offers",
-  "Gift Ideas",
-  "Women's Clothing",
-  "Men's Clothing",
-  "Accessories",
-  "Shoes & Footwear",
-  "Bags & Purses",
-  "Jewelry & Watches",
-  "Sportswear",
-  "Underwear & Lingerie",
-  "Kids & Baby",
-  "Plus Size",
-]
-
-const shopCategories = [
-  {
-    name: "ROBES",
-    subcategories: [],
-  },
-  {
-    name: "PYJAMAS",
-    subcategories: ["Haut + Pantalon", "Pyjama Short", "3 PIECES", "Pyjama Long", "Pyjamas Satin", "Body & Colon"],
-  },
-  {
-    name: "SANDALES",
-    subcategories: [],
-  },
-  {
-    name: "LINGERIE",
-    subcategories: ["NUISETTE ET PEIGNOIR SATIN", "NIGHTIE", "SOUS VETEMENTS", "SPORTSWEAR"],
-  },
-  {
-    name: "SERVIETTES",
-    subcategories: [],
-  },
-  {
-    name: "BURKINI",
-    subcategories: [],
-  },
-  {
-    name: "HOMME",
-    subcategories: [],
-  },
-  {
-    name: "KIDS",
-    subcategories: [],
-  },
-  {
-    name: "SOLDES",
-    subcategories: [],
-  },
-  {
-    name: "ACCESSOIRES",
-    subcategories: [],
-  },
-]
-
-const mainMenuItems = [
-  { name: "HOME", href: "/", hasSubmenu: false },
-  { name: "SHOP", href: "/shop", hasSubmenu: true, submenu: shopCategories },
-  { name: "FAQ", href: "/faq", hasSubmenu: false },
-  { name: "ABOUT", href: "/about", hasSubmenu: false },
-  { name: "CONTACT", href: "/contact", hasSubmenu: false },
-]
+import type { CategoryWithSubcategories } from "@/lib/actions/category"
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -113,20 +49,29 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
 
-  // Load initial data
+  // Categories state
+  const [categories, setCategories] = useState<CategoryWithSubcategories[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+
+  // Load initial data including categories
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [cartData, cartCountData, wishlistCountData] = await Promise.all([
+        const [cartData, cartCountData, wishlistCountData, categoriesData] = await Promise.all([
           getCartWithDetails(),
           getCartCount(),
           getWishlistCount(),
+          getCategoriesWithSubcategories(),
         ])
+
         setCartItems(cartData)
         setCartCount(cartCountData)
         setWishlistCount(wishlistCountData)
+        setCategories(categoriesData)
+        setCategoriesLoading(false)
       } catch (error) {
         console.error("Failed to load navbar data:", error)
+        setCategoriesLoading(false)
       }
     }
     loadData()
@@ -188,7 +133,6 @@ export default function Navbar() {
     const handleScroll = () => {
       const newScrolled = window.scrollY > 500
       setIsScrolled(newScrolled)
-
       // Close dropdowns when scroll state changes
       if (newScrolled) {
         setShowMainCategories(false)
@@ -200,6 +144,7 @@ export default function Navbar() {
         setShowStickyCategories(false)
       }
     }
+
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [showShopDropdown])
@@ -211,9 +156,11 @@ export default function Navbar() {
         setShowCartDropdown(false)
       }
     }
+
     if (showCartDropdown) {
       document.addEventListener("click", handleClickOutside)
     }
+
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
@@ -226,6 +173,7 @@ export default function Navbar() {
     } else {
       document.body.style.overflow = "unset"
     }
+
     return () => {
       document.body.style.overflow = "unset"
     }
@@ -343,6 +291,15 @@ export default function Navbar() {
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.product.base_price * item.quantity, 0)
   }
+
+  // Create main menu items with dynamic categories
+  const mainMenuItems = [
+    { name: "HOME", href: "/", hasSubmenu: false },
+    { name: "SHOP", href: "/shop", hasSubmenu: true, submenu: categories },
+    { name: "FAQ", href: "/faq", hasSubmenu: false },
+    { name: "ABOUT", href: "/about", hasSubmenu: false },
+    { name: "CONTACT", href: "/contact", hasSubmenu: false },
+  ]
 
   return (
     <>
@@ -561,15 +518,21 @@ export default function Navbar() {
                   {showMainCategories && !isScrolled && (
                     <div className="absolute top-full left-0 w-60 bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
                       <div className="max-h-96 overflow-y-auto">
-                        {clothingCategories.map((category, index) => (
-                          <Link
-                            key={index}
-                            href="#"
-                            className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            {category}
-                          </Link>
-                        ))}
+                        {categoriesLoading ? (
+                          <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                        ) : categories.length === 0 ? (
+                          <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                        ) : (
+                          categories.map((category) => (
+                            <Link
+                              key={category.id}
+                              href={`/shop/${category.slug}`}
+                              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] border-b border-gray-100 last:border-b-0 transition-colors"
+                            >
+                              {category.name}
+                            </Link>
+                          ))
+                        )}
                       </div>
                     </div>
                   )}
@@ -608,29 +571,35 @@ export default function Navbar() {
                         <div className="flex">
                           <div className="w-1/2 p-4 border-r border-gray-200">
                             <div className="grid grid-cols-2 gap-2">
-                              {shopCategories.map((category, index) => (
-                                <div
-                                  key={index}
-                                  className={`relative group cursor-pointer`}
-                                  onMouseEnter={() => setHoveredCategory(category.name)}
-                                >
-                                  <Link
-                                    href={`/shop/${category.name.toLowerCase()}`}
-                                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                      hoveredCategory === category.name
-                                        ? "bg-[#e94491] text-white"
-                                        : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
-                                    }`}
+                              {categoriesLoading ? (
+                                <div className="col-span-2 text-center py-8 text-gray-500">Loading...</div>
+                              ) : categories.length === 0 ? (
+                                <div className="col-span-2 text-center py-8 text-gray-500">No categories found</div>
+                              ) : (
+                                categories.map((category) => (
+                                  <div
+                                    key={category.id}
+                                    className={`relative group cursor-pointer`}
+                                    onMouseEnter={() => setHoveredCategory(category.name)}
                                   >
-                                    <div className="flex items-center justify-between">
-                                      <span>{category.name}</span>
-                                      {category.subcategories.length > 0 && (
-                                        <ChevronRight className="h-3 w-3 opacity-60" />
-                                      )}
-                                    </div>
-                                  </Link>
-                                </div>
-                              ))}
+                                    <Link
+                                      href={`/shop/${category.slug}`}
+                                      className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                        hoveredCategory === category.name
+                                          ? "bg-[#e94491] text-white"
+                                          : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <span>{category.name}</span>
+                                        {category.subcategories.length > 0 && (
+                                          <ChevronRight className="h-3 w-3 opacity-60" />
+                                        )}
+                                      </div>
+                                    </Link>
+                                  </div>
+                                ))
+                              )}
                             </div>
                           </div>
                           <div className="w-1/2 p-4">
@@ -640,20 +609,18 @@ export default function Navbar() {
                                   {hoveredCategory} Collection
                                 </h4>
                                 <div className="space-y-1">
-                                  {shopCategories
+                                  {categories
                                     .find((cat) => cat.name === hoveredCategory)
-                                    ?.subcategories.map((subcategory, index) => (
+                                    ?.subcategories.map((subcategory) => (
                                       <Link
-                                        key={index}
-                                        href={`/shop/${hoveredCategory.toLowerCase()}/${subcategory
-                                          .toLowerCase()
-                                          .replace(/\s+/g, "-")}`}
+                                        key={subcategory.id}
+                                        href={`/shop/${subcategory.slug}`}
                                         className="block px-3 py-2 text-sm text-gray-600 hover:text-[#e94491] hover:bg-gray-50 rounded-md transition-colors"
                                       >
-                                        {subcategory}
+                                        {subcategory.name}
                                       </Link>
                                     ))}
-                                  {shopCategories.find((cat) => cat.name === hoveredCategory)?.subcategories.length ===
+                                  {categories.find((cat: CategoryWithSubcategories) => cat.name === hoveredCategory)?.subcategories.length ===
                                     0 && (
                                     <p className="text-sm text-gray-500 italic px-3 py-2">
                                       Explore our {hoveredCategory.toLowerCase()} collection
@@ -859,66 +826,70 @@ export default function Navbar() {
                           >
                             {item.hasSubmenu && expandedMenuItem === item.name && (
                               <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-[#e94491] ml-4 mr-2 rounded-r-lg">
-                                {item.submenu?.map((subItem, subIndex) => (
-                                  <div key={subIndex}>
-                                    <div className="flex items-center justify-between px-4 py-3 hover:bg-white transition-all duration-300 rounded-r-lg group">
-                                      <Link
-                                        href={`/shop/${subItem.name.toLowerCase()}`}
-                                        className="flex-1 text-sm text-gray-600 hover:text-[#e94491] font-medium transition-colors duration-300"
-                                        onClick={() => subItem.subcategories.length === 0 && closeSidebar()}
-                                      >
-                                        {subItem.name}
-                                      </Link>
-                                      {subItem.subcategories.length > 0 && (
-                                        <button
-                                          onClick={(e) => {
-                                            e.preventDefault()
-                                            e.stopPropagation()
-                                            toggleSubMenuItem(`${item.name}-${subItem.name}`)
-                                          }}
-                                          className="p-1 hover:bg-gray-200 rounded-full transition-all duration-300 group-hover:scale-110"
+                                {categoriesLoading ? (
+                                  <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                                ) : categories.length === 0 ? (
+                                  <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                                ) : (
+                                  categories.map((category) => (
+                                    <div key={category.id}>
+                                      <div className="flex items-center justify-between px-4 py-3 hover:bg-white transition-all duration-300 rounded-r-lg group">
+                                        <Link
+                                          href={`/shop/${category.slug}`}
+                                          className="flex-1 text-sm text-gray-600 hover:text-[#e94491] font-medium transition-colors duration-300"
+                                          onClick={() => category.subcategories.length === 0 && closeSidebar()}
                                         >
-                                          <ChevronDown
-                                            className={`h-4 w-4 text-gray-400 transition-all duration-500 ${
-                                              expandedSubMenus.has(`${item.name}-${subItem.name}`)
-                                                ? "rotate-180 text-[#e94491]"
-                                                : ""
-                                            }`}
-                                          />
-                                        </button>
-                                      )}
-                                    </div>
-
-                                    {/* Enhanced Sub-subcategories with better animations */}
-                                    <div
-                                      className={`overflow-hidden transition-all duration-600 ease-in-out ${
-                                        expandedSubMenus.has(`${item.name}-${subItem.name}`)
-                                          ? "max-h-96 opacity-100"
-                                          : "max-h-0 opacity-0"
-                                      }`}
-                                    >
-                                      {subItem.subcategories.length > 0 &&
-                                        expandedSubMenus.has(`${item.name}-${subItem.name}`) && (
-                                          <div className="ml-4 border-l-2 border-[#e94491] bg-white rounded-r-lg shadow-inner">
-                                            {subItem.subcategories.map((subSubItem, subSubIndex) => (
-                                              <Link
-                                                key={subSubIndex}
-                                                href={`/shop/${subItem.name.toLowerCase()}/${subSubItem
-                                                  .toLowerCase()
-                                                  .replace(/\s+/g, "-")}`}
-                                                className="flex items-center px-4 py-2 text-xs text-gray-500 hover:text-[#e94491] hover:bg-gray-50 transition-all duration-300 rounded-r-lg border-b border-gray-100 last:border-b-0 hover:translate-x-1 group"
-                                                onClick={closeSidebar}
-                                              >
-                                                <span className="inline-block w-2 h-2 bg-[#e94491] rounded-full mr-3 opacity-60 group-hover:opacity-100 transition-all duration-300"></span>
-                                                <span className="flex-1">{subSubItem}</span>
-                                                <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-60 transition-all duration-300 transform group-hover:translate-x-1" />
-                                              </Link>
-                                            ))}
-                                          </div>
+                                          {category.name}
+                                        </Link>
+                                        {category.subcategories.length > 0 && (
+                                          <button
+                                            onClick={(e) => {
+                                              e.preventDefault()
+                                              e.stopPropagation()
+                                              toggleSubMenuItem(`${item.name}-${category.name}`)
+                                            }}
+                                            className="p-1 hover:bg-gray-200 rounded-full transition-all duration-300 group-hover:scale-110"
+                                          >
+                                            <ChevronDown
+                                              className={`h-4 w-4 text-gray-400 transition-all duration-500 ${
+                                                expandedSubMenus.has(`${item.name}-${category.name}`)
+                                                  ? "rotate-180 text-[#e94491]"
+                                                  : ""
+                                              }`}
+                                            />
+                                          </button>
                                         )}
+                                      </div>
+
+                                      {/* Enhanced Sub-subcategories with better animations */}
+                                      <div
+                                        className={`overflow-hidden transition-all duration-600 ease-in-out ${
+                                          expandedSubMenus.has(`${item.name}-${category.name}`)
+                                            ? "max-h-96 opacity-100"
+                                            : "max-h-0 opacity-0"
+                                        }`}
+                                      >
+                                        {category.subcategories.length > 0 &&
+                                          expandedSubMenus.has(`${item.name}-${category.name}`) && (
+                                            <div className="ml-4 border-l-2 border-[#e94491] bg-white rounded-r-lg shadow-inner">
+                                              {category.subcategories.map((subcategory) => (
+                                                <Link
+                                                  key={subcategory.id}
+                                                  href={`/shop/${subcategory.slug}`}
+                                                  className="flex items-center px-4 py-2 text-xs text-gray-500 hover:text-[#e94491] hover:bg-gray-50 transition-all duration-300 rounded-r-lg border-b border-gray-100 last:border-b-0 hover:translate-x-1 group"
+                                                  onClick={closeSidebar}
+                                                >
+                                                  <span className="inline-block w-2 h-2 bg-[#e94491] rounded-full mr-3 opacity-60 group-hover:opacity-100 transition-all duration-300"></span>
+                                                  <span className="flex-1">{subcategory.name}</span>
+                                                  <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-60 transition-all duration-300 transform group-hover:translate-x-1" />
+                                                </Link>
+                                              ))}
+                                            </div>
+                                          )}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ))
+                                )}
                               </div>
                             )}
                           </div>
@@ -929,17 +900,23 @@ export default function Navbar() {
 
                   {activeTab === "categories" && (
                     <div className="py-2">
-                      {clothingCategories.map((category, index) => (
-                        <Link
-                          key={index}
-                          href="#"
-                          className="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] transition-all duration-300 border-b border-gray-100 last:border-b-0 group hover:translate-x-1"
-                          onClick={closeSidebar}
-                        >
-                          <span className="flex-1">{category}</span>
-                          <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-60 transition-all duration-300 transform group-hover:translate-x-1" />
-                        </Link>
-                      ))}
+                      {categoriesLoading ? (
+                        <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                      ) : categories.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                      ) : (
+                        categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/shop/${category.slug}`}
+                            className="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] transition-all duration-300 border-b border-gray-100 last:border-b-0 group hover:translate-x-1"
+                            onClick={closeSidebar}
+                          >
+                            <span className="flex-1">{category.name}</span>
+                            <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-60 transition-all duration-300 transform group-hover:translate-x-1" />
+                          </Link>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
@@ -1011,15 +988,21 @@ export default function Navbar() {
                 {showStickyCategories && isScrolled && (
                   <div className="absolute top-full left-0 w-60 bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
                     <div className="max-h-96 overflow-y-auto">
-                      {clothingCategories.map((category, index) => (
-                        <Link
-                          key={index}
-                          href="#"
-                          className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] border-b border-gray-100 last:border-b-0 transition-colors"
-                        >
-                          {category}
-                        </Link>
-                      ))}
+                      {categoriesLoading ? (
+                        <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                      ) : categories.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                      ) : (
+                        categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/shop/${category.slug}`}
+                            className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] border-b border-gray-100 last:border-b-0 transition-colors"
+                          >
+                            {category.name}
+                          </Link>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -1062,29 +1045,35 @@ export default function Navbar() {
                       <div className="flex">
                         <div className="w-1/2 p-4 border-r border-gray-200">
                           <div className="grid grid-cols-2 gap-2">
-                            {shopCategories.map((category, index) => (
-                              <div
-                                key={index}
-                                className={`relative group cursor-pointer`}
-                                onMouseEnter={() => setHoveredCategory(category.name)}
-                              >
-                                <Link
-                                  href={`/shop/${category.name.toLowerCase()}`}
-                                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    hoveredCategory === category.name
-                                      ? "bg-[#e94491] text-white"
-                                      : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
-                                  }`}
+                            {categoriesLoading ? (
+                              <div className="col-span-2 text-center py-8 text-gray-500">Loading...</div>
+                            ) : categories.length === 0 ? (
+                              <div className="col-span-2 text-center py-8 text-gray-500">No categories found</div>
+                            ) : (
+                              categories.map((category) => (
+                                <div
+                                  key={category.id}
+                                  className={`relative group cursor-pointer`}
+                                  onMouseEnter={() => setHoveredCategory(category.name)}
                                 >
-                                  <div className="flex items-center justify-between">
-                                    <span>{category.name}</span>
-                                    {category.subcategories.length > 0 && (
-                                      <ChevronRight className="h-3 w-3 opacity-60" />
-                                    )}
-                                  </div>
-                                </Link>
-                              </div>
-                            ))}
+                                  <Link
+                                    href={`/shop/${category.slug}`}
+                                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                      hoveredCategory === category.name
+                                        ? "bg-[#e94491] text-white"
+                                        : "text-gray-700 hover:bg-gray-50 hover:text-[#e94491]"
+                                    }`}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <span>{category.name}</span>
+                                      {category.subcategories.length > 0 && (
+                                        <ChevronRight className="h-3 w-3 opacity-60" />
+                                      )}
+                                    </div>
+                                  </Link>
+                                </div>
+                              ))
+                            )}
                           </div>
                         </div>
                         <div className="w-1/2 p-4">
@@ -1094,21 +1083,18 @@ export default function Navbar() {
                                 {hoveredCategory} Collection
                               </h4>
                               <div className="space-y-1">
-                                {shopCategories
+                                {categories
                                   .find((cat) => cat.name === hoveredCategory)
-                                  ?.subcategories.map((subcategory, index) => (
+                                  ?.subcategories.map((subcategory) => (
                                     <Link
-                                      key={index}
-                                      href={`/shop/${hoveredCategory.toLowerCase()}/${subcategory
-                                        .toLowerCase()
-                                        .replace(/\s+/g, "-")}`}
+                                      key={subcategory.id}
+                                      href={`/shop/${subcategory.slug}`}
                                       className="block px-3 py-2 text-sm text-gray-600 hover:text-[#e94491] hover:bg-gray-50 rounded-md transition-colors"
                                     >
-                                      {subcategory}
+                                      {subcategory.name}
                                     </Link>
                                   ))}
-                                {shopCategories.find((cat) => cat.name === hoveredCategory)?.subcategories.length ===
-                                  0 && (
+                                {categories.find((cat) => cat.name === hoveredCategory)?.subcategories.length === 0 && (
                                   <p className="text-sm text-gray-500 italic px-3 py-2">
                                     Explore our {hoveredCategory.toLowerCase()} collection
                                   </p>

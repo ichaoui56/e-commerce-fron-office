@@ -81,7 +81,7 @@ export interface Category {
   id: string
   name: string
   slug: string
-  parent_id: string | null
+  parentId: string | null
 }
 
 export interface Color {
