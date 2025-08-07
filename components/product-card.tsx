@@ -1,10 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingCart } from "lucide-react"
+import { Heart, ShoppingCart, Eye } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -13,7 +12,6 @@ import { addToCart } from "@/lib/actions/cart"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useTransition, useEffect } from "react"
 
-// Updated interface to match your server actions
 interface ProductWithDetails {
   id: string
   name: string
@@ -75,8 +73,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
   const [isLiked, setIsLiked] = useState(isInWishlist)
   const [selectedColorId, setSelectedColorId] = useState(product.colors[0]?.id || "")
   const [isPending, startTransition] = useTransition()
+  const [isHovered, setIsHovered] = useState(false)
 
-  // Update local state when prop changes
   useEffect(() => {
     setIsLiked(isInWishlist)
   }, [isInWishlist])
@@ -95,25 +93,17 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
     startTransition(async () => {
       try {
         const result = isLiked ? await removeFromWishlist(product.id) : await addToWishlist(product.id)
-
         if (result.success) {
           const newLikedState = !isLiked
           setIsLiked(newLikedState)
-
-          // Call the callback to update parent component
           onWishlistChange?.(product.id, newLikedState)
-
           toast({
             title: result.message,
             variant: "success",
           })
-
-          // Dispatch custom event to update navbar count
-          window.dispatchEvent(
-            new CustomEvent("wishlistUpdated", {
-              detail: { count: result.count || 0 },
-            }),
-          )
+          window.dispatchEvent(new CustomEvent("wishlistUpdated", {
+            detail: { count: result.count || 0 },
+          }))
         } else {
           toast({
             title: "Error",
@@ -137,9 +127,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
 
     startTransition(async () => {
       try {
-        // Find first available variant for selected color
         const availableVariant = product.variants.find(
-          (variant) => variant.color_id === selectedColorId && variant.stock_quantity > 0,
+          (variant) => variant.color_id === selectedColorId && variant.stock_quantity > 0
         )
 
         if (!availableVariant) {
@@ -151,16 +140,12 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
           return
         }
 
-        // Use the ProductSizeStock ID directly from the variant
         const result = await addToCart(availableVariant.id, 1)
-
         if (result.success) {
           toast({
             title: result.message,
             variant: "success",
           })
-
-          // Dispatch custom event to update navbar cart count
           window.dispatchEvent(new CustomEvent("cartUpdated"))
         } else {
           toast({
@@ -179,141 +164,129 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
     })
   }
 
-  // Check if product has stock
   const hasStock = product.total_stock > 0
   const isOutOfStock = product.status === "out_of_stock"
 
   return (
-    <div className="group relative bg-white rounded-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden">
-      {/* Product Image Container */}
-      <Link href={`/product/${product.id}`}>
-        <div className="relative aspect-[4/5] overflow-hidden bg-gray-50 cursor-pointer">
+    <div 
+      className="group relative bg-white rounded-xl  border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Product Image Container - Much bigger/taller */}
+      <div className="relative aspect-[3/5] sm:aspect-[4/6] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
           <Image
             src={currentImage || "/placeholder.svg"}
             alt={product.name}
             fill
-            className={`object-cover transition-transform duration-300 ${
-              !isMobile ? "group-hover:scale-105" : ""
+            className={`object-cover transition-all duration-500 cursor-pointer ${
+              !isMobile && isHovered ? "scale-105" : "scale-100"
             } ${isOutOfStock ? "grayscale opacity-75" : ""}`}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
 
-          {/* Discount Badge */}
+        {/* Badges - Positioned outside image area on mobile */}
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 sm:bottom-auto flex flex-row sm:flex-col gap-1 sm:gap-2 z-10">
           {product.discount_percentage > 0 && (
-            <div className="absolute top-3 left-3 px-3 py-1 text-xs font-bold text-white rounded-full bg-red-500 shadow-lg">
+            <div className="px-2 py-1 text-xs font-bold text-white rounded-md bg-red-500 shadow-sm">
               -{product.discount_percentage}%
             </div>
           )}
-
-          {/* Stock Status Badge */}
-          {isOutOfStock && (
-            <div className="absolute top-3 left-3 px-3 py-1 text-xs font-bold text-white rounded-full bg-gray-500 shadow-lg">
-              OUT OF STOCK
+          {product.is_featured && (
+            <div className="px-2 py-1 text-xs font-bold text-white rounded-md bg-[#e94491] shadow-sm">
+              TOP
             </div>
           )}
+         
+        </div>
 
-          {/* Heart Icon - Always visible on mobile, hover on desktop */}
+        {/* Action Buttons - Different layout for mobile vs desktop */}
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2">
+          {/* Wishlist Button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={handleWishlistToggle}
             disabled={isPending}
-            className={`absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full h-10 w-10 transition-all duration-300 shadow-lg ${
+            className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${
               isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
+            aria-label="Add to wishlist"
           >
             <Heart
-              className={`h-5 w-5 transition-colors ${
+              className={`h-4 w-4 transition-colors ${
                 isLiked ? "text-red-500 fill-red-500" : "text-gray-600 hover:text-red-500"
               }`}
             />
           </Button>
 
-          {/* Add to Cart Button - Always visible on mobile, hover on desktop */}
-          <div
-            className={`absolute bottom-0 left-0 right-0 p-3 transition-transform duration-300 ${
-              isMobile ? "translate-y-0" : "transform translate-y-full group-hover:translate-y-0"
-            }`}
-          >
+          {/* Quick View Button */}
+          <Link href={`/product/${product.id}`}>
             <Button
-              variant="outline"
-              onClick={handleAddToCart}
-              disabled={isPending || isOutOfStock}
-              className="w-full bg-white/95 backdrop-blur-sm border-gray-200 hover:bg-[#e94491] hover:text-white text-gray-700 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="ghost"
+              size="icon"
+              className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${
+                isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
+              aria-label="Quick view"
             >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {isPending ? "ADDING..." : isOutOfStock ? "OUT OF STOCK" : "ADD TO CART"}
+              <Eye className="h-4 w-4 text-gray-600 hover:text-[#e94491]" />
             </Button>
-          </div>
+          </Link>
+
+          {/* Add to Cart Button - Icon only, ONLY visible on mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleAddToCart}
+            disabled={isPending || isOutOfStock}
+            className={`sm:hidden bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 transition-all duration-200 shadow-sm border border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${
+              !isOutOfStock ? "hover:bg-[#e94491] hover:text-white hover:border-[#e94491]" : ""
+            }`}
+            aria-label={isPending ? "Adding to cart..." : isOutOfStock ? "Out of stock" : "Add to cart"}
+          >
+            <ShoppingCart 
+              className={`h-4 w-4 transition-colors ${
+                isPending ? "animate-pulse" : ""
+              } ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`} 
+            />
+          </Button>
         </div>
-      </Link>
 
-      {/* Product Information */}
-      <div className="p-4">
-       <div className="flex justify-between">
-         {/* Category */}
-         {product.category && (
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">{product.category.name}</p>
-        )}
-        {/* Featured Badge */}
-        {product.is_featured && (
-          <div className=" top-10 left-3 px-2 py-1 text-xs font-bold text-white rounded-full bg-[#e94491] shadow-lg">
-            TOP Product
-          </div>
-        )}
-       </div>
-        {/* Product Name */}
-        <Link href={`/product/${product.id}`}>
-          <h3 className="text-sm font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-[#e94491] transition-colors cursor-pointer leading-tight">
-            {product.name}
-          </h3>
-        </Link>
+        {/* Full Add to Cart Button - ONLY visible on larger screens */}
+        <div className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 transition-all duration-500 ${
+          isMobile ? "" : "translate-y-full group-hover:translate-y-0"
+        }`}>
+          <Button
+            onClick={handleAddToCart}
+            disabled={isPending || isOutOfStock}
+            className="w-full bg-white/95 backdrop-blur-sm border border-white/50 hover:bg-[#e94491] hover:text-white hover:border-[#e94491] text-gray-700 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg h-10 text-sm"
+          >
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            {isPending ? "ADDING..." : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
+          </Button>
+        </div>
+      </div>
 
-        {/* Pricing */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg font-bold text-[#e94491]">${product.current_price.toFixed(2)}</span>
-          {product.discount_percentage > 0 && (
-            <span className="text-sm text-gray-400 line-through">${product.base_price.toFixed(2)}</span>
+      {/* Product Information - More compact since image is bigger */}
+      <div className="p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+        {/* Category & Status */}
+        <div className="flex justify-between items-center">
+          {product.category && (
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium truncate">
+              {product.category.name}
+            </p>
           )}
-        </div>
-
-        {/* Color Selection */}
-        {product.colors && product.colors.length > 0 && (
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs text-gray-500 mr-1">Colors:</span>
-            {product.colors.slice(0, 5).map((color) => (
-              <button
-                key={color.id}
-                onClick={(e) => {
-                  e.preventDefault()
-                  setSelectedColorId(color.id)
-                }}
-                className={cn(
-                  "w-6 h-6 rounded-full border-2 transition-all duration-200 hover:scale-110",
-                  selectedColorId === color.id
-                    ? "border-[#000000] ring-1 ring-[#000000]/30 scale-110"
-                    : "border-gray-300 hover:border-gray-400",
-                )}
-                style={{ backgroundColor: color.hex_code }}
-                title={color.name}
-              />
-            ))}
-            {product.colors.length > 5 && (
-              <span className="text-xs text-gray-400 ml-1">+{product.colors.length - 5}</span>
-            )}
-          </div>
-        )}
-
-        {/* Stock Status */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          {/* Stock Status Indicator */}
+          <div className="flex items-center gap-1 flex-shrink-0">
             <div
               className={cn(
-                "w-2 h-2 rounded-full",
+                "w-1.5 h-1.5 rounded-full",
                 product.status === "in_stock"
                   ? "bg-green-500"
                   : product.status === "low_stock"
-                    ? "bg-yellow-500"
-                    : "bg-red-500",
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
               )}
             />
             <span
@@ -322,21 +295,68 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
                 product.status === "in_stock"
                   ? "text-green-600"
                   : product.status === "low_stock"
-                    ? "text-yellow-600"
-                    : "text-red-600",
+                  ? "text-yellow-600"
+                  : "text-red-600"
               )}
             >
               {product.status === "in_stock"
                 ? "In Stock"
                 : product.status === "low_stock"
-                  ? "Low Stock"
-                  : "Out of Stock"}
+                ? `${product.total_stock} left`
+                : "Sold Out"}
             </span>
           </div>
-
-          {/* Show stock count for low stock items */}
-          {product.status === "low_stock" && <span className="text-xs text-gray-500">{product.total_stock} left</span>}
         </div>
+
+        {/* Product Name - Compact */}
+        <Link href={`/product/${product.id}`}>
+          <h3 className="text-sm sm:text-base font-medium text-gray-800 line-clamp-2 hover:text-[#e94491] transition-colors cursor-pointer leading-tight">
+            {product.name}
+          </h3>
+        </Link>
+
+        {/* Pricing */}
+        <div className="flex items-center gap-2">
+          <span className="text-base sm:text-lg font-bold text-[#e94491]">
+            ${product.current_price.toFixed(2)}
+          </span>
+          {product.discount_percentage > 0 && (
+            <span className="text-xs sm:text-sm text-gray-400 line-through">
+              ${product.base_price.toFixed(2)}
+            </span>
+          )}
+        </div>
+
+        {/* Color Selection - Compact */}
+        {product.colors && product.colors.length > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-500 mr-1">Colors:</span>
+            <div className="flex gap-1">
+              {product.colors.slice(0, 3).map((color) => (
+                <button
+                  key={color.id}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setSelectedColorId(color.id)
+                  }}
+                  className={cn(
+                    "w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-all duration-200 hover:scale-110",
+                    selectedColorId === color.id
+                      ? "border-gray-800 ring-1 ring-gray-800/20 scale-110"
+                      : "border-gray-200 hover:border-gray-400"
+                  )}
+                  style={{ backgroundColor: color.hex_code }}
+                  title={color.name}
+                />
+              ))}
+              {product.colors.length > 3 && (
+                <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 border border-gray-200 text-xs text-gray-500 font-medium">
+                  +{product.colors.length - 3}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -60,23 +60,24 @@ export default function WishlistPage({ products }: WishlistPageProps) {
   const handleAddToCart = (product: ProductWithDetails) => {
     startTransition(async () => {
       try {
-        const firstVariant = product.variants[0]
+        const firstVariant = product.variants.find(v => v.stock_quantity > 0)
         if (!firstVariant) {
           toast({
             title: "Error",
-            description: "No variants available",
+            description: "No stock available",
             variant: "destructive",
           })
           return
         }
-
-        const result = await addToCart(firstVariant.size_id, 1)
-
+  
+        const result = await addToCart(firstVariant.id, 1) // ✅ FIXED: use `variant.id` not `size_id`
+  
         if (result.success) {
           toast({
             title: result.message,
             variant: "success",
           })
+          window.dispatchEvent(new CustomEvent("cartUpdated")) // optional: sync cart badge
         } else {
           toast({
             title: "Error",
@@ -93,9 +94,10 @@ export default function WishlistPage({ products }: WishlistPageProps) {
       }
     })
   }
+  
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Page Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-8">
@@ -141,7 +143,7 @@ export default function WishlistPage({ products }: WishlistPageProps) {
             </Link>
           </div>
         ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {wishlistProducts.map((product) => (
               <ProductCard
                 key={product.id}
