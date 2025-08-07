@@ -211,13 +211,6 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             </div>
           )}
 
-          {/* Featured Badge */}
-          {product.is_featured && (
-            <div className="absolute top-3 right-14 px-2 py-1 text-xs font-bold text-white rounded-full bg-[#e94491] shadow-lg">
-              TOP
-            </div>
-          )}
-
           {/* Heart Icon - Always visible on mobile, hover on desktop */}
           <Button
             variant="ghost"
@@ -256,11 +249,18 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
 
       {/* Product Information */}
       <div className="p-4">
-        {/* Category */}
-        {product.category && (
+       <div className="flex justify-between">
+         {/* Category */}
+         {product.category && (
           <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">{product.category.name}</p>
         )}
-
+        {/* Featured Badge */}
+        {product.is_featured && (
+          <div className=" top-10 left-3 px-2 py-1 text-xs font-bold text-white rounded-full bg-[#e94491] shadow-lg">
+            TOP Product
+          </div>
+        )}
+       </div>
         {/* Product Name */}
         <Link href={`/product/${product.id}`}>
           <h3 className="text-sm font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-[#e94491] transition-colors cursor-pointer leading-tight">

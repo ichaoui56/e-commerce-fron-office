@@ -81,6 +81,18 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
   }
 
   const handleAddToCart = () => {
+    const availableVariant = product.variants.find(
+      (variant) => variant.color_id === selectedColorId && variant.stock_quantity > 0,
+    )
+
+    if (!availableVariant) {
+      toast({
+        title: "Error",
+        description: "No stock available for selected color",
+        variant: "destructive",
+      })
+      return
+    }
     if (!selectedVariant) {
       toast({
         title: "Error",
@@ -101,9 +113,12 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
     startTransition(async () => {
       try {
-        const result = await addToCart(product.id, selectedColorId, selectedSizeId, quantity)
+        const result = await addToCart(availableVariant.id, quantity)
 
         if (result.success) {
+          // Dispatch the cart update event to notify the navbar
+          window.dispatchEvent(new CustomEvent("cartUpdated"))
+
           toast({
             title: result.message,
             variant: "success",
@@ -128,12 +143,12 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
   const handleColorChange = (colorId: string) => {
     setSelectedColorId(colorId)
     setCurrentImageIndex(0) // Reset to first image when color changes
-    
+
     // Reset size selection if current size is not available for new color
     const availableSizes = product.variants
       .filter(v => v.color_id === colorId)
       .map(v => v.size.id)
-    
+
     if (!availableSizes.includes(selectedSizeId)) {
       setSelectedSizeId(availableSizes[0] || "")
     }
@@ -205,9 +220,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                 {displayImages.map((image, index) => (
                   <div
                     key={image.id}
-                    className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer group ${
-                      index === currentImageIndex ? "ring-2 ring-[#e94491]" : ""
-                    }`}
+                    className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer group ${index === currentImageIndex ? "ring-2 ring-[#e94491]" : ""
+                      }`}
                     onClick={() => setCurrentImageIndex(index)}
                   >
                     <Image
@@ -259,9 +273,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                     <button
                       key={color.id}
                       onClick={() => handleColorChange(color.id)}
-                      className={`w-8 h-8 rounded-full border-2 transition-all ${
-                        selectedColorId === color.id ? "border-gray-400 scale-110" : "border-gray-200"
-                      }`}
+                      className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColorId === color.id ? "border-gray-400 scale-110" : "border-gray-200"
+                        }`}
                       style={{ backgroundColor: color.hex_code }}
                       title={color.name}
                     />
@@ -278,23 +291,22 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                 </div>
                 <div className="flex items-center gap-3">
                   {availableSizesForColor.map((size) => {
-                    const sizeVariant = product.variants.find(v => 
+                    const sizeVariant = product.variants.find(v =>
                       v.color_id === selectedColorId && v.size_id === size.id
                     )
                     const isOutOfStock = !sizeVariant || sizeVariant.stock_quantity === 0
-                    
+
                     return (
                       <button
                         key={size.id}
                         onClick={() => !isOutOfStock && setSelectedSizeId(size.id)}
                         disabled={isOutOfStock}
-                        className={`w-12 h-12 border-2 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
-                          selectedSizeId === size.id
+                        className={`w-12 h-12 border-2 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${selectedSizeId === size.id
                             ? "border-[#e94491] text-[#e94491]"
                             : isOutOfStock
-                            ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                            : "border-gray-200 text-gray-600 hover:border-gray-300"
-                        }`}
+                              ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                              : "border-gray-200 text-gray-600 hover:border-gray-300"
+                          }`}
                       >
                         {size.label}
                       </button>

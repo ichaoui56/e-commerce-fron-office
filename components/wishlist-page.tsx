@@ -70,7 +70,7 @@ export default function WishlistPage({ products }: WishlistPageProps) {
           return
         }
 
-        const result = await addToCart(product.id, firstVariant.color_id, firstVariant.size_id, 1)
+        const result = await addToCart(firstVariant.size_id, 1)
 
         if (result.success) {
           toast({
@@ -203,7 +203,7 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                         {isPending ? "Adding..." : "Add to Cart"}
                       </Button>
                       <Link href={`/product/${product.id}`}>
-                        <Button variant="outline" className="px-6 py-2 rounded-lg bg-transparent">
+                        <Button variant="outline" className="hidden md:block px-6 py-2 rounded-lg bg-transparent">
                           View Details
                         </Button>
                       </Link>

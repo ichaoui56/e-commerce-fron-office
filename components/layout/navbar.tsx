@@ -339,13 +339,14 @@ export default function Navbar() {
 
   const closeSidebar = () => {
     setIsClosing(true)
+    // Longer timeout for smoother closing animation
     setTimeout(() => {
       setShowMobileSidebar(false)
       setIsClosing(false)
       setExpandedMenuItem(null)
       setExpandedSubMenus(new Set())
       setActiveTab("menu")
-    }, 600)
+    }, 800) // Increased from 600ms to 800ms
   }
 
   // Create main menu items with dynamic categories
@@ -493,7 +494,7 @@ export default function Navbar() {
 
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden">
-                                    <button
+                                  <Button
                                       data-cart-action
                                       onClick={(e) => {
                                         e.preventDefault()
@@ -501,14 +502,14 @@ export default function Navbar() {
                                         handleUpdateQuantity(item.id, item.quantity - 1)
                                       }}
                                       disabled={isUpdatingCart}
-                                      className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
+                                      className="p-3 bg-transparent hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                                     >
                                       <Minus className="h-3 w-3" />
-                                    </button>
+                                    </Button>
                                     <span className="px-2 py-1 min-w-[30px] text-center font-medium text-gray-800 bg-gray-50 flex items-center justify-center text-sm">
                                       {item.quantity}
                                     </span>
-                                    <button
+                                    <Button
                                       data-cart-action
                                       onClick={(e) => {
                                         e.preventDefault()
@@ -516,10 +517,10 @@ export default function Navbar() {
                                         handleUpdateQuantity(item.id, item.quantity + 1)
                                       }}
                                       disabled={isUpdatingCart}
-                                      className="p-2 hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
+                                      className="p-3 bg-transparent hover:bg-[#e94491] hover:text-white transition-all duration-200 text-gray-600 flex items-center justify-center disabled:opacity-50"
                                     >
                                       <Plus className="h-3 w-3" />
-                                    </button>
+                                    </Button>
                                   </div>
 
                                   <div className="text-right">
@@ -797,51 +798,53 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Enhanced Mobile Sidebar with Better Animations */}
+        {/* Enhanced Mobile Sidebar with Smooth Closing Animation */}
         {showMobileSidebar && (
           <>
             {/* Backdrop with smooth fade */}
             <div
-              className={`fixed inset-0 bg-black z-50 lg:hidden transition-all duration-600 ease-in-out ${isClosing ? "bg-opacity-0" : "bg-opacity-50"
+              className={`fixed inset-0 bg-black z-50 lg:hidden transition-all duration-800 ease-in-out ${isClosing ? "bg-opacity-0" : "bg-opacity-50"
                 }`}
               onClick={closeSidebar}
             />
 
             {/* Sidebar with enhanced slide animation */}
             <div
-              className={`fixed top-0 left-0 h-full w-80 bg-white z-50 lg:hidden shadow-2xl transition-all duration-600 ease-out transform ${isClosing ? "-translate-x-full opacity-0 scale-95" : "translate-x-0 opacity-100 scale-100"
-                }`}
+              className={`fixed top-0 left-0 h-full w-80 bg-white z-50 lg:hidden shadow-2xl transition-all duration-800 ease-out transform ${isClosing 
+                ? "-translate-x-full opacity-0 scale-95" 
+                : "translate-x-0 opacity-100 scale-100"
+              }`}
               style={{
                 transformOrigin: "left center",
               }}
             >
               <div className="flex flex-col h-full">
-                {/* Header with enhanced styling */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#e94491] to-[#f472b6]">
+                {/* Enhanced Header with better logo visibility */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
                   <Link href="/" onClick={closeSidebar}>
                     <Image
                       src="/shahine-logo.png"
                       alt="Shahine Logo"
                       width={100}
                       height={32}
-                      className="object-contain brightness-0 invert"
+                      className="object-contain"
                     />
                   </Link>
                   <button
                     onClick={closeSidebar}
-                    className="p-2 hover:bg-white/20 rounded-full transition-all duration-200 group"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-all duration-200 group"
                   >
-                    <X className="h-6 w-6 text-white group-hover:rotate-90 transition-transform duration-200" />
+                    <X className="h-6 w-6 text-gray-600 group-hover:rotate-90 group-hover:text-[#e94491] transition-all duration-300" />
                   </button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="p-4 border-b border-gray-200">
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <div className="relative">
                     <Input
                       type="search"
                       placeholder="Search product ..."
-                      className="pr-12 border-2 border-gray-200 focus:border-[#e94491] rounded-lg transition-colors duration-200"
+                      className="pr-12 border-2 border-gray-200 focus:border-[#e94491] rounded-lg transition-colors duration-200 bg-white"
                     />
                     <button className="absolute right-1 top-1 bottom-1 px-3 bg-[#e94491] hover:bg-[#d63384] text-white rounded-md transition-colors duration-200">
                       <Search className="h-4 w-4" />
@@ -849,41 +852,41 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Enhanced Tabs */}
-                <div className="flex border-b border-gray-200 bg-gray-50">
+                {/* Enhanced Tabs with better styling */}
+                <div className="flex border-b border-gray-200 bg-white">
                   <button
                     onClick={() => setActiveTab("menu")}
-                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${activeTab === "menu"
-                        ? "text-[#e94491] bg-white"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                    className={`flex-1 py-4 px-4 text-sm font-semibold transition-all duration-300 relative ${activeTab === "menu"
+                        ? "text-[#e94491] bg-gray-50"
+                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
                     MENU
                     {activeTab === "menu" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#e94491] transform scale-x-100 transition-transform duration-500" />
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#e94491] transform scale-x-100 transition-transform duration-300" />
                     )}
                   </button>
                   <button
                     onClick={() => setActiveTab("categories")}
-                    className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-500 relative ${activeTab === "categories"
-                        ? "text-[#e94491] bg-white"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                    className={`flex-1 py-4 px-4 text-sm font-semibold transition-all duration-300 relative ${activeTab === "categories"
+                        ? "text-[#e94491] bg-gray-50"
+                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
                     CATEGORIES
                     {activeTab === "categories" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#e94491] transform scale-x-100 transition-transform duration-500" />
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#e94491] transform scale-x-100 transition-transform duration-300" />
                     )}
                   </button>
                 </div>
 
                 {/* Content with improved animations */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto bg-white">
                   {activeTab === "menu" && (
                     <div className="py-2">
                       {mainMenuItems.map((item, index) => (
                         <div key={index} className="border-b border-gray-100 last:border-b-0">
-                          <div className="flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-all duration-200 group">
+                          <div className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all duration-200 group">
                             <Link
                               href={item.href}
                               className={`flex-1 font-medium text-base group-hover:text-[#e94491] transition-colors duration-200 ${isActiveLink(item.href) ? "text-[#e94491]" : "text-gray-700"
@@ -902,7 +905,7 @@ export default function Navbar() {
                                 className="p-2 hover:bg-gray-200 rounded-full transition-all duration-200 group-hover:scale-110"
                               >
                                 <ChevronDown
-                                  className={`h-5 w-5 text-gray-500 transition-all duration-300 ${expandedMenuItem === item.name ? "rotate-180 text-[#e94491] scale-110" : ""
+                                  className={`h-5 w-5 text-gray-500 transition-all duration-400 ${expandedMenuItem === item.name ? "rotate-180 text-[#e94491] scale-110" : ""
                                     }`}
                                 />
                               </button>
@@ -911,11 +914,13 @@ export default function Navbar() {
 
                           {/* Enhanced Submenu with better animations */}
                           <div
-                            className={`overflow-hidden transition-all duration-700 ease-in-out ${expandedMenuItem === item.name ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-                              }`}
+                            className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedMenuItem === item.name 
+                              ? "max-h-[600px] opacity-100" 
+                              : "max-h-0 opacity-0"
+                            }`}
                           >
                             {item.hasSubmenu && expandedMenuItem === item.name && (
-                              <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-[#e94491] ml-4 mr-2 rounded-r-lg">
+                              <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-[#e94491] ml-6 mr-4 rounded-r-lg">
                                 {categoriesLoading ? (
                                   <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
                                 ) : categories.length === 0 ? (
@@ -941,7 +946,7 @@ export default function Navbar() {
                                             className="p-1 hover:bg-gray-200 rounded-full transition-all duration-300 group-hover:scale-110"
                                           >
                                             <ChevronDown
-                                              className={`h-4 w-4 text-gray-400 transition-all duration-500 ${expandedSubMenus.has(`${item.name}-${category.name}`)
+                                              className={`h-4 w-4 text-gray-400 transition-all duration-400 ${expandedSubMenus.has(`${item.name}-${category.name}`)
                                                   ? "rotate-180 text-[#e94491]"
                                                   : ""
                                                 }`}
@@ -952,7 +957,7 @@ export default function Navbar() {
 
                                       {/* Enhanced Sub-subcategories with better animations */}
                                       <div
-                                        className={`overflow-hidden transition-all duration-600 ease-in-out ${expandedSubMenus.has(`${item.name}-${category.name}`)
+                                        className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedSubMenus.has(`${item.name}-${category.name}`)
                                             ? "max-h-96 opacity-100"
                                             : "max-h-0 opacity-0"
                                           }`}
@@ -997,7 +1002,7 @@ export default function Navbar() {
                           <Link
                             key={category.id}
                             href={`/shop/${category.slug}`}
-                            className="flex items-center justify-between px-4 py-4 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] transition-all duration-300 border-b border-gray-100 last:border-b-0 group hover:translate-x-1"
+                            className="flex items-center justify-between px-6 py-4 text-gray-700 hover:bg-gray-50 hover:text-[#e94491] transition-all duration-300 border-b border-gray-100 last:border-b-0 group hover:translate-x-1"
                             onClick={closeSidebar}
                           >
                             <span className="flex-1">{category.name}</span>
@@ -1010,18 +1015,18 @@ export default function Navbar() {
                 </div>
 
                 {/* Enhanced Social Media Footer */}
-                <div className="p-4 border-t border-gray-200 bg-gray-50">
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex justify-center gap-4">
-                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#3b5998] hover:text-white hover:border-[#3b5998] transition-all duration-500 transform hover:scale-110 hover:-translate-y-1">
+                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#3b5998] hover:text-white hover:border-[#3b5998] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
                       <Facebook className="h-5 w-5" />
                     </button>
-                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#1da1f2] hover:text-white hover:border-[#1da1f2] transition-all duration-500 transform hover:scale-110 hover:-translate-y-1">
+                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#1da1f2] hover:text-white hover:border-[#1da1f2] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
                       <Twitter className="h-5 w-5" />
                     </button>
-                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#e4405f] hover:text-white hover:border-[#e4405f] transition-all duration-500 transform hover:scale-110 hover:-translate-y-1">
+                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#e4405f] hover:text-white hover:border-[#e4405f] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
                       <Instagram className="h-5 w-5" />
                     </button>
-                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#ff0000] hover:text-white hover:border-[#ff0000] transition-all duration-500 transform hover:scale-110 hover:-translate-y-1">
+                    <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#ff0000] hover:text-white hover:border-[#ff0000] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
                       <Youtube className="h-5 w-5" />
                     </button>
                   </div>

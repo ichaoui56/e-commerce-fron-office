@@ -4,13 +4,11 @@ import ProductDetailPage from "@/components/product-detail-page"
 import { notFound } from "next/navigation"
 
 interface ProductPageProps {
-    params: {
-        id: string
-    }
+    params: Promise<{ id: string }>
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const product = await getProductById(params.id)
+    const product = await getProductById((await params).id)
 
     if (!product) {
         notFound()
@@ -22,7 +20,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-    const product = await getProductById(params.id)
+    const product = await getProductById((await params).id)
 
     if (!product) {
         return {
