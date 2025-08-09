@@ -38,7 +38,7 @@ export default function Hero() {
       {/* Main Hero Card */}
       <div className="flex-1 relative bg-black bg-opacity-20 min-h-[60vh]">
         <Image
-          src="https://img.freepik.com/photos-gratuite/portrait-femme-debout-mur-gris-bras-croises-regarder-appareil-photo_23-2148169320.jpg?t=st=1753834339~exp=1753837939~hmac=17709b6602804b4a715ae1477d0c6166b37e199b9b2413896d74e8f4e5263427&w=1800"
+          src="https://i.ibb.co/SX34mm51/Whats-App-Image-2025-08-09-at-17-27-30.jpg"
           alt="Woman in denim outfit"
           fill
           className="object-cover z-0"

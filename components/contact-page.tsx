@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -50,7 +50,25 @@ const fadeInRight = {
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.2
+      staggerChildren: 0.15
+    }
+  }
+}
+
+// Fixed animation variant for contact info cards
+const contactCardVariant: Variants = {
+  initial: { 
+    opacity: 0, 
+    y: 40,
+    scale: 0.9 
+  },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: { 
+      duration: 0.5, 
+      ease: "easeOut" 
     }
   }
 }
@@ -229,12 +247,12 @@ export default function ContactPage() {
         </div>
       </motion.div>
 
-      {/* Contact Information Cards */}
+      {/* Contact Information Cards - Fixed Animation */}
       <motion.div 
         className="container mx-auto px-4 py-12"
         initial="initial"
         whileInView="animate"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: true, amount: 0.1 }}
       >
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
@@ -244,7 +262,7 @@ export default function ContactPage() {
             <motion.div
               key={index}
               className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
-              variants={scaleIn}
+              variants={contactCardVariant}
               whileHover={{ y: -10 }}
             >
               <div
@@ -269,7 +287,7 @@ export default function ContactPage() {
           className="bg-white py-12 rounded-2xl shadow-xl mb-16"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           <div className="container mx-auto px-8">
             <motion.div 
@@ -302,7 +320,7 @@ export default function ContactPage() {
             variants={fadeInLeft}
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.2 }}
           >
             <motion.div 
               className="flex items-center gap-3 mb-8"
@@ -422,7 +440,7 @@ export default function ContactPage() {
             variants={fadeInRight}
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.2 }}
           >
            
 
@@ -512,43 +530,46 @@ export default function ContactPage() {
           </motion.div>
         </div>
 
-        {/* CTA Section */}
-         {/* Google Maps */}
-         <motion.div 
-              className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="p-6 bg-gradient-to-r from-[#e94491]/10 to-[#f472b6]/10 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-light text-gray-800">Find Our Store</h3>
-                    <p className="text-gray-600 text-sm">Located in El Jadida, Morocco</p>
-                  </div>
-                </div>
+        {/* Google Maps */}
+        <motion.div 
+          className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mt-16"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={fadeInUp}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="p-6 bg-gradient-to-r from-[#e94491]/10 to-[#f472b6]/10 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full flex items-center justify-center">
+                <MapPin className="h-5 w-5 text-white" />
               </div>
-              <div className="relative h-64 md:h-80">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3380.9618836297973!2d-8.534645424268843!3d33.227076573478776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda91f004cda3c9d%3A0x7aac99b84b5c084b!2sShahine%20V%C3%AAtements%20pour%20femmes!5e1!3m2!1sen!2sma!4v1754515672299!5m2!1sen!2sma"
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="rounded-b-2xl"
-                ></iframe>
+              <div>
+                <h3 className="text-xl font-light text-gray-800">Find Our Store</h3>
+                <p className="text-gray-600 text-sm">Located in El Jadida, Morocco</p>
               </div>
-              <div className="p-4 bg-gray-50">
-                <p className="text-sm text-gray-600 text-center">
-                  <MapPin className="inline h-4 w-4 mr-1 text-[#e94491]" />
-                  Shahine Vêtements pour femmes, El Jadida, Morocco
-                </p>
-              </div>
-            </motion.div>
+            </div>
+          </div>
+          <div className="relative h-64 md:h-80">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3380.9618836297973!2d-8.534645424268843!3d33.227076573478776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda91f004cda3c9d%3A0x7aac99b84b5c084b!2sShahine%20V%C3%AAtements%20pour%20femmes!5e1!3m2!1sen!2sma!4v1754515672299!5m2!1sen!2sma"
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-b-2xl"
+            ></iframe>
+          </div>
+          <div className="p-4 bg-gray-50">
+            <p className="text-sm text-gray-600 text-center">
+              <MapPin className="inline h-4 w-4 mr-1 text-[#e94491]" />
+              Shahine Vêtements pour femmes, El Jadida, Morocco
+            </p>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   )

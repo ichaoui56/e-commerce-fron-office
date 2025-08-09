@@ -3,7 +3,7 @@
 import type React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ShoppingCart, Eye } from 'lucide-react'
+import { Heart, ShoppingCart, Eye, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -74,6 +74,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
   const [selectedColorId, setSelectedColorId] = useState(product.colors[0]?.id || "")
   const [isPending, startTransition] = useTransition()
   const [isHovered, setIsHovered] = useState(false)
+  const [isImageLoading, setIsImageLoading] = useState(false)
+  const [loadedImageUrl, setLoadedImageUrl] = useState("")
 
   useEffect(() => {
     setIsLiked(isInWishlist)
@@ -85,6 +87,30 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
     product.images.find((img) => img.color_id === selectedColorId)?.image_url ||
     product.images[0]?.image_url ||
     "/placeholder.svg"
+
+  // Handle image loading when color changes
+  useEffect(() => {
+    if (currentImage && currentImage !== loadedImageUrl) {
+      setIsImageLoading(true)
+    }
+  }, [currentImage, loadedImageUrl])
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false)
+    setLoadedImageUrl(currentImage)
+  }
+
+  const handleImageError = () => {
+    setIsImageLoading(false)
+  }
+
+  const handleColorChange = (colorId: string) => {
+    if (colorId !== selectedColorId) {
+      setSelectedColorId(colorId)
+      // Start loading immediately when color changes
+      setIsImageLoading(true)
+    }
+  }
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -169,24 +195,39 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
 
   return (
     <div 
-      className="group relative bg-white rounded-xl  border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
+      className="group relative bg-white rounded-xl border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Product Image Container - Much bigger/taller */}
       <div className="relative aspect-[3/5] sm:aspect-[4/6] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-          <Image
-            src={currentImage || "/placeholder.svg"}
-            alt={product.name}
-            fill
-            className={`object-cover transition-all duration-500 cursor-pointer ${
-              !isMobile && isHovered ? "scale-105" : "scale-100"
-            } ${isOutOfStock ? "grayscale opacity-75" : ""}`}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
+        {/* Loading Overlay - positioned over the image */}
+        {isImageLoading && (
+          <div className="absolute inset-0 bg-black/10 flex items-center justify-center z-10 backdrop-blur-[2px]">
+            <div className="flex flex-col items-center gap-2 rounded-lg px-3 py-2 shadow-sm">
+              <Loader2 className="h-5 w-5 animate-spin text-gray-600" />
+              <span className="text-xs text-gray-600 font-medium">Loading...</span>
+            </div>
+          </div>
+        )}
+
+        <Image
+          src={currentImage || "/placeholder.svg"}
+          alt={product.name}
+          fill
+          className={`object-cover transition-all duration-500 cursor-pointer ${
+            !isMobile && isHovered ? "scale-105" : "scale-100"
+          } ${isOutOfStock ? "grayscale opacity-75" : ""} ${
+            isImageLoading ? "opacity-50" : "opacity-100"
+          }`}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+          priority={false}
+        />
 
         {/* Badges - Positioned outside image area on mobile */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 sm:bottom-auto flex flex-row sm:flex-col gap-1 sm:gap-2 z-10">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 sm:bottom-auto flex flex-row sm:flex-col gap-1 sm:gap-2 z-20">
           {product.discount_percentage > 0 && (
             <div className="px-2 py-1 text-xs font-bold text-white rounded-md bg-red-500 shadow-sm">
               -{product.discount_percentage}%
@@ -197,11 +238,10 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
               TOP
             </div>
           )}
-         
         </div>
 
         {/* Action Buttons - Different layout for mobile vs desktop */}
-        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2">
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2 z-20">
           {/* Wishlist Button */}
           <Button
             variant="ghost"
@@ -254,7 +294,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
         </div>
 
         {/* Full Add to Cart Button - ONLY visible on larger screens */}
-        <div className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 transition-all duration-500 ${
+        <div className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 transition-all duration-500 z-20 ${
           isMobile ? "" : "translate-y-full group-hover:translate-y-0"
         }`}>
           <Button
@@ -337,10 +377,11 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
                   key={color.id}
                   onClick={(e) => {
                     e.preventDefault()
-                    setSelectedColorId(color.id)
+                    handleColorChange(color.id)
                   }}
+                  disabled={isImageLoading}
                   className={cn(
-                    "w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-all duration-200 hover:scale-110",
+                    "w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50",
                     selectedColorId === color.id
                       ? "border-gray-800 ring-1 ring-gray-800/20 scale-110"
                       : "border-gray-200 hover:border-gray-400"
