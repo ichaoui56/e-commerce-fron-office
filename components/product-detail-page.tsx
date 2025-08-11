@@ -81,28 +81,40 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
   }
 
   const handleAddToCart = () => {
-    const availableVariant = product.variants.find(
-      (variant) => variant.color_id === selectedColorId && variant.stock_quantity > 0,
+    // Check if both color and size are selected
+    if (!selectedColorId || !selectedSizeId) {
+      toast({
+        title: "Error",
+        description: "Please select both color and size",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Get the specific variant for selected color AND size
+    const selectedVariantForCart = product.variants.find(
+      (variant) => variant.color_id === selectedColorId && variant.size_id === selectedSizeId
     )
 
-    if (!availableVariant) {
+    if (!selectedVariantForCart) {
       toast({
         title: "Error",
-        description: "No stock available for selected color",
-        variant: "destructive",
-      })
-      return
-    }
-    if (!selectedVariant) {
-      toast({
-        title: "Error",
-        description: "Please select a color and size",
+        description: "Selected variant not found",
         variant: "destructive",
       })
       return
     }
 
-    if (availableStock < quantity) {
+    if (selectedVariantForCart.stock_quantity === 0) {
+      toast({
+        title: "Error",
+        description: "Selected size is out of stock",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (selectedVariantForCart.stock_quantity < quantity) {
       toast({
         title: "Error",
         description: "Not enough stock available",
@@ -113,7 +125,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
     startTransition(async () => {
       try {
-        const result = await addToCart(availableVariant.id, quantity)
+        // Use the correct variant ID (ProductSizeStock ID) for the selected color and size
+        const result = await addToCart(selectedVariantForCart.id, quantity)
 
         if (result.success) {
           // Dispatch the cart update event to notify the navbar
@@ -152,6 +165,15 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
     if (!availableSizes.includes(selectedSizeId)) {
       setSelectedSizeId(availableSizes[0] || "")
     }
+    
+    // Reset quantity to 1 when changing color
+    setQuantity(1)
+  }
+
+  const handleSizeChange = (sizeId: string) => {
+    setSelectedSizeId(sizeId)
+    // Reset quantity to 1 when changing size
+    setQuantity(1)
   }
 
   return (
@@ -299,7 +321,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                     return (
                       <button
                         key={size.id}
-                        onClick={() => !isOutOfStock && setSelectedSizeId(size.id)}
+                        onClick={() => !isOutOfStock && handleSizeChange(size.id)}
                         disabled={isOutOfStock}
                         className={`w-12 h-12 border-2 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${selectedSizeId === size.id
                             ? "border-[#e94491] text-[#e94491]"

@@ -1,5 +1,6 @@
-// lib/types/product.ts
+// lib/types/index.ts
 
+// Product interfaces
 export interface ProductWithDetails {
   id: string
   name: string
@@ -53,7 +54,6 @@ export interface ProductWithDetails {
   status: "in_stock" | "low_stock" | "out_of_stock"
 }
 
-// Category interface for the shop page
 export interface Category {
   id: string
   name: string
@@ -63,20 +63,9 @@ export interface Category {
   children?: Category[]
 }
 
-// Other existing interfaces...
 export interface ProductCardProps {
   product: ProductWithDetails
   isInWishlist?: boolean
-}
-
-export interface WishlistResponse {
-  success: boolean
-  message: string
-}
-
-export interface CartResponse {
-  success: boolean
-  message: string
 }
 
 export interface Product {
@@ -120,10 +109,11 @@ export interface ProductImage {
   is_primary: boolean
 }
 
+// Cart interfaces
 export interface CartItem {
   id: string
   guest_session_id: string
-  product_variant_id: string
+  product_size_stock_id: string
   quantity: number
   added_at: string
 }
@@ -136,11 +126,52 @@ export interface CartItemWithDetails extends CartItem {
   image: ProductImage
 }
 
+export interface CartItemForCheckout {
+  id: string
+  product_size_stock_id: string
+  quantity: number
+  price: number
+  subtotal: number
+  product: {
+    id: string
+    name: string
+  }
+  color: {
+    id: string
+    name: string
+    hex: string
+  }
+  size: {
+    id: string
+    label: string
+  }
+  image_url: string
+}
+
+// Wishlist interfaces
 export interface Like {
   id: string
   guest_session_id: string
   product_id: string
   liked_at: string
+}
+
+export interface WishlistResponse {
+  success: boolean
+  message: string
+}
+
+export interface CartResponse {
+  success: boolean
+  message: string
+}
+
+// Shipping interfaces
+export interface ShippingOption {
+  id: string
+  label: string
+  price: number
+  cities: string
 }
 
 export interface ShippingZone {
@@ -151,31 +182,86 @@ export interface ShippingZone {
   cost_per_item: number
 }
 
+// Order interfaces
 export interface Order {
   id: string
   guest_session_id: string
-  order_ref: string
-  first_name: string
-  last_name: string
-  email: string
+  ref_id: string
+  name: string
   phone: string
   address: string
-  city: string
-  postal_code: string
-  country: string
-  shipping_cost: number
-  order_notes?: string
-  status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
+  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
   created_at: string
   total_amount: number
+  subtotal?: number
+  shipping_cost?: number
+  shipping_option?: ShippingOption
+  items: OrderItem[]
 }
 
 export interface OrderItem {
   id: string
   order_id: string
-  product_variant_id: string
+  product_size_stock_id: string
   quantity: number
+  price: number
   unit_price: number
-  color_id: string
-  size_id: string
+  subtotal: number
+  product: {
+    id: string
+    name: string
+  }
+  color: {
+    id: string
+    name: string
+    hex: string
+  }
+  size: {
+    id: string
+    label: string
+  }
+  image_url: string
+}
+
+export interface OrderSummary {
+  id: string
+  ref_id: string
+  name: string
+  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
+  created_at: string
+  total_amount: number
+  items_count: number
+}
+
+// Form interfaces
+export interface CheckoutFormData {
+  fullName: string
+  phone: string
+  city: string
+  address: string
+  notes?: string
+}
+
+export interface OrderCreationData extends CheckoutFormData {
+  shippingOptionId: string
+}
+
+// API Response interfaces
+export interface OrderCreationResponse {
+  success: boolean
+  message: string
+  order?: Order
+}
+
+export interface CartItemsResponse {
+  success: boolean
+  message: string
+  items: CartItemForCheckout[]
+}
+
+// Guest user interface
+export interface GuestUser {
+  session_id: string
+  created_at: string
+  expires_at: string
 }

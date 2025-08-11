@@ -3,19 +3,19 @@
 import { PrismaClient } from "@prisma/client"
 import { cookies } from "next/headers"
 import type { Order, OrderItem } from "@/lib/types"
+import { getOrCreateGuestSession } from "@/lib/actions/session"
 
 const prisma = new PrismaClient()
 
-// Get or create guest session
-async function getGuestSession(): Promise<string> {
-  const cookieStore = await cookies()
-  let sessionId = cookieStore.get("guest_session_id")?.value
-
-  if (!sessionId) {
-    throw new Error("No guest session found")
+// Get guest session for read operations (build-safe)
+async function getGuestSessionReadOnly(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies()
+    return cookieStore.get("guest_session_id")?.value || null
+  } catch (error) {
+    console.warn("Cannot get guest session during build time:", error)
+    return null
   }
-
-  return sessionId
 }
 
 // Generate order reference
@@ -25,15 +25,16 @@ function generateOrderRef(): string {
   return `ORD-${timestamp}-${random}`
 }
 
-// Create order from cart
+// Create order from cart (WRITE operation - can create session)
 export async function createOrder(orderData: {
   name: string
   phone: string
-  address: string
-  shippingCost?: number
+  city: string
+  shippingCost: number
+  shippingOption: string
 }) {
   try {
-    const sessionId = await getGuestSession()
+    const sessionId = await getOrCreateGuestSession()
 
     // Get cart items
     const cartItems = await prisma.panelItem.findMany({
@@ -67,24 +68,23 @@ export async function createOrder(orderData: {
       }
     }
 
-    // Calculate total
+    // Calculate subtotal
     const subtotal = cartItems.reduce((total, item) => {
       return total + Number(item.productSizeStock.price) * item.quantity
     }, 0)
 
-    const shippingCost = orderData.shippingCost || 0
-    const total = subtotal + shippingCost
-
     // Create order in transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Create order
+      // Create order with shipping cost
       const order = await tx.order.create({
         data: {
           guest_session_id: sessionId,
           ref_id: generateOrderRef(),
           name: orderData.name,
           phone: orderData.phone,
-          address: orderData.address,
+          city: orderData.city,
+          shipping_cost: orderData.shippingCost,
+          shipping_option: orderData.shippingOption,
           status: "pending",
         },
       })
@@ -131,7 +131,7 @@ export async function createOrder(orderData: {
   }
 }
 
-// Get order by ID
+// Get order by ID (READ operation - no session needed)
 export async function getOrderById(orderId: string) {
   try {
     const order = await prisma.order.findUnique({
@@ -159,47 +159,44 @@ export async function getOrderById(orderId: string) {
       return null
     }
 
+    // Calculate subtotal from order items
+    const subtotal = order.orderItems.reduce((total, item) => {
+      return total + Number(item.price_at_purchase) * item.quantity
+    }, 0)
+
+    // Total includes shipping cost
+    const total = subtotal + Number(order.shipping_cost)
+
     return {
       id: order.id,
-      guest_session_id: order.guest_session_id,
-      order_ref: order.ref_id,
-      first_name: order.name.split(" ")[0] || order.name,
-      last_name: order.name.split(" ").slice(1).join(" ") || "",
-      email: "", // You might want to add email to your schema
+      ref_id: order.ref_id,
+      name: order.name,
       phone: order.phone,
-      address: order.address,
-      city: "", // You might want to add city to your schema
-      postal_code: "", // You might want to add postal_code to your schema
-      country: "", // You might want to add country to your schema
-      shipping_cost: 0, // You might want to add shipping_cost to your schema
-      order_notes: "", // You might want to add order_notes to your schema
-      status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+      city: order.city,
+      status: order.status,
       created_at: order.created_at.toISOString(),
-      total_amount: order.orderItems.reduce((total, item) => {
-        return total + Number(item.price_at_purchase) * item.quantity
-      }, 0),
+      shipping_cost: Number(order.shipping_cost),
+      shipping_option: order.shipping_option,
+      total_amount: total,
       items: order.orderItems.map((item) => ({
         id: item.id,
-        order_id: item.order_id,
-        product_variant_id: item.product_size_stock_id,
         quantity: item.quantity,
         unit_price: Number(item.price_at_purchase),
-        color_id: item.productSizeStock.productColor.color_id,
-        size_id: item.productSizeStock.size_id,
+        subtotal: Number(item.price_at_purchase) * item.quantity,
         product: {
           id: item.productSizeStock.productColor.product.id,
           name: item.productSizeStock.productColor.product.name,
-          image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
         },
         color: {
           id: item.productSizeStock.productColor.color.id,
           name: item.productSizeStock.productColor.color.name,
-          hex_code: item.productSizeStock.productColor.color.hex || "#000000",
+          hex: item.productSizeStock.productColor.color.hex || "#000000",
         },
         size: {
           id: item.productSizeStock.size.id,
           label: item.productSizeStock.size.label,
         },
+        image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
       })),
     }
   } catch (error) {
@@ -208,7 +205,7 @@ export async function getOrderById(orderId: string) {
   }
 }
 
-// Get order by reference
+// Get order by reference (READ operation - no session needed)
 export async function getOrderByRef(orderRef: string) {
   try {
     const order = await prisma.order.findUnique({
@@ -243,10 +240,15 @@ export async function getOrderByRef(orderRef: string) {
   }
 }
 
-// Get user orders
+// Get user orders (READ operation - use read-only session)
 export async function getUserOrders() {
   try {
-    const sessionId = await getGuestSession()
+    const sessionId = await getGuestSessionReadOnly()
+
+    // Return empty array if no session (e.g., during build time)
+    if (!sessionId) {
+      return []
+    }
 
     const orders = await prisma.order.findMany({
       where: { guest_session_id: sessionId },
@@ -270,23 +272,27 @@ export async function getUserOrders() {
       orderBy: { created_at: "desc" },
     })
 
-    return orders.map((order) => ({
-      id: order.id,
-      order_ref: order.ref_id,
-      status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
-      created_at: order.created_at.toISOString(),
-      total_amount: order.orderItems.reduce((total, item) => {
+    return orders.map((order) => {
+      const subtotal = order.orderItems.reduce((total, item) => {
         return total + Number(item.price_at_purchase) * item.quantity
-      }, 0),
-      items_count: order.orderItems.reduce((total, item) => total + item.quantity, 0),
-    }))
+      }, 0)
+      
+      return {
+        id: order.id,
+        order_ref: order.ref_id,
+        status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+        created_at: order.created_at.toISOString(),
+        total_amount: subtotal + Number(order.shipping_cost),
+        items_count: order.orderItems.reduce((total, item) => total + item.quantity, 0),
+      }
+    })
   } catch (error) {
     console.error("Get user orders error:", error)
     return []
   }
 }
 
-// Update order status (admin function)
+// Update order status (admin function - WRITE operation)
 export async function updateOrderStatus(orderId: string, status: "pending" | "shipped" | "delivered" | "cancelled") {
   try {
     const order = await prisma.order.update({

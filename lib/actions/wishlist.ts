@@ -1,7 +1,7 @@
 "use server"
 
 import { PrismaClient } from "@prisma/client"
-import { getGuestSessionId, getOrCreateGuestSession } from "@/lib/actions/session"
+import { getOrCreateGuestSession, getOrCreateGuestSessionReadOnly } from "@/lib/actions/session"
 import type { ProductWithDetails } from "@/lib/types"
 
 const prisma = new PrismaClient()
@@ -98,10 +98,10 @@ export async function removeFromWishlist(productId: string): Promise<WishlistRes
   }
 }
 
-// Get wishlist count
+// Get wishlist count (READ-ONLY operation)
 export async function getWishlistCount(): Promise<number> {
   try {
-    const sessionId = await getGuestSessionId()
+    const sessionId = await getOrCreateGuestSessionReadOnly()
 
     // Return 0 if no session (e.g., during build time)
     if (!sessionId) {
@@ -121,10 +121,10 @@ export async function getWishlistCount(): Promise<number> {
   }
 }
 
-// Get wishlist product IDs
+// Get wishlist product IDs (READ-ONLY operation)
 export async function getWishlistProductIds(): Promise<string[]> {
   try {
-    const sessionId = await getGuestSessionId()
+    const sessionId = await getOrCreateGuestSessionReadOnly()
 
     // Return empty array if no session (e.g., during build time)
     if (!sessionId) {
@@ -147,10 +147,10 @@ export async function getWishlistProductIds(): Promise<string[]> {
   }
 }
 
-// Get wishlist with full product details
+// Get wishlist with full product details (READ-ONLY operation)
 export async function getWishlistWithDetails(): Promise<ProductWithDetails[]> {
   try {
-    const sessionId = await getGuestSessionId()
+    const sessionId = await getOrCreateGuestSessionReadOnly()
 
     // Return empty array if no session (e.g., during build time)
     if (!sessionId) {
@@ -192,10 +192,10 @@ export async function getWishlistWithDetails(): Promise<ProductWithDetails[]> {
   }
 }
 
-// Check if product is in wishlist
+// Check if product is in wishlist (READ-ONLY operation)
 export async function isProductInWishlist(productId: string): Promise<boolean> {
   try {
-    const sessionId = await getGuestSessionId()
+    const sessionId = await getOrCreateGuestSessionReadOnly()
 
     // Return false if no session (e.g., during build time)
     if (!sessionId) {

@@ -5,13 +5,11 @@ import { getWishlistProductIds } from "@/lib/actions/wishlist"
 import { notFound } from "next/navigation"
 
 interface CategoryShopPageProps {
-  params: {
-    categorySlug: string
-  }
+  params: Promise<{ categorySlug: string }>
 }
 
 export default async function CategoryShop({ params }: CategoryShopPageProps) {
-  const { categorySlug } = params
+  const { categorySlug } = await params
   
   // Get products for this category
   const products = await getProductsByCategorySlug(categorySlug)

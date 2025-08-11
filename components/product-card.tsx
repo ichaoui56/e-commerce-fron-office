@@ -194,7 +194,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
   const isOutOfStock = product.status === "out_of_stock"
 
   return (
-    <div 
+    <div
       className="group relative bg-white rounded-xl border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -210,22 +210,20 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             </div>
           </div>
         )}
-
-        <Image
-          src={currentImage || "/placeholder.svg"}
-          alt={product.name}
-          fill
-          className={`object-cover transition-all duration-500 cursor-pointer ${
-            !isMobile && isHovered ? "scale-105" : "scale-100"
-          } ${isOutOfStock ? "grayscale opacity-75" : ""} ${
-            isImageLoading ? "opacity-50" : "opacity-100"
-          }`}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          priority={false}
-        />
-
+        <Link href={`/product/${product.id}`}>
+          <Image
+            src={currentImage || "/placeholder.svg"}
+            alt={product.name}
+            fill
+            className={`object-cover transition-all duration-500 cursor-pointer ${!isMobile && isHovered ? "scale-105" : "scale-100"
+              } ${isOutOfStock ? "grayscale opacity-75" : ""} ${isImageLoading ? "opacity-50" : "opacity-100"
+              }`}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            priority={false}
+          />
+        </Link>
         {/* Badges - Positioned outside image area on mobile */}
         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 sm:bottom-auto flex flex-row sm:flex-col gap-1 sm:gap-2 z-20">
           {product.discount_percentage > 0 && (
@@ -248,15 +246,13 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             size="icon"
             onClick={handleWishlistToggle}
             disabled={isPending}
-            className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${
-              isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-            }`}
+            className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
             aria-label="Add to wishlist"
           >
             <Heart
-              className={`h-4 w-4 transition-colors ${
-                isLiked ? "text-red-500 fill-red-500" : "text-gray-600 hover:text-red-500"
-              }`}
+              className={`h-4 w-4 transition-colors ${isLiked ? "text-red-500 fill-red-500" : "text-gray-600 hover:text-red-500"
+                }`}
             />
           </Button>
 
@@ -265,9 +261,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             <Button
               variant="ghost"
               size="icon"
-              className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${
-                isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-              }`}
+              className={`bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-sm border border-gray-100 ${isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
               aria-label="Quick view"
             >
               <Eye className="h-4 w-4 text-gray-600 hover:text-[#e94491]" />
@@ -280,23 +275,20 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             size="icon"
             onClick={handleAddToCart}
             disabled={isPending || isOutOfStock}
-            className={`sm:hidden bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 transition-all duration-200 shadow-sm border border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${
-              !isOutOfStock ? "hover:bg-[#e94491] hover:text-white hover:border-[#e94491]" : ""
-            }`}
+            className={`sm:hidden bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-8 w-8 transition-all duration-200 shadow-sm border border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ${!isOutOfStock ? "hover:bg-[#e94491] hover:text-white hover:border-[#e94491]" : ""
+              }`}
             aria-label={isPending ? "Adding to cart..." : isOutOfStock ? "Out of stock" : "Add to cart"}
           >
-            <ShoppingCart 
-              className={`h-4 w-4 transition-colors ${
-                isPending ? "animate-pulse" : ""
-              } ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`} 
+            <ShoppingCart
+              className={`h-4 w-4 transition-colors ${isPending ? "animate-pulse" : ""
+                } ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`}
             />
           </Button>
         </div>
 
         {/* Full Add to Cart Button - ONLY visible on larger screens */}
-        <div className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 transition-all duration-500 z-20 ${
-          isMobile ? "" : "translate-y-full group-hover:translate-y-0"
-        }`}>
+        <div className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 transition-all duration-500 z-20 ${isMobile ? "" : "translate-y-full group-hover:translate-y-0"
+          }`}>
           <Button
             onClick={handleAddToCart}
             disabled={isPending || isOutOfStock}
@@ -325,8 +317,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
                 product.status === "in_stock"
                   ? "bg-green-500"
                   : product.status === "low_stock"
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
               )}
             />
             <span
@@ -335,15 +327,15 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
                 product.status === "in_stock"
                   ? "text-green-600"
                   : product.status === "low_stock"
-                  ? "text-yellow-600"
-                  : "text-red-600"
+                    ? "text-yellow-600"
+                    : "text-red-600"
               )}
             >
               {product.status === "in_stock"
                 ? "In Stock"
                 : product.status === "low_stock"
-                ? `${product.total_stock} left`
-                : "Sold Out"}
+                  ? `${product.total_stock} left`
+                  : "Sold Out"}
             </span>
           </div>
         </div>
