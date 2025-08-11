@@ -206,6 +206,7 @@ export async function getOrderById(orderId: string) {
 }
 
 // Get order by reference (READ operation - no session needed)
+// In your getOrderByRef function, convert null to undefined
 export async function getOrderByRef(orderRef: string) {
   try {
     const order = await prisma.order.findUnique({
@@ -233,7 +234,46 @@ export async function getOrderByRef(orderRef: string) {
       return null
     }
 
-    return await getOrderById(order.id)
+    // Calculate subtotal from order items
+    const subtotal = order.orderItems.reduce((total, item) => {
+      return total + Number(item.price_at_purchase) * item.quantity
+    }, 0)
+
+    // Total includes shipping cost
+    const total = subtotal + Number(order.shipping_cost)
+
+    return {
+      id: order.id,
+      ref_id: order.ref_id,
+      name: order.name,
+      phone: order.phone,
+      city: order.city,
+      status: order.status,
+      created_at: order.created_at.toISOString(),
+      shipping_cost: Number(order.shipping_cost),
+      shipping_option: order.shipping_option || undefined, // Convert null to undefined
+      total_amount: total,
+      items: order.orderItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        unit_price: Number(item.price_at_purchase),
+        subtotal: Number(item.price_at_purchase) * item.quantity,
+        product: {
+          id: item.productSizeStock.productColor.product.id,
+          name: item.productSizeStock.productColor.product.name,
+        },
+        color: {
+          id: item.productSizeStock.productColor.color.id,
+          name: item.productSizeStock.productColor.color.name,
+          hex: item.productSizeStock.productColor.color.hex || "#000000",
+        },
+        size: {
+          id: item.productSizeStock.size.id,
+          label: item.productSizeStock.size.label,
+        },
+        image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
+      })),
+    }
   } catch (error) {
     console.error("Get order by ref error:", error)
     return null

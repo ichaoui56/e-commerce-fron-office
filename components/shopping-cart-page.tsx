@@ -353,43 +353,6 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                 </div>
 
                 <div className="py-4 md:py-6 border-t border-gray-200">
-                  <div className="flex items-center gap-2 mb-3 md:mb-4">
-                    <Truck className="h-4 w-4 md:h-5 md:w-5 text-[#e94491]" />
-                    <span className="text-gray-700 font-medium text-sm md:text-base">Shipping:</span>
-                  </div>
-                  <div className="space-y-3 md:space-y-4">
-                    {[
-                      { value: "free", label: "Free Shipping", price: 0, desc: "5-7 business days" },
-                      { value: "standard", label: "Standard", price: 10, desc: "3-5 business days" },
-                      { value: "express", label: "Express", price: 20, desc: "1-2 business days" },
-                    ].map((option) => (
-                      <label
-                        key={option.value}
-                        className="flex items-center justify-between cursor-pointer p-2 md:p-3 rounded-lg md:rounded-xl hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <input
-                            type="radio"
-                            name="shipping"
-                            value={option.value}
-                            checked={selectedShipping === option.value}
-                            onChange={(e) => setSelectedShipping(e.target.value)}
-                            className="text-[#e94491] focus:ring-[#e94491]"
-                          />
-                          <div>
-                            <span className="font-medium text-gray-800 text-sm md:text-base">{option.label}</span>
-                            <p className="text-xs text-gray-500">{option.desc}</p>
-                          </div>
-                        </div>
-                        <span className="font-normal text-[#e94491] text-sm md:text-base">
-                          {option.price === 0 ? "Free" : `$${option.price.toFixed(2)}`}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="py-4 md:py-6 border-t border-gray-200">
                   <div className="flex justify-between items-center mb-4 md:mb-6">
                     <span className="text-base md:text-lg font-semibold text-gray-800">Total:</span>
                     <span className="text-xl md:text-2xl font-bold text-[#e94491]">${total.toFixed(2)}</span>

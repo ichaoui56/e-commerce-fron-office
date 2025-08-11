@@ -350,11 +350,11 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
         {/* Pricing */}
         <div className="flex items-center gap-2">
           <span className="text-base sm:text-lg font-bold text-[#e94491]">
-            ${product.current_price.toFixed(2)}
+            {product.current_price.toFixed(2)} MAD
           </span>
           {product.discount_percentage > 0 && (
             <span className="text-xs sm:text-sm text-gray-400 line-through">
-              ${product.base_price.toFixed(2)}
+              {product.base_price.toFixed(2)} MAD
             </span>
           )}
         </div>

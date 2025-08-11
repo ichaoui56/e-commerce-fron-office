@@ -441,8 +441,8 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                       />
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 px-2">
-                      <span>$0</span>
-                      <span>$750</span>
+                      <span>0 MAD</span>
+                      <span>750 MAD</span>
                     </div>
                   </div>
                 </div>

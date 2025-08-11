@@ -189,7 +189,7 @@ export interface Order {
   ref_id: string
   name: string
   phone: string
-  address: string
+  city: string
   status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
   created_at: string
   total_amount: number
@@ -238,7 +238,6 @@ export interface CheckoutFormData {
   fullName: string
   phone: string
   city: string
-  address: string
   notes?: string
 }
 

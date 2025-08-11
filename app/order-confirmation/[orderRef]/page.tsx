@@ -8,16 +8,17 @@ import { Button } from "@/components/ui/button"
 import { getOrderByRef } from "@/lib/actions/orders"
 import { toast } from "sonner"
 
+// Update your OrderDetails interface in the React component
 interface OrderDetails {
   id: string
   ref_id: string
   name: string
   phone: string
-  address: string
+  city: string
   status: string
   created_at: string
   shipping_cost: number
-  shipping_option?: string
+  shipping_option?: string | null  // Allow both undefined and null
   total_amount: number
   items: Array<{
     id: string
@@ -252,7 +253,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800 mb-2">Delivery Address</h3>
-                      <p className="text-gray-700 leading-relaxed">{order.address}</p>
+                      <p className="text-gray-700 leading-relaxed">{order.city}</p>
                       {order.shipping_option && (
                         <p className="text-sm text-gray-500 mt-1">
                           Shipping: {order.shipping_option}
