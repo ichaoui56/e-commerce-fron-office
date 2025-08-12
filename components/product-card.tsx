@@ -132,15 +132,15 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
           }))
         } else {
           toast({
-            title: "Error",
+            title: "Erreur",
             description: result.message,
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Something went wrong",
+          title: "Erreur",
+          description: "Une erreur est survenue",
           variant: "destructive",
         })
       }
@@ -159,8 +159,8 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
 
         if (!availableVariant) {
           toast({
-            title: "Error",
-            description: "No stock available for selected color",
+            title: "Erreur",
+            description: "Aucun stock disponible pour la couleur sélectionnée",
             variant: "destructive",
           })
           return
@@ -175,14 +175,14 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
           window.dispatchEvent(new CustomEvent("cartUpdated"))
         } else {
           toast({
-            title: "Error",
+            title: "Erreur",
             description: result.message,
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
+          title: "Erreur",
           description: "Failed to add to cart",
           variant: "destructive",
         })
@@ -295,7 +295,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
             className="w-full bg-white/95 backdrop-blur-sm border border-white/50 hover:bg-[#e94491] hover:text-white hover:border-[#e94491] text-gray-700 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 rounded-lg h-10 text-sm"
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            {isPending ? "ADDING..." : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
+            {isPending ? "AJOUT..." : isOutOfStock ? "ÉPUISÉ" : "AJOUTER AU PANIER"}
           </Button>
         </div>
       </div>
@@ -332,10 +332,10 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
               )}
             >
               {product.status === "in_stock"
-                ? "In Stock"
+                ? "En stock"
                 : product.status === "low_stock"
-                  ? `${product.total_stock} left`
-                  : "Sold Out"}
+                  ? `${product.total_stock} restants`
+                  : "Épuisé"}
             </span>
           </div>
         </div>
@@ -362,7 +362,7 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
         {/* Color Selection - Compact */}
         {product.colors && product.colors.length > 0 && (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-500 mr-1">Colors:</span>
+            <span className="text-xs text-gray-500 mr-1">Couleurs :</span>
             <div className="flex gap-1">
               {product.colors.slice(0, 3).map((color) => (
                 <button

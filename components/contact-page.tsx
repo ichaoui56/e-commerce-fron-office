@@ -105,7 +105,7 @@ export default function ContactPage() {
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
     
-    console.log("Contact form submitted:", formData)
+    console.log("Formulaire de contact envoyé :", formData)
     setIsSubmitting(false)
     // Reset form or show success message
     setFormData({ name: "", email: "", subject: "", message: "" })
@@ -114,29 +114,29 @@ export default function ContactPage() {
   const contactInfo = [
     {
       icon: MapPin,
-      title: "Visit Our Store",
-      details: ["Shahine Vêtements pour femmes", "El Jadida, Morocco"],
+      title: "Visitez notre boutique",
+      details: ["Shahine Vêtements pour femmes", "El Jadida, Maroc"],
       color: "text-blue-500",
       bgColor: "bg-blue-50",
     },
     {
       icon: Phone,
-      title: "Call Us",
+      title: "Appelez-nous",
       details: ["+212 523 123 456", "+212 661 234 567"],
       color: "text-green-500",
       bgColor: "bg-green-50",
     },
     {
       icon: Mail,
-      title: "Email Us",
+      title: "Envoyez-nous un e-mail",
       details: ["info@shahine.com", "support@shahine.com"],
       color: "text-[#e94491]",
       bgColor: "bg-pink-50",
     },
     {
       icon: Clock,
-      title: "Working Hours",
-      details: ["Mon - Sat: 9:00 AM - 8:00 PM", "Sunday: 10:00 AM - 6:00 PM"],
+      title: "Heures d'ouverture",
+      details: ["Lun - Sam : 9h00 - 20h00", "Dimanche : 10h00 - 18h00"],
       color: "text-purple-500",
       bgColor: "bg-purple-50",
     },
@@ -145,31 +145,31 @@ export default function ContactPage() {
   const storeFeatures = [
     {
       icon: Users,
-      title: "Expert Staff",
-      description: "Our knowledgeable team is here to help you find the perfect style",
+      title: "Personnel expert",
+      description: "Notre équipe compétente est là pour vous aider à trouver le style parfait",
     },
     {
       icon: Award,
-      title: "Premium Quality",
-      description: "Carefully curated collection of high-quality fashion items",
+      title: "Qualité supérieure",
+      description: "Collection soigneusement sélectionnée d'articles de mode de haute qualité",
     },
     {
       icon: Truck,
-      title: "Fast Delivery",
-      description: "Quick and reliable shipping to your doorstep",
+      title: "Livraison rapide",
+      description: "Expédition rapide et fiable jusqu'à votre porte",
     },
     {
       icon: Shield,
-      title: "Secure Shopping",
-      description: "Safe and secure payment processing for your peace of mind",
+      title: "Achats sécurisés",
+      description: "Traitement des paiements sûr et sécurisé pour votre tranquillité d'esprit",
     },
   ]
 
   const stats = [
-    { number: "50K+", label: "Happy Customers", icon: Users },
-    { number: "24/7", label: "Customer Support", icon: Headphones },
-    { number: "99%", label: "Satisfaction Rate", icon: Star },
-    { number: "15+", label: "Years Experience", icon: Award },
+    { number: "50K+", label: "Clients satisfaits", icon: Users },
+    { number: "24/7", label: "Support client", icon: Headphones },
+    { number: "99%", label: "Taux de satisfaction", icon: Star },
+    { number: "15+", label: "Années d'expérience", icon: Award },
   ]
 
   return (
@@ -210,7 +210,7 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Contact Us
+            Contactez-nous
           </motion.h1>
           <motion.p 
             className="text-[#e94491] font-normal text-lg tracking-wider"
@@ -218,7 +218,7 @@ export default function ContactPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            GET IN TOUCH
+            ENVOYEZ-NOUS UN MESSAGE
           </motion.p>
           <motion.div 
             className="w-24 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-6 rounded-full"
@@ -239,7 +239,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-3 text-sm">
             <Link href="/" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Home
+              Accueil
             </Link>
             <span className="text-gray-300">›</span>
             <span className="text-[#e94491]">Contact</span>
@@ -333,8 +333,8 @@ export default function ContactPage() {
                 <Send className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-light text-gray-800">Send us a Message</h2>
-                <p className="text-gray-600 text-sm">We'd love to hear from you</p>
+                <h2 className="text-2xl font-light text-gray-800">Envoyez-nous un message</h2>
+                <p className="text-gray-600 text-sm">Nous serions ravis d'avoir de vos nouvelles !</p>
               </div>
             </motion.div>
 
@@ -354,7 +354,7 @@ export default function ContactPage() {
                 viewport={{ once: true }}
               >
                 <motion.div variants={slideInFromBottom}>
-                  <label className="block text-sm text-gray-600 mb-2">Your Name *</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-600 mb-2">Votre nom *</label>
                   <Input
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
@@ -363,7 +363,7 @@ export default function ContactPage() {
                   />
                 </motion.div>
                 <motion.div variants={slideInFromBottom}>
-                  <label className="block text-sm text-gray-600 mb-2">Email Address *</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">Adresse e-mail *</label>
                   <Input
                     type="email"
                     value={formData.email}
@@ -381,7 +381,7 @@ export default function ContactPage() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
               >
-                <label className="block text-sm text-gray-600 mb-2">Subject *</label>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-600 mb-2">Sujet *</label>
                 <Input
                   value={formData.subject}
                   onChange={(e) => handleInputChange("subject", e.target.value)}
@@ -397,12 +397,12 @@ export default function ContactPage() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                <label className="block text-sm text-gray-600 mb-2">Message *</label>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-600 mb-2">Message *</label>
                 <Textarea
                   value={formData.message}
                   onChange={(e) => handleInputChange("message", e.target.value)}
                   className="border-2 border-gray-200 rounded-xl focus:border-[#e94491] min-h-[120px] transition-all duration-300 hover:border-gray-300"
-                  placeholder="Tell us how we can help you..."
+                  placeholder="Dites-nous comment nous pouvons vous aider..."
                   required
                 />
               </motion.div>
@@ -421,12 +421,12 @@ export default function ContactPage() {
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Sending...
+                      Envoi en cours...
                     </>
                   ) : (
                     <>
                       <Send className="mr-2 h-5 w-5" />
-                      Send Message
+                      Envoyer le message
                     </>
                   )}
                 </Button>
@@ -461,8 +461,8 @@ export default function ContactPage() {
                   <Heart className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-light text-gray-800">Why Choose Us</h3>
-                  <p className="text-gray-600 text-sm">What makes us special</p>
+                  <h3 className="text-xl font-light text-gray-800">Pourquoi nous choisir ?</h3>
+                  <p className="text-gray-600 text-sm">Ce qui nous rend spéciaux</p>
                 </div>
               </motion.div>
 
@@ -510,8 +510,8 @@ export default function ContactPage() {
               >
                 <Headphones className="h-8 w-8" />
                 <div>
-                  <h3 className="text-xl font-semibold">24/7 Customer Support</h3>
-                  <p className="text-white/90 text-sm">We're here to help you anytime</p>
+                  <h3 className="text-xl font-semibold">Support client 24/7</h3>
+                  <p className="text-white/90 text-sm">Nous sommes là pour vous aider à tout moment</p>
                 </div>
               </motion.div>
               <motion.p 
@@ -521,8 +521,8 @@ export default function ContactPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                Our dedicated support team is available around the clock to assist you with any questions or concerns.
-                Get instant help through our multiple channels.
+                Notre équipe de support dédiée est disponible 24 heures sur 24 pour vous aider avec toutes vos questions ou préoccupations.
+                Obtenez une aide instantanée via nos multiples canaux.
               </motion.p>
             
                
@@ -546,8 +546,8 @@ export default function ContactPage() {
                 <MapPin className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-light text-gray-800">Find Our Store</h3>
-                <p className="text-gray-600 text-sm">Located in El Jadida, Morocco</p>
+                <h3 className="text-xl font-light text-gray-800">Trouvez notre boutique</h3>
+                <p className="text-gray-600 text-sm">Situé à El Jadida, Maroc</p>
               </div>
             </div>
           </div>
@@ -566,7 +566,7 @@ export default function ContactPage() {
           <div className="p-4 bg-gray-50">
             <p className="text-sm text-gray-600 text-center">
               <MapPin className="inline h-4 w-4 mr-1 text-[#e94491]" />
-              Shahine Vêtements pour femmes, El Jadida, Morocco
+              Shahine Vêtements pour femmes, El Jadida, Maroc
             </p>
           </div>
         </motion.div>

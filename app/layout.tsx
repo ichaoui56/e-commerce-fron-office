@@ -10,8 +10,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Shahine - Fashion Store",
-  description: "Premium fashion and lifestyle products",
+  title: "Shahine - Magasin de Mode",
+  description: "Produits de mode et de style de vie haut de gamme",
     generator: 'v0.dev'
 }
 
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <CartProvider>
           <Navbar />

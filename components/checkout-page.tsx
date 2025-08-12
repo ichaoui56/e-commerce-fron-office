@@ -20,7 +20,7 @@ const shippingOptions = [
   { id: "proche", label: "MOHMADIA / BOUSKOURA / BERRCHID", price: 39, cities: "Mohmadia, Bouskoura, Berrchid" },
   { id: "rahma", label: "LIVRAISON RAHMA / DEROUA / TITT MELIL", price: 30, cities: "Rahma, Deroua, Titt Melil" },
   { id: "rabat", label: "RABAT / KENITRA / SALE / TEMARA ET REGIONS", price: 35, cities: "Rabat, Kenitra, Sale, Temara" },
-  { id: "autres", label: "RESTE DES VILLES (باقي المدن)", price: 45, cities: "Autres villes" },
+  { id: "autres", label: "RESTE DES VILLES", price: 45, cities: "Autres villes" },
 ]
 
 export default function CheckoutPage() {
@@ -49,11 +49,11 @@ export default function CheckoutPage() {
         if (result.success) {
           setCartItems(result.items)
         } else {
-          toast.error(result.message || "Failed to load cart items")
+          toast.error(result.message || "Échec du chargement des articles du panier")
         }
       } catch (error) {
-        console.error("Error loading cart:", error)
-        toast.error("Failed to load cart items")
+        console.error("Erreur de chargement du panier:", error)
+        toast.error("Échec du chargement des articles du panier")
       } finally {
         setLoading(false)
       }
@@ -80,21 +80,17 @@ export default function CheckoutPage() {
     const newErrors: Record<string, string> = {}
 
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required"
+      newErrors.fullName = "Le nom complet est requis"
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required"
+      newErrors.phone = "Le numéro de téléphone est requis"
     } else if (!/^[0-9+\-\s()]+$/.test(formData.phone)) {
-      newErrors.phone = "Please enter a valid phone number"
+      newErrors.phone = "Veuillez saisir un numéro de téléphone valide"
     }
 
     if (!formData.city.trim()) {
-      newErrors.city = "City is required"
-    }
-
-    if (!formData.city.trim()) {
-      newErrors.city = "City is required"
+      newErrors.city = "La ville est requise"
     }
 
     setErrors(newErrors)
@@ -103,21 +99,21 @@ export default function CheckoutPage() {
 
   const handleApplyCoupon = () => {
     if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code")
+      toast.error("Veuillez saisir un code de réduction")
       return
     }
     // Implement coupon logic here
-    toast.info("Coupon functionality coming soon")
+    toast.info("La fonctionnalité de coupon sera bientôt disponible")
   }
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
-      toast.error("Please fill in all required fields")
+      toast.error("Veuillez remplir tous les champs obligatoires")
       return
     }
 
     if (cartItems.length === 0) {
-      toast.error("Your cart is empty")
+      toast.error("Votre panier est vide")
       return
     }
 
@@ -133,15 +129,15 @@ export default function CheckoutPage() {
       })
 
       if (result.success && result.orderRef) {
-        toast.success("Order created successfully!")
+        toast.success("Commande passée avec succès !")
         // Redirect to order confirmation page
         router.push(`/order-confirmation/${result.orderRef}`)
       } else {
-        toast.error(result.message || "Failed to create order")
+        toast.error(result.message || "Échec de la commande")
       }
     } catch (error) {
-      console.error("Order creation error:", error)
-      toast.error("Failed to create order. Please try again.")
+      console.error("Erreur de création de commande:", error)
+      toast.error("Échec de la commande. Veuillez réessayer.")
     } finally {
       setProcessing(false)
     }
@@ -152,8 +148,8 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-6 text-[#e94491]" />
-          <h2 className="text-xl font-light text-gray-800 mb-2">Loading checkout...</h2>
-          <p className="text-gray-600">Please wait while we prepare your order</p>
+          <h2 className="text-2xl font-light text-gray-800 mb-2">Chargement de la page de paiement...</h2>
+          <p className="text-gray-600">Veuillez patienter pendant que nous préparons votre commande</p>
         </div>
       </div>
     )
@@ -166,17 +162,17 @@ export default function CheckoutPage() {
           <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-8">
             <ShoppingBag className="w-12 h-12 text-gray-400" />
           </div>
-          <h2 className="text-3xl font-light text-gray-800 mb-4">Your cart is empty</h2>
+          <h2 className="text-3xl font-light text-gray-800 mb-4">Votre panier est vide</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            Looks like you haven't added any products to your cart yet. 
-            Browse our collection and find something you love!
+            Il semble que vous n'avez pas ajouté de produits à votre panier. 
+            Parcourez notre collection et trouvez quelque chose que vous aimez !
           </p>
           <div className="space-y-3">
             <Button asChild className="w-full bg-[#e94491] hover:bg-[#d63384] text-white py-3">
-              <Link href="/shop">Browse Products</Link>
+              <Link href="/shop">Parcourez les produits</Link>
             </Button>
             <Button asChild variant="outline" className="w-full border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white py-3">
-              <Link href="/cart">View Cart</Link>
+              <Link href="/cart">Voir le panier</Link>
             </Button>
           </div>
         </div>
@@ -195,8 +191,8 @@ export default function CheckoutPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full mb-6 shadow-xl">
             <CreditCard className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl font-light text-gray-800 mb-4 tracking-wide">Checkout</h1>
-          <p className="text-[#e94491] font-medium text-lg tracking-wider">COMPLETE YOUR ORDER</p>
+          <h1 className="text-5xl font-light text-gray-800 mb-4 tracking-wide">Paiement</h1>
+          <p className="text-[#e94491] font-medium text-lg tracking-wider">TERMINEZ VOTRE COMMANDE</p>
           <div className="w-32 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-6 rounded-full"></div>
         </div>
       </div>
@@ -206,18 +202,18 @@ export default function CheckoutPage() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-3 text-sm">
             <Link href="/" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Home
+              Accueil
             </Link>
             <span className="text-gray-300">›</span>
             <Link href="/shop" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Shop
+              Boutique
             </Link>
             <span className="text-gray-300">›</span>
             <Link href="/cart" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Cart
+              Panier
             </Link>
             <span className="text-gray-300">›</span>
-            <span className="text-[#e94491] font-medium">Checkout</span>
+            <span className="text-[#e94491] font-medium">Paiement</span>
           </nav>
         </div>
       </div>
@@ -229,7 +225,7 @@ export default function CheckoutPage() {
           className="inline-flex items-center gap-2 text-[#e94491] hover:text-[#d63384] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Cart</span>
+          <span>Retour au panier</span>
         </Link>
       </div>
 
@@ -240,19 +236,19 @@ export default function CheckoutPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Tag className="h-5 w-5 text-[#e94491]" />
-              <span className="text-gray-600">Have a coupon code?</span>
+              <span className="text-gray-600">Avez-vous un code de réduction ?</span>
             </div>
             <button 
               onClick={() => setShowCouponField(!showCouponField)}
               className="text-[#e94491] hover:text-[#d63384] font-medium transition-colors"
             >
-              {showCouponField ? 'Hide' : 'Apply Coupon'}
+              {showCouponField ? 'Masquer' : 'Appliquer le code de réduction'}
             </button>
           </div>
           {showCouponField && (
             <div className="flex gap-3 max-w-md mt-4">
               <Input
-                placeholder="Enter coupon code"
+                placeholder="Entrez votre code de réduction"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 className="border-2 border-gray-200 rounded-xl focus:border-[#e94491]"
@@ -261,32 +257,32 @@ export default function CheckoutPage() {
                 onClick={handleApplyCoupon}
                 className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 rounded-xl whitespace-nowrap"
               >
-                Apply
+                Appliquer
               </Button>
             </div>
           )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Billing Details */}
+          {/* Informations de facturation */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <h2 className="text-2xl font-light text-gray-800 mb-8 flex items-center gap-3">
                 <Package className="w-6 h-6 text-[#e94491]" />
-                Billing Details
+                Informations de facturation
               </h2>
 
               <div className="space-y-6">
                 {/* Full Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name <span className="text-red-500">*</span>
+                    Nom complet <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.fullName}
                     onChange={(e) => handleInputChange("fullName", e.target.value)}
                     className={`border-2 ${errors.fullName ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#e94491]'} rounded-xl h-12 transition-colors`}
-                    placeholder="Enter your full name"
+                    placeholder="Entrez votre nom complet"
                     required
                   />
                   {errors.fullName && <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
@@ -297,14 +293,14 @@ export default function CheckoutPage() {
                 {/* Phone */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number <span className="text-red-500">*</span>
+                    Numéro de téléphone <span className="text-red-500">*</span>
                   </label>
                   <Input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
                     className={`border-2 ${errors.phone ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#e94491]'} rounded-xl h-12 transition-colors`}
-                    placeholder="Enter your phone number"
+                    placeholder="Entrez votre numéro de téléphone"
                     required
                   />
                   {errors.phone && <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
@@ -315,13 +311,13 @@ export default function CheckoutPage() {
                 {/* City */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City <span className="text-red-500">*</span>
+                    Ville <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.city}
                     onChange={(e) => handleInputChange("city", e.target.value)}
                     className={`border-2 ${errors.city ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-[#e94491]'} rounded-xl h-12 transition-colors`}
-                    placeholder="Enter your city"
+                    placeholder="Entrez votre ville"
                     required
                   />
                   {errors.city && <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
@@ -334,7 +330,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-2 mb-6">
                     <Truck className="h-6 w-6 text-[#e94491]" />
                     <label className="text-lg font-medium text-gray-800">
-                      Choose Shipping Option <span className="text-red-500">*</span>
+                      Choisissez une option de livraison <span className="text-red-500">*</span>
                     </label>
                   </div>
                   <div className="space-y-4">
@@ -363,7 +359,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="text-right">
                           <span className="text-[#e94491] font-bold text-lg">{option.price} DHS</span>
-                          <p className="text-xs text-gray-500">shipping fee</p>
+                          <p className="text-xs text-gray-500">frais de livraison</p>
                         </div>
                       </label>
                     ))}
@@ -373,10 +369,10 @@ export default function CheckoutPage() {
                 {/* Order Notes */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Order Notes (Optional)
+                    Notes de commande (facultatif)
                   </label>
                   <Textarea
-                    placeholder="Special instructions for delivery, gift message, or any other notes..."
+                    placeholder="Instructions spéciales pour la livraison, message cadeau ou autres notes..."
                     value={formData.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
                     className="border-2 border-gray-200 rounded-xl focus:border-[#e94491] min-h-[100px] transition-colors"
@@ -391,13 +387,13 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 sticky top-8">
               <div className="flex items-center gap-3 mb-8">
                 <ShoppingBag className="h-6 w-6 text-[#e94491]" />
-                <h3 className="text-xl font-medium text-gray-800">Order Summary</h3>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Résumé de la commande</h2>
               </div>
 
               {/* Order Items */}
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-sm font-medium text-gray-600 pb-3 border-b border-gray-200">
-                  <span>Product</span>
+                  <span>Produit</span>
                   <span>Total</span>
                 </div>
                 <div className="max-h-64 overflow-y-auto space-y-4">
@@ -421,10 +417,10 @@ export default function CheckoutPage() {
                             style={{ backgroundColor: item.color.hex }}
                           />
                           <span className="text-xs text-gray-500">{item.color.name}</span>
-                          <span className="text-xs text-gray-300">•</span>
-                          <span className="text-xs text-gray-500">Size {item.size.label}</span>
+                          <span className="text-xs text-gray-500">Couleur</span>
+                          <span className="text-xs text-gray-500">Taille {item.size.label}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Quantity: {item.quantity}</p>
+                        <p className="text-xs text-gray-500 mt-1">Quantité: {item.quantity}</p>
                       </div>
                       <div className="text-right">
                         <span className="text-sm font-bold text-gray-800">
@@ -443,14 +439,14 @@ export default function CheckoutPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="text-gray-600">
-                    Subtotal ({cartItems.reduce((total, item) => total + item.quantity, 0)} items):
+                    Sous-total ({cartItems.reduce((total, item) => total + item.quantity, 0)} articles):
                   </span>
                   <span className="font-medium text-gray-800">{subtotal.toFixed(2)} DHS</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
-                  <span className="text-gray-600">Shipping:</span>
+                  <span className="text-gray-600">Livraison:</span>
                   <span className="font-medium text-[#e94491]">
-                    {shippingCost === 0 ? 'FREE' : `${shippingCost} DHS`}
+                    {shippingCost === 0 ? 'GRATUIT' : `${shippingCost} DHS`}
                   </span>
                 </div>
                 <div className="flex justify-between py-4 text-xl font-bold border-t-2 border-gray-200">
@@ -462,11 +458,11 @@ export default function CheckoutPage() {
               {/* Payment Method Info */}
               <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                 <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-2">
-                  💳 Payment Method
+                  💳 Méthode de paiement
                 </h4>
-                <p className="text-sm text-blue-700">Cash on Delivery (COD)</p>
+                <p className="text-sm text-blue-700">Paiement à la livraison</p>
                 <p className="text-xs text-blue-600 mt-1">
-                  Pay when you receive your order. No advance payment required.
+                  Payez lorsque vous recevez votre commande. Aucun paiement anticipé requis.
                 </p>
               </div>
 
@@ -479,19 +475,19 @@ export default function CheckoutPage() {
                 {processing ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    PROCESSING ORDER...
+                    TRAITEMENT DE LA COMMANDE...
                   </>
                 ) : (
                   <>
-                    🛍️ PLACE ORDER ({total.toFixed(2)} DHS)
+                    🛍️ PASSER LA COMMANDE ({total.toFixed(2)} DHS)
                   </>
                 )}
               </Button>
 
               <div className="mt-6 p-4 bg-gray-50 rounded-xl">
                 <p className="text-center text-xs text-gray-600 leading-relaxed">
-                  🔒 <strong>Secure Checkout:</strong> Your personal data will be used to process your order, 
-                  support your experience throughout this website, and for other purposes described in our privacy policy.
+                  🔒 <strong>Paiement sécurisé:</strong> Vos données personnelles seront utilisées pour traiter votre commande, 
+                  soutenir votre expérience sur ce site web, et pour d'autres fins décrites dans notre politique de confidentialité.
                 </p>
               </div>
             </div>

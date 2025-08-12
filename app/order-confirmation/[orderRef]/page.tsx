@@ -55,11 +55,11 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
         if (orderData) {
           setOrder(orderData)
         } else {
-          setError("Order not found")
+          setError("Commande non trouvée")
         }
       } catch (err) {
         console.error("Error loading order:", err)
-        setError("Failed to load order details")
+        setError("Échec du chargement des détails de la commande")
       } finally {
         setLoading(false)
       }
@@ -73,10 +73,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
       try {
         await navigator.clipboard.writeText(order.ref_id)
         setCopied(true)
-        toast.success("Order reference copied!")
+        toast.success("Référence de commande copiée !")
         setTimeout(() => setCopied(false), 2000)
       } catch (err) {
-        toast.error("Failed to copy order reference")
+        toast.error("Échec de la copie de la référence de commande")
       }
     }
   }
@@ -85,8 +85,8 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
     if (order && navigator.share) {
       try {
         await navigator.share({
-          title: `Order ${order.ref_id}`,
-          text: `My order has been confirmed! Order reference: ${order.ref_id}`,
+          title: `Commande ${order.ref_id}`,
+          text: `Ma commande a été confirmée ! Référence de commande : ${order.ref_id}`,
           url: window.location.href,
         })
       } catch (err) {
@@ -107,8 +107,8 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
               <Package className="w-10 h-10 text-white" />
             </div>
           </div>
-          <h2 className="text-xl font-light text-gray-800 mb-2">Loading your order...</h2>
-          <p className="text-gray-600">Please wait while we fetch your order details</p>
+          <h2 className="text-xl font-light text-gray-800 mb-2">Chargement de votre commande...</h2>
+          <p className="text-gray-600">Veuillez patienter pendant que nous récupérons les détails de votre commande</p>
         </div>
       </div>
     )
@@ -121,16 +121,14 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
           <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-8">
             <Package className="w-12 h-12 text-red-500" />
           </div>
-          <h2 className="text-3xl font-light text-gray-800 mb-4">Order Not Found</h2>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            {error || "The order you're looking for doesn't exist or may have been removed."}
-          </p>
+          <h1 className="text-4xl md:text-5xl font-light text-gray-800 mb-4 tracking-tight">Merci pour votre commande !</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">Votre commande a été passée avec succès. Une confirmation sera bientôt envoyée sur votre téléphone.</p>
           <div className="space-y-3">
-            <Button asChild className="w-full bg-[#e94491] hover:bg-[#d63384] text-white py-3">
-              <Link href="/shop">Continue Shopping</Link>
+            <Button asChild className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3">
+              <Link href="/">Retour à l'accueil</Link>
             </Button>
             <Button asChild variant="outline" className="w-full border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white py-3">
-              <Link href="/orders">View My Orders</Link>
+              <Link href="/orders">Voir mes commandes</Link>
             </Button>
           </div>
         </div>
@@ -191,18 +189,18 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
               <CheckCircle className="w-12 h-12 text-white" />
             </div>
             <div className="max-w-2xl mx-auto">
-              <h1 className="text-4xl font-light text-gray-800 mb-3">🎉 Order Confirmed!</h1>
+              <h1 className="text-4xl font-light text-gray-800 mb-3">🎉 Commande confirmée !</h1>
               <p className="text-lg text-gray-600 mb-4">
-                Thank you <strong className="text-[#e94491]">{order.name}</strong> for your order! 
-                We've received your order and will process it shortly.
+                Merci <strong className="text-[#e94491]">{order.name}</strong> pour votre commande ! 
+                Nous avons reçu votre commande et allons la traiter sous peu.
               </p>
               <div className="inline-flex items-center gap-2 bg-[#e94491]/10 px-6 py-3 rounded-full">
-                <span className="text-sm text-gray-600">Order Reference:</span>
+                <span className="font-semibold text-gray-800">Réf. commande :</span>
                 <code className="font-mono font-bold text-[#e94491] text-lg">{order.ref_id}</code>
                 <button
                   onClick={copyOrderRef}
                   className="ml-2 p-1 hover:bg-[#e94491]/20 rounded transition-colors"
-                  title="Copy order reference"
+                  title="Copier la référence de commande"
                 >
                   {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-[#e94491]" />}
                 </button>
@@ -220,10 +218,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h2 className="text-2xl font-light text-gray-800 mb-2">Order Details</h2>
+                  <h2 className="text-2xl font-light text-gray-800 mb-2">Détails de la commande</h2>
                   <p className="text-gray-600 flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Placed on {formatDate(order.created_at)}
+                    Passée le {formatDate(order.created_at)}
                   </p>
                 </div>
                 <div className={`px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
@@ -240,7 +238,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                       <Phone className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800 mb-2">Contact Information</h3>
+                      <h3 className="font-semibold text-gray-800 mb-2">Informations de contact</h3>
                       <p className="text-gray-700 font-medium">{order.name}</p>
                       <p className="text-gray-600">{order.phone}</p>
                     </div>
@@ -252,11 +250,11 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                       <MapPin className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800 mb-2">Delivery Address</h3>
+                      <h3 className="font-semibold text-gray-800 mb-2">Adresse de livraison</h3>
                       <p className="text-gray-700 leading-relaxed">{order.city}</p>
                       {order.shipping_option && (
                         <p className="text-sm text-gray-500 mt-1">
-                          Shipping: {order.shipping_option}
+                          Livraison : {order.shipping_option}
                         </p>
                       )}
                     </div>
@@ -269,10 +267,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
                     <Package className="w-6 h-6 text-[#e94491]" />
-                    Your Items ({order.items.length} {order.items.length === 1 ? 'product' : 'products'})
+                    Vos articles ({order.items.length} {order.items.length === 1 ? 'article' : 'articles'})
                   </h3>
                   <span className="text-sm text-gray-500">
-                    {order.items.reduce((total, item) => total + item.quantity, 0)} items total
+                    {order.items.reduce((total, item) => total + item.quantity, 0)} articles au total
                   </span>
                 </div>
                 <div className="space-y-4">
@@ -301,9 +299,9 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                               <span className="font-medium">{item.color.name}</span>
                             </div>
                             <div className="w-px h-4 bg-gray-300"></div>
-                            <span><strong>Size:</strong> {item.size.label}</span>
+                            <span><strong>Taille :</strong> {item.size.label}</span>
                             <div className="w-px h-4 bg-gray-300"></div>
-                            <span><strong>Qty:</strong> {item.quantity}</span>
+                            <span><strong>Qté :</strong> {item.quantity}</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <div className="text-sm text-gray-600">
@@ -326,28 +324,28 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
             {/* What's Next */}
             <div className="bg-gradient-to-r from-[#e94491]/10 to-[#f472b6]/10 rounded-2xl p-8 border border-[#e94491]/20">
               <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                ⏭️ What Happens Next?
+                ⏭️ Qu'est-ce qui se passe ensuite ?
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-[#e94491] rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Order Processing</h4>
-                    <p className="text-sm text-gray-600">We'll verify your order and prepare your items for shipping.</p>
+                    <h4 className="font-medium text-gray-800">Traitement de la commande</h4>
+                    <p className="text-sm text-gray-600">Nous allons vérifier votre commande et préparer vos articles pour l'expédition.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-[#e94491] rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Shipping</h4>
-                    <p className="text-sm text-gray-600">Your order will be shipped within 1-2 business days.</p>
+                    <h4 className="font-medium text-gray-800">Expédition</h4>
+                    <p className="text-sm text-gray-600">Votre commande sera expédiée dans les 1-2 jours ouvrables.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-[#e94491] rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Delivery & Payment</h4>
-                    <p className="text-sm text-gray-600">Pay cash when you receive your order at your doorstep.</p>
+                    <h4 className="font-medium text-gray-800">Livraison et paiement</h4>
+                    <p className="text-sm text-gray-600">Vous paierez en espèces à la réception de votre commande.</p>
                   </div>
                 </div>
               </div>
@@ -359,25 +357,25 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
             {/* Order Summary */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                📋 Order Summary
+                📋 Récapitulatif de la commande
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between py-2 border-b border-gray-200">
                   <span className="text-gray-600">
-                    Items ({order.items.reduce((total, item) => total + item.quantity, 0)}):
+                    Articles ({order.items.reduce((total, item) => total + item.quantity, 0)}):
                   </span>
                   <span className="font-medium text-gray-800">
                     {subtotal.toFixed(2)} DHS
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-200">
-                  <span className="text-gray-600">Shipping:</span>
+                  <span className="text-gray-600">Livraison</span>
                   <span className="font-medium text-gray-800">
-                    {order.shipping_cost > 0 ? `${order.shipping_cost.toFixed(2)} DHS` : 'FREE'}
+                    {order.shipping_cost > 0 ? `${order.shipping_cost.toFixed(2)} DHS` : 'Gratuit'}
                   </span>
                 </div>
                 <div className="flex justify-between py-4 text-xl font-bold border-t-2 border-gray-200">
-                  <span className="text-[#e94491]">Total:</span>
+                  <span className="text-[#e94491]">Total :</span>
                   <span className="text-[#e94491]">{order.total_amount.toFixed(2)} DHS</span>
                 </div>
               </div>
@@ -387,29 +385,29 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
                 <Truck className="w-5 h-5 text-[#e94491]" />
-                Delivery Info
+                Informations de livraison
               </h3>
               <div className="space-y-4">
                 <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">💰</span>
-                    <p className="text-sm font-semibold text-green-800">Cash on Delivery</p>
+                    <p className="text-sm font-semibold text-green-800">Paiement à la livraison</p>
                   </div>
-                  <p className="text-xs text-green-700">No advance payment required. Pay when you receive your order.</p>
+                  <p className="text-xs text-green-700">Aucun paiement anticipé requis. Payez à la réception de votre commande.</p>
                 </div>
                 <div className="p-4 bg-gradient-to-r from-blue-50 to-sky-50 rounded-xl border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">🚚</span>
-                    <p className="text-sm font-semibold text-blue-800">Estimated Delivery</p>
+                    <p className="text-sm font-semibold text-blue-800">Livraison estimée</p>
                   </div>
-                  <p className="text-xs text-blue-700">3-5 business days from order confirmation</p>
+                  <p className="text-xs text-blue-700">3-5 jours ouvrables à compter de la confirmation de la commande</p>
                 </div>
                 <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl border border-purple-200">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">📱</span>
-                    <p className="text-sm font-semibold text-purple-800">Order Tracking</p>
+                    <p className="text-sm font-semibold text-purple-800">Suivi de commande</p>
                   </div>
-                  <p className="text-xs text-purple-700">We'll contact you with updates via phone</p>
+                  <p className="text-xs text-purple-700">Nous vous contacterons par téléphone pour vous tenir informé.</p>
                 </div>
               </div>
             </div>
@@ -421,12 +419,12 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                 className="w-full bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
               >
                 <Share2 className="w-4 h-4 mr-2" />
-                Share Order
+                Partager la commande
               </Button>
               
               <Button asChild className="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-xl">
                 <Link href="/shop" className="flex items-center justify-center gap-2">
-                  Continue Shopping
+                  Continuer vos achats
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
@@ -434,7 +432,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
               <Button asChild variant="outline" className="w-full border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white py-3 rounded-xl">
                 <Link href="/orders" className="flex items-center justify-center gap-2">
                   <Package className="w-4 h-4" />
-                  View All Orders
+                  Voir toutes les commandes
                 </Link>
               </Button>
             </div>
@@ -442,17 +440,17 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
             {/* Support */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
               <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                💬 Need Help?
+                💬 Besoin d'aide ?
               </h4>
               <p className="text-sm text-gray-600 mb-4">
-                Have questions about your order? We're here to help!
+                Vous avez des questions sur votre commande ? Nous sommes là pour vous aider !
               </p>
               <div className="space-y-2">
                 <Link href="/contact" className="block text-sm text-[#e94491] hover:text-[#d63384] font-medium">
-                  📧 Contact Support
+                  📧 Contacter le support
                 </Link>
                 <Link href="/faq" className="block text-sm text-[#e94491] hover:text-[#d63384] font-medium">
-                  ❓ View FAQ
+                  ❓ Voir la FAQ
                 </Link>
               </div>
             </div>

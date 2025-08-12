@@ -1,19 +1,19 @@
 import { ChevronRight, ChevronLeft } from "lucide-react"
 
 const pinkBannerItems = [
-  "NEW SUMMER COLLECTION",
-  "LIMITED EDITION DROPS",
-  "FASHION THAT MOVES YOU",
-  "ELEVATE YOUR STYLE",
-  "DESIGNED FOR YOU",
+  "NOUVELLE COLLECTION D'ÉTÉ",
+  "LANCEMENTS EN ÉDITION LIMITÉE",
+  "LA MODE QUI VOUS ANIME",
+  "ÉLEVEZ VOTRE STYLE",
+  "CONÇU POUR VOUS",
 ]
 
 const beigeBannerItems = [
-  "UP TO 50% OFF SALE",
-  "TRENDING NOW",
-  "FREE SHIPPING ON ORDERS $50+",
-  "SUSTAINABLE FABRICS",
-  "MADE TO LAST",
+  "JUSQU'À 50% DE RÉDUCTION",
+  "TENDANCE ACTUELLE",
+  "LIVRAISON GRATUITE POUR LES COMMANDES DE 50$ ET PLUS",
+  "TISSUS DURABLES",
+  "FAIT POUR DURER",
 ]
 
 export default function Banners() {

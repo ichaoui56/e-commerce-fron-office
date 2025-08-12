@@ -51,10 +51,10 @@ export default function LocalizedNotFound() {
   }, []);
 
   const popularPages = [
-    { name: "New Arrivals", href: "/shop/new", icon: Sparkles },
-    { name: "Sale Items", href: "/shop/sale", icon: Star },
-    { name: "Wishlist", href: "/wishlist", icon: Heart },
-    { name: "About Us", href: "/about", icon: MapPin },
+    { name: "Nouveautés", href: "/shop/new", icon: Sparkles },
+    { name: "Articles en Solde", href: "/shop/sale", icon: Star },
+    { name: "Liste de Souhaits", href: "/wishlist", icon: Heart },
+    { name: "À Propos de Nous", href: "/about", icon: MapPin },
   ];
 
   return (
@@ -119,16 +119,15 @@ export default function LocalizedNotFound() {
 
           {/* Error Message */}
           <div className="mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-gray-800 mb-6 tracking-wide">
-              Oops! Page Not Found
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 tracking-tight leading-tight mb-4 animate-fade-in-up">
+              Oups ! Page Introuvable
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-4 max-w-2xl mx-auto leading-relaxed">
-              The page you're looking for seems to have wandered off into the fashion dimension. 
-              Don't worry though, we'll help you find your way back to style!
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              Il semble que vous ayez pris un mauvais virage. La page que vous recherchez n'existe pas ou a été déplacée.
             </p>
             <div className="inline-flex items-center gap-2 text-[#e94491] font-medium">
               <Sparkles className="h-5 w-5 animate-pulse" />
-              <span className="text-sm tracking-wider uppercase">Error Code: 404</span>
+              <span className="text-sm tracking-wider uppercase">Erreur : 404</span>
               <Sparkles className="h-5 w-5 animate-pulse" />
             </div>
           </div>
@@ -140,7 +139,7 @@ export default function LocalizedNotFound() {
               className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#e94491] to-[#f472b6] text-white rounded-xl font-semibold tracking-wider shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
             >
               <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
-              Go Back
+              Retour
             </button>
             
             <a 
@@ -148,7 +147,7 @@ export default function LocalizedNotFound() {
               className="group flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#e94491] border-2 border-[#e94491] rounded-xl font-semibold tracking-wider hover:bg-[#e94491] hover:text-white transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
             >
               <Home className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-              Home Page
+              Page d'Accueil
             </a>
             
             <a 
@@ -156,7 +155,7 @@ export default function LocalizedNotFound() {
               className="group flex items-center justify-center gap-3 px-8 py-4 bg-transparent text-gray-700 border-2 border-gray-300 rounded-xl font-semibold tracking-wider hover:border-[#e94491] hover:text-[#e94491] transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
             >
               <ShoppingBag className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-              Shop Now
+              Acheter Maintenant
             </a>
           </div>
 
@@ -166,18 +165,18 @@ export default function LocalizedNotFound() {
               <div className="w-8 h-8 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full flex items-center justify-center">
                 <Heart className="h-4 w-4 text-white animate-pulse" />
               </div>
-              <h4 className="text-lg font-semibold text-gray-800">Need Help?</h4>
+              <h4 className="text-lg font-semibold text-gray-800">Besoin d'Aide ?</h4>
             </div>
             <p className="text-gray-600 text-center leading-relaxed">
-              If you're looking for something specific, try our search above or browse our categories. 
-              Our customer service team is also here to help you find exactly what you need.
+              Si vous cherchez quelque chose de spécifique, essayez notre recherche ci-dessus ou parcourez nos catégories. 
+              Notre service client est également là pour vous aider à trouver exactement ce dont vous avez besoin.
             </p>
             <div className="flex justify-center mt-6">
               <a 
                 href="/contact"
                 className="inline-flex items-center gap-2 text-[#e94491] hover:text-[#d63384] font-medium transition-colors duration-300"
               >
-                Contact Support
+                Contacter le Support
                 <ChevronRight className="h-4 w-4" />
               </a>
             </div>
@@ -186,9 +185,9 @@ export default function LocalizedNotFound() {
           {/* Decorative Quote */}
           <div className="mt-12 text-center">
             <blockquote className="text-lg md:text-xl text-gray-500 italic font-light">
-              "Every great fashion journey starts with a single step... 
+              "Chaque grand voyage dans la mode commence par un simple pas... 
               <br className="hidden md:block" />
-              even if it's in the wrong direction!"
+              même si c'est dans la mauvaise direction !"
             </blockquote>
             <div className="w-16 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-4 rounded-full"></div>
           </div>

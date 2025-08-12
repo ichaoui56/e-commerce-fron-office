@@ -24,16 +24,16 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
     if (!product) {
         return {
-            title: 'Product Not Found',
+            title: 'Produit non trouvé',
         }
     }
 
     return {
-        title: `${product.name} - Your Store`,
-        description: product.description || `Shop ${product.name} at great prices`,
+        title: `${product.name} - Votre Boutique`,
+        description: product.description || `Achetez ${product.name} à des prix avantageux`,
         openGraph: {
             title: product.name,
-            description: product.description || `Shop ${product.name} at great prices`,
+            description: product.description || `Achetez ${product.name} à des prix avantageux`,
             images: product.images.length > 0 ? [product.images[0].image_url] : [],
         },
     }

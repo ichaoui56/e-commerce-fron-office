@@ -39,13 +39,13 @@ export default function NewArrivals({
       <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">New Arrivals</h2>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Nouveautés</h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Discover our latest collection of premium fashion pieces, carefully curated for the modern lifestyle.
+              Découvrez notre dernière collection de pièces de mode haut de gamme, soigneusement sélectionnées pour un style de vie moderne.
             </p>
           </div>
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No featured products available at the moment.</p>
+            <p className="text-gray-500 text-lg">Aucun produit en vedette disponible pour le moment.</p>
             <p className="text-sm text-gray-400 mt-2">
               Make sure you have products with "top_price" set to true in your database.
             </p>
@@ -167,7 +167,7 @@ export default function NewArrivals({
                   ? 'text-gray-700 hover:bg-gray-50 hover:shadow-xl hover:scale-110' 
                   : 'text-gray-300 cursor-not-allowed opacity-50'
               }`}
-              aria-label="Previous product"
+              aria-label="Produit précédent"
             >
               <ChevronLeft size={24} />
             </button>
@@ -180,7 +180,7 @@ export default function NewArrivals({
                   ? 'text-gray-700 hover:bg-gray-50 hover:shadow-xl hover:scale-110' 
                   : 'text-gray-300 cursor-not-allowed opacity-50'
               }`}
-              aria-label="Next product"
+              aria-label="Produit suivant"
             >
               <ChevronRight size={24} />
             </button>
@@ -232,7 +232,7 @@ export default function NewArrivals({
                       ? 'bg-[#e94491] scale-125' 
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
-                  aria-label={`Go to product ${index + 1}`}
+                  aria-label={`Aller au produit ${index + 1}`}
                 />
               ))}
             </div>
@@ -245,7 +245,7 @@ export default function NewArrivals({
             href="/products"
             className="inline-flex items-center px-10 py-4 bg-[#e94491] text-white font-semibold rounded-full hover:bg-[#d73d85] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            View All Products
+            Voir tous les produits
             <ChevronRight className="ml-2" size={20} />
           </a>
         </div>

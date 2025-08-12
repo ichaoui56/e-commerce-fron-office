@@ -351,10 +351,10 @@ export default function Navbar() {
 
   // Create main menu items with dynamic categories
   const mainMenuItems = [
-    { name: "HOME", href: "/", hasSubmenu: false },
-    { name: "SHOP", href: "/shop", hasSubmenu: true, submenu: categories },
+    { name: "ACCUEIL", href: "/", hasSubmenu: false },
+    { name: "BOUTIQUE", href: "/shop", hasSubmenu: true, submenu: categories },
     { name: "FAQ", href: "/faq", hasSubmenu: false },
-    { name: "ABOUT", href: "/about", hasSubmenu: false },
+    { name: "À PROPOS", href: "/about", hasSubmenu: false },
     { name: "CONTACT", href: "/contact", hasSubmenu: false },
   ]
 
@@ -405,7 +405,7 @@ export default function Navbar() {
               <div className="relative w-full max-w-md">
                 <Input
                   type="search"
-                  placeholder="Search product ..."
+                  placeholder="Rechercher un produit ..."
                   className="pr-10 border-pink-300 focus:border-pink-500 focus:ring-pink-500"
                 />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -419,7 +419,7 @@ export default function Navbar() {
                 className="relative flex items-center gap-2 hover:text-[#e94491] transition-colors"
               >
                 <Heart className="h-6 w-6" />
-                <span className="hidden sm:inline">Wishlist</span>
+                <span className="hidden sm:inline">Liste de souhaits</span>
                 {wishlistCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-[#e94491] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                     {wishlistCount}
@@ -433,7 +433,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 hover:text-[#e94491] transition-colors cursor-pointer"
                 >
                   <ShoppingCart className="h-6 w-6" />
-                  <span className="hidden sm:inline">Cart</span>
+                  <span className="hidden sm:inline">Panier</span>
                   {cartCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-[#e94491] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                       {cartCount}
@@ -449,20 +449,20 @@ export default function Navbar() {
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                           <ShoppingCart className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="text-gray-600 mb-4">No products selected</p>
+                        <p className="text-gray-600 mb-4">Aucun produit sélectionné</p>
                         <Link href="/shop">
                           <Button
                             className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-xl"
                             onClick={() => setShowCartDropdown(false)}
                           >
-                            Continue Shopping
+                            Continuer les achats
                           </Button>
                         </Link>
                       </div>
                     ) : (
                       <>
                         <div className="p-4 border-b border-gray-200">
-                          <h3 className="text-lg font-medium text-gray-800">Shopping Cart ({cartCount})</h3>
+                          <h3 className="text-lg font-medium text-gray-800">Panier ({cartCount})</h3>
                         </div>
 
                         <div className="max-h-80 overflow-y-auto">
@@ -529,7 +529,7 @@ export default function Navbar() {
                                     </p>
                                     {item.quantity > 1 && (
                                       <p className="text-xs text-gray-500">
-                                        ${item.product.base_price.toFixed(2)} each
+                                        ${item.product.base_price.toFixed(2)} chacun
                                       </p>
                                     )}
                                   </div>
@@ -564,7 +564,7 @@ export default function Navbar() {
                                 className="w-full border-2 border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white rounded-xl bg-transparent"
                                 onClick={() => setShowCartDropdown(false)}
                               >
-                                View Cart
+                                Voir le panier
                               </Button>
                             </Link>
                             <Link href="/checkout" className="flex-1">
@@ -572,7 +572,7 @@ export default function Navbar() {
                                 className="w-full bg-[#e94491] hover:bg-[#d63384] text-white rounded-xl"
                                 onClick={() => setShowCartDropdown(false)}
                               >
-                                Checkout →
+                                Paiement →
                               </Button>
                             </Link>
                           </div>
@@ -595,7 +595,7 @@ export default function Navbar() {
                   onMouseLeave={handleMainCategoriesMouseLeave}
                 >
                   <button
-                    className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showMainCategories ? "bg-[#e94491]" : ""
+                    className={`flex items-center gap-2 w-[16rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showMainCategories ? "bg-[#e94491]" : ""
                       }`}
                   >
                     <div className="relative w-5 h-5 flex items-center justify-center">
@@ -615,17 +615,17 @@ export default function Navbar() {
                       </div>
                     </div>
                     <span className={`transition-colors duration-300 ${showMainCategories ? "text-white" : ""}`}>
-                      Browse Categories
+                      Parcourir les catégories
                     </span>
                   </button>
 
                   {showMainCategories && !isScrolled && (
-                    <div className="absolute top-full left-0 w-60 bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
+                    <div className="absolute top-full left-0 w-[16rem] bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
                       <div className="max-h-96 overflow-y-auto">
                         {categoriesLoading ? (
-                          <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                          <div className="px-4 py-8 text-center text-gray-500">Chargement des catégories...</div>
                         ) : categories.length === 0 ? (
-                          <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                          <div className="px-4 py-8 text-center text-gray-500">Aucune catégorie trouvée</div>
                         ) : (
                           categories.map((category) => (
                             <Link
@@ -650,7 +650,7 @@ export default function Navbar() {
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                       }`}
                   >
-                    Home
+                    Accueil
                   </Link>
 
                   <div className="relative" onMouseEnter={handleShopMouseEnter} onMouseLeave={handleShopMouseLeave}>
@@ -661,22 +661,22 @@ export default function Navbar() {
                           : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                         }`}
                     >
-                      Shop <ChevronDown className="h-4 w-4" />
+                      Boutique <ChevronDown className="h-4 w-4" />
                     </Link>
 
                     {showShopDropdown && !isScrolled && (
                       <div className="absolute top-full left-0 w-[600px] bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-xl overflow-hidden">
                         <div className="bg-gradient-to-r from-[#e94491] to-[#f472b6] text-white px-6 py-4">
-                          <h3 className="text-lg font-semibold">Shop Categories</h3>
-                          <p className="text-sm opacity-90">Discover our amazing collection</p>
+                          <h3 className="text-lg font-semibold">Catégories de la boutique</h3>
+                          <p className="text-sm opacity-90">Découvrez notre incroyable collection</p>
                         </div>
                         <div className="flex">
                           <div className="w-1/2 p-4 border-r border-gray-200">
                             <div className="grid grid-cols-2 gap-2">
                               {categoriesLoading ? (
-                                <div className="col-span-2 text-center py-8 text-gray-500">Loading...</div>
+                                <div className="col-span-2 text-center py-8 text-gray-500">Chargement...</div>
                               ) : categories.length === 0 ? (
-                                <div className="col-span-2 text-center py-8 text-gray-500">No categories found</div>
+                                <div className="col-span-2 text-center py-8 text-gray-500">Aucune catégorie trouvée</div>
                               ) : (
                                 categories.map((category) => (
                                   <div
@@ -707,7 +707,7 @@ export default function Navbar() {
                             {hoveredCategory && (
                               <div className="animate-in slide-in-from-right-2 duration-200">
                                 <h4 className="text-sm font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
-                                  {hoveredCategory} Collection
+                                  Collection {hoveredCategory}
                                 </h4>
                                 <div className="space-y-1">
                                   {categories
@@ -724,7 +724,7 @@ export default function Navbar() {
                                   {categories.find((cat: CategoryWithSubcategories) => cat.name === hoveredCategory)?.subcategories.length ===
                                     0 && (
                                       <p className="text-sm text-gray-500 italic px-3 py-2">
-                                        Explore our {hoveredCategory.toLowerCase()} collection
+                                        Découvrez notre collection {hoveredCategory.toLowerCase()}
                                       </p>
                                     )}
                                 </div>
@@ -743,8 +743,8 @@ export default function Navbar() {
                         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h4 className="text-sm font-semibold text-gray-800">Special Offers</h4>
-                              <p className="text-xs text-gray-600">Up to 50% off on selected items</p>
+                              <h4 className="text-sm font-semibold text-gray-800">Offres Spéciales</h4>
+                              <p className="text-xs text-gray-600">Jusqu'à 50% de réduction sur une sélection d'articles</p>
                             </div>
                             <Link
                               href="/shop/soldes"
@@ -775,7 +775,7 @@ export default function Navbar() {
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                       }`}
                   >
-                    About
+                    À Propos
                   </Link>
 
                   <Link
@@ -843,11 +843,11 @@ export default function Navbar() {
                   <div className="relative">
                     <Input
                       type="search"
-                      placeholder="Search product ..."
+                      placeholder="Rechercher des produits..."
                       className="pr-12 border-2 border-gray-200 focus:border-[#e94491] rounded-lg transition-colors duration-200 bg-white"
                     />
                     <button className="absolute right-1 top-1 bottom-1 px-3 bg-[#e94491] hover:bg-[#d63384] text-white rounded-md transition-colors duration-200">
-                      <Search className="h-4 w-4" />
+                      <Search className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -873,7 +873,7 @@ export default function Navbar() {
                         : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
-                    CATEGORIES
+                    CATÉGORIES
                     {activeTab === "categories" && (
                       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#e94491] transform scale-x-100 transition-transform duration-300" />
                     )}
@@ -922,9 +922,9 @@ export default function Navbar() {
                             {item.hasSubmenu && expandedMenuItem === item.name && (
                               <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-[#e94491] ml-6 mr-4 rounded-r-lg">
                                 {categoriesLoading ? (
-                                  <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                                  <div className="px-4 py-8 text-center text-gray-500">Chargement des catégories...</div>
                                 ) : categories.length === 0 ? (
-                                  <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                                  <div className="px-4 py-8 text-center text-gray-500">Aucune catégorie trouvée</div>
                                 ) : (
                                   categories.map((category) => (
                                     <div key={category.id}>
@@ -994,9 +994,9 @@ export default function Navbar() {
                   {activeTab === "categories" && (
                     <div className="py-2">
                       {categoriesLoading ? (
-                        <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                        <div className="px-4 py-8 text-center text-gray-500">Chargement des catégories...</div>
                       ) : categories.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                        <div className="px-4 py-8 text-center text-gray-500">Aucune catégorie trouvée</div>
                       ) : (
                         categories.map((category) => (
                           <Link
@@ -1015,7 +1015,8 @@ export default function Navbar() {
                 </div>
 
                 {/* Enhanced Social Media Footer */}
-                <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="px-6 py-6 border-t border-gray-200 bg-gray-50">
+                  <p className="text-sm font-semibold mb-3">Suivez-nous</p>
                   <div className="flex justify-center gap-4">
                     <button className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-[#3b5998] hover:text-white hover:border-[#3b5998] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
                       <Facebook className="h-5 w-5" />
@@ -1049,7 +1050,7 @@ export default function Navbar() {
                 onMouseLeave={handleStickyCategoriesMouseLeave}
               >
                 <button
-                  className={`flex items-center gap-2 w-[15rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showStickyCategories ? "bg-[#e94491]" : ""
+                  className={`flex items-center gap-2 w-[16rem] p-4 border-b-2 border-transparent font-semibold transition-colors ${showStickyCategories ? "bg-[#e94491]" : ""
                     }`}
                 >
                   <div className="relative w-5 h-5 flex items-center justify-center">
@@ -1069,15 +1070,16 @@ export default function Navbar() {
                     </div>
                   </div>
                   <span className={`transition-colors duration-300 ${showStickyCategories ? "text-white" : ""}`}>
-                    Browse Categories
+                  Parcourir les catégories
+
                   </span>
                 </button>
 
                 {showStickyCategories && isScrolled && (
-                  <div className="absolute top-full left-0 w-60 bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
+                  <div className="absolute top-full left-0 w-[16rem] bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-lg overflow-hidden">
                     <div className="max-h-96 overflow-y-auto">
                       {categoriesLoading ? (
-                        <div className="px-4 py-8 text-center text-gray-500">Loading categories...</div>
+                        <div className="px-4 py-8 text-center text-gray-500">Chargement des catégories...</div>
                       ) : categories.length === 0 ? (
                         <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
                       ) : (
@@ -1191,7 +1193,7 @@ export default function Navbar() {
                             <div className="flex items-center justify-center h-full text-gray-400">
                               <div className="text-center">
                                 <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                <p className="text-sm">Hover over a category to see subcategories</p>
+                                <p className="text-sm">Survolez une catégorie pour voir les sous-catégories</p>
                               </div>
                             </div>
                           )}
@@ -1207,7 +1209,7 @@ export default function Navbar() {
                             href="/shop/soldes"
                             className="bg-[#e94491] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d63384] transition-colors"
                           >
-                            View Deals
+                            Voir les Offres
                           </Link>
                         </div>
                       </div>
@@ -1232,7 +1234,7 @@ export default function Navbar() {
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                     }`}
                 >
-                  About
+                  À Propos
                 </Link>
 
                 <Link
@@ -1248,7 +1250,7 @@ export default function Navbar() {
 
               <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
-                <span>Clearance Up to 30% Off</span>
+                <span>Liquidation jusqu'à 30% de réduction</span>
               </div>
             </nav>
           </div>

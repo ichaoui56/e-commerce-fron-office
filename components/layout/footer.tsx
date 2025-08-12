@@ -72,17 +72,17 @@ export default function Footer() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 mb-4">
               <Sparkles className="h-6 w-6 text-[#e94491] animate-pulse" />
-              <span className="text-sm font-medium text-[#e94491] uppercase tracking-wider">Exclusive Offers</span>
+              <span className="text-sm font-medium text-[#e94491] uppercase tracking-wider">Offres Exclusives</span>
               <Sparkles className="h-6 w-6 text-[#e94491] animate-pulse" />
             </div>
 
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-light mb-4 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
-              Get The Latest Deals
+              Recevez les dernières offres
             </h3>
 
             <p className="text-gray-600 mb-8 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Join our exclusive community and receive <span className="text-[#e94491] font-semibold">$20 coupon</span>{" "}
-              for your first shopping experience
+              Rejoignez notre communauté exclusive et recevez un <span className="text-[#e94491] font-semibold">coupon de 200 MAD</span>{" "}
+              pour votre première expérience d'achat
             </p>
 
             <form
@@ -93,7 +93,7 @@ export default function Footer() {
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   type="email"
-                  placeholder="Enter your email address"
+                  placeholder="Entrez votre adresse e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-12 bg-white border-gray-300 text-gray-800 placeholder:text-gray-500 focus:border-[#e94491] focus:ring-[#e94491] h-14 rounded-xl transition-all duration-300 shadow-sm"
@@ -152,17 +152,18 @@ export default function Footer() {
             {/* Quick Links */}
             <div className="space-y-6">
               <h4 className="text-lg font-semibold text-gray-800 mb-6 relative">
-                Quick Links
+                Liens Rapides
                 <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full"></div>
               </h4>
               <ul className="space-y-3">
                 {[
-                  { name: "About Shahine", href: "/about" },
-                  { name: "How to Shop", href: "/guide" },
-                  { name: "FAQ", href: "/faq" },
-                  { name: "Contact Us", href: "/contact" },
-                  { name: "Size Guide", href: "/size-guide" },
-                  { name: "Track Order", href: "/track" },
+                  { name: "Notre histoire", href: "/about" },
+                  { name: "Carrières", href: "/careers" },
+                  { name: "Presse", href: "/press" },
+                  { name: "Blog", href: "/blog" },
+                  { name: "Contact", href: "/contact" },
+                  { name: "Guide des tailles", href: "/size-guide" },
+                  { name: "Suivre ma commande", href: "/track" },
                 ].map((link, index) => (
                   <li key={index}>
                     <Link
@@ -263,14 +264,14 @@ export default function Footer() {
           <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
             {/* Copyright */}
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center lg:text-left">
-              <p className="text-gray-500 text-sm">© 2024 Shahine Store. All Rights Reserved.</p>
+              <p className="text-gray-500 text-sm">© 2024 Shahine Store. Tous droits réservés.</p>
               <div className="flex items-center gap-4 text-sm">
                 <Link href="/terms" className="text-gray-500 hover:text-[#e94491] transition-colors">
-                  Terms of Use
+                  Conditions d'utilisation
                 </Link>
                 <div className="w-px h-4 bg-gray-300"></div>
                 <Link href="/privacy" className="text-gray-500 hover:text-[#e94491] transition-colors">
-                  Privacy Policy
+                  Politique de confidentialité
                 </Link>
               </div>
             </div>

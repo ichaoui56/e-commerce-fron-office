@@ -4,27 +4,27 @@ import Link from "next/link"
 
 const heroCards = [
   {
-    title: "FLIP FLOP",
-    subtitle: "SUMMER SALE -70% OFF",
-    buttonText: "SHOP NOW",
+    title: "TONGS",
+    subtitle: "SOLDES D'ÉTÉ -70% DE RÉDUCTION",
+    buttonText: "ACHETER MAINTENANT",
     imageUrl: "hero-img1.jpeg",
     alt: "Man in summer shirt",
     bgColor: "bg-[#e6d7c3]",
     position: "start",
   },
   {
-    title: "ACCESSORIES",
-    subtitle: "2019 WINTER UP TO 50% OFF",
-    buttonText: "SHOP NOW",
+    title: "ACCESSOIRES",
+    subtitle: "HIVER 2019 JUSQU'À -50%",
+    buttonText: "ACHETER MAINTENANT",
     imageUrl: "hero-img2.jpeg",
     alt: "Elegant silk scarf",
     bgColor: "bg-gray-200",
     position: "center",
   },
   {
-    title: "NEW IN",
-    subtitle: "WOMEN'S SPORTSWEAR",
-    buttonText: "SHOP NOW",
+    title: "NOUVEAUTÉS",
+    subtitle: "VÊTEMENTS DE SPORT FEMME",
+    buttonText: "ACHETER MAINTENANT",
     imageUrl: "hero-img3.jpeg",
     alt: "Woman in sportswear",
     bgColor: "bg-gray-300",
@@ -45,13 +45,13 @@ export default function Hero() {
         />
         <div className="relative z-10 flex items-center justify-center h-full min-h-[60vh]">
           <div className="text-center text-white">
-            <p className="text-sm font-light mb-2 tracking-wider">NEW COLLECTION</p>
-            <h1 className="text-4xl md:text-6xl font-light mb-6 tracking-wide">SHOP WOMEN'S</h1>
+            <p className="text-sm font-light mb-2 tracking-wider">NOUVELLE COLLECTION</p>
+            <h1 className="text-4xl md:text-6xl font-light mb-6 tracking-wide">BOUTIQUE FEMME</h1>
             <Button
               variant="outline"
               className="bg-transparent font-light border-b-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300 px-8 py-3 text-sm font-light tracking-wider"
             >
-              DISCOVER NOW
+              DÉCOUVRIR MAINTENANT
             </Button>
           </div>
         </div>

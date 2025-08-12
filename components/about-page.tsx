@@ -54,70 +54,70 @@ const scaleIn = {
 
 export default function AboutPage() {
   const stats = [
-    { number: "50K+", label: "Happy Customers", icon: Users },
-    { number: "10K+", label: "Products Sold", icon: ShoppingBag },
-    { number: "15+", label: "Countries Served", icon: Globe },
-    { number: "99%", label: "Satisfaction Rate", icon: Star },
+    { number: "50K+", label: "Clients Satisfaits", icon: Users },
+    { number: "10K+", label: "Produits Vendus", icon: ShoppingBag },
+    { number: "15+", label: "Pays Desservis", icon: Globe },
+    { number: "99%", label: "Taux de Satisfaction", icon: Star },
   ]
 
   const values = [
     {
       icon: Heart,
-      title: "Passion for Fashion",
+      title: "Passion pour la Mode",
       description:
-        "We live and breathe fashion, constantly seeking the latest trends and timeless pieces that make you feel confident and beautiful.",
+        "Nous vivons et respirons la mode, à la recherche constante des dernières tendances et des pièces intemporelles pour que vous vous sentiez en confiance et magnifique.",
     },
     {
       icon: Award,
-      title: "Quality First",
+      title: "La Qualité d'Abord",
       description:
-        "Every item in our collection is carefully selected for its quality, craftsmanship, and attention to detail.",
+        "Chaque article de notre collection est soigneusement sélectionné pour sa qualité, son savoir-faire et son souci du détail.",
     },
     {
       icon: Users,
-      title: "Customer Focused",
+      title: "Centré sur le Client",
       description:
-        "Your satisfaction is our priority. We're committed to providing exceptional service and support at every step.",
+        "Votre satisfaction est notre priorité. Nous nous engageons à fournir un service et un soutien exceptionnels à chaque étape.",
     },
     {
       icon: Globe,
-      title: "Global Reach",
-      description: "From Morocco to the world, we bring fashion-forward pieces to customers across the globe.",
+      title: "Portée Mondiale",
+      description: "Du Maroc au monde entier, nous proposons des pièces avant-gardistes à nos clients du monde entier.",
     },
   ]
 
   const team = [
     {
       name: "Sarah Johnson",
-      role: "Founder & Creative Director",
+      role: "Fondatrice & Directrice Créative",
       image:
         "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
       description:
-        "With over 15 years in fashion, Sarah leads our creative vision and ensures every piece meets our high standards.",
+        "Avec plus de 15 ans d'expérience dans la mode, Sarah dirige notre vision créative et s'assure que chaque pièce répond à nos normes élevées.",
     },
     {
       name: "Ahmed Benali",
-      role: "Head of Operations",
+      role: "Responsable des Opérations",
       image:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       description:
-        "Ahmed ensures smooth operations and timely delivery, making sure your shopping experience is seamless.",
+        "Ahmed assure le bon déroulement des opérations et une livraison ponctuelle, garantissant une expérience d'achat fluide.",
     },
     {
       name: "Maria Rodriguez",
-      role: "Head of Design",
+      role: "Responsable du Design",
       image:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      description: "Maria brings creativity and innovation to our collections, always staying ahead of fashion trends.",
+      description: "Maria apporte créativité et innovation à nos collections, toujours à la pointe des tendances de la mode.",
     },
   ]
 
   const milestones = [
-    { year: "2018", title: "Founded", description: "Shahine was born with a vision to democratize fashion" },
-    { year: "2019", title: "First Store", description: "Opened our flagship store in Casablanca" },
-    { year: "2021", title: "Online Launch", description: "Launched our e-commerce platform" },
-    { year: "2023", title: "Global Expansion", description: "Started shipping worldwide" },
-    { year: "2024", title: "50K Customers", description: "Reached 50,000 happy customers milestone" },
+    { year: "2018", title: "Fondation", description: "Shahine est née avec la vision de démocratiser la mode" },
+    { year: "2019", title: "Premier Magasin", description: "Ouverture de notre magasin phare à Casablanca" },
+    { year: "2021", title: "Lancement en Ligne", description: "Lancement de notre plateforme e-commerce" },
+    { year: "2023", title: "Expansion Mondiale", description: "Début des livraisons à l'international" },
+    { year: "2024", title: "50K Clients", description: "Atteint le jalon de 50 000 clients satisfaits" },
   ]
 
   return (
@@ -158,7 +158,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            About Shahine
+            À Propos de Shahine
           </motion.h1>
           <motion.p 
             className="text-[#e94491] font-normal text-lg tracking-wider"
@@ -166,7 +166,7 @@ export default function AboutPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            OUR STORY
+            NOTRE HISTOIRE
           </motion.p>
           <motion.div 
             className="w-24 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-6 rounded-full"
@@ -187,10 +187,10 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-3 text-sm">
             <Link href="/" className="text-gray-500 hover:text-[#e94491] transition-colors">
-              Home
+              Accueil
             </Link>
             <span className="text-gray-300">›</span>
-            <span className="text-[#e94491]">About</span>
+            <span className="text-[#e94491]">À Propos</span>
           </nav>
         </div>
       </motion.div>
@@ -215,7 +215,7 @@ export default function AboutPage() {
               transition={{ duration: 0.5 }}
             >
               <Sparkles className="h-5 w-5" />
-              <span>Since 2018</span>
+              <span>Depuis 2018</span>
             </motion.div>
             <motion.h2 
               className="text-4xl font-light text-gray-800 leading-tight"
@@ -224,8 +224,8 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Redefining Fashion, <br />
-              <span className="text-[#e94491]">One Style at a Time</span>
+              Redéfinir la mode, <br />
+              <span className="text-[#e94491]">Un style à la fois</span>
             </motion.h2>
             <motion.p 
               className="text-gray-600 text-lg leading-relaxed"
@@ -234,9 +234,9 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Born from a passion for accessible luxury fashion, Shahine has grown from a small boutique dream into a
-              global fashion destination. We believe that great style shouldn't be exclusive – it should be for
-              everyone.
+              Née d'une passion pour la mode de luxe accessible, Shahine est passée d'un petit rêve de boutique à une
+              destination de mode mondiale. Nous croyons qu'un grand style ne devrait pas être exclusif – il devrait être pour
+              tout le monde.
             </motion.p>
             <motion.p 
               className="text-gray-600 leading-relaxed"
@@ -245,9 +245,9 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              Our journey began in the vibrant streets of Casablanca, where we discovered the perfect blend of
-              traditional craftsmanship and contemporary design. Today, we continue to honor that heritage while
-              embracing innovation and sustainability.
+              Notre voyage a commencé dans les rues animées de Casablanca, où nous avons découvert le mélange parfait de
+              l'artisanat traditionnel et du design contemporain. Aujourd'hui, nous continuons d'honorer cet héritage tout en
+              adoptant l'innovation et la durabilité.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -257,7 +257,7 @@ export default function AboutPage() {
             >
               <Link href="/shop">
                 <Button className="bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white px-8 py-3 rounded-xl font-semibold tracking-wider shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
-                  Explore Collection <ArrowRight className="ml-2 h-4 w-4" />
+                  Découvrir la collection <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </motion.div>
@@ -339,16 +339,16 @@ export default function AboutPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-xl flex items-center justify-center">
                 <Target className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-2xl font-light text-gray-800">Our Mission</h3>
+              <h3 className="text-2xl font-light text-gray-800">Notre Mission</h3>
             </div>
             <p className="text-gray-600 leading-relaxed mb-6">
-              To make high-quality, fashionable clothing accessible to everyone, regardless of their budget or location.
-              We strive to create a shopping experience that's not just about buying clothes, but about discovering your
-              personal style and feeling confident in your own skin.
+              Rendre les vêtements de haute qualité et à la mode accessibles à tous, quel que soit leur budget ou leur emplacement.
+              Nous nous efforçons de créer une expérience d'achat qui ne consiste pas seulement à acheter des vêtements, mais à découvrir votre
+              style personnel et à vous sentir en confiance dans votre propre peau.
             </p>
             <div className="flex items-center gap-2 text-[#e94491] font-medium">
               <CheckCircle className="h-5 w-5" />
-              <span>Accessible luxury fashion for all</span>
+              <span>Mode de luxe accessible pour tous</span>
             </div>
           </motion.div>
 
@@ -362,16 +362,16 @@ export default function AboutPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
                 <Eye className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-2xl font-light text-gray-800">Our Vision</h3>
+              <h3 className="text-2xl font-light text-gray-800">Notre Vision</h3>
             </div>
             <p className="text-gray-600 leading-relaxed mb-6">
-              To become the world's most trusted and beloved fashion destination, known for our commitment to quality,
-              sustainability, and customer satisfaction. We envision a future where fashion is both beautiful and
-              responsible, where every purchase makes a positive impact.
+              Devenir la destination de mode la plus fiable et la plus appréciée au monde, connue pour notre engagement envers la qualité,
+              la durabilité et la satisfaction du client. Nous envisageons un avenir où la mode est à la fois belle et
+              responsable, où chaque achat a un impact positif.
             </p>
             <div className="flex items-center gap-2 text-purple-500 font-medium">
               <TrendingUp className="h-5 w-5" />
-              <span>Leading the future of fashion</span>
+              <span>Mener l'avenir de la mode</span>
             </div>
           </motion.div>
         </div>
@@ -389,9 +389,9 @@ export default function AboutPage() {
             className="text-center mb-12"
             variants={fadeInUp}
           >
-            <h2 className="text-3xl font-light text-gray-800 mb-4">Our Values</h2>
+            <h2 className="text-3xl font-light text-gray-800 mb-4">Nos Valeurs</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              These core principles guide everything we do, from selecting products to serving our customers
+              Ces principes fondamentaux guident tout ce que nous faisons, de la sélection des produits au service de nos clients
             </p>
           </motion.div>
 
@@ -436,7 +436,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Ready to Join Our Fashion Journey?
+            Prêt(e) à Rejoindre Notre Aventure Mode ?
           </motion.h2>
           <motion.p 
             className="text-white/90 mb-8 max-w-2xl mx-auto text-lg"
@@ -445,8 +445,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Discover our latest collections and become part of the Shahine family. Experience fashion that speaks to
-            your soul.
+            Découvrez nos dernières collections et rejoignez la famille Shahine. Vivez une mode qui parle à votre âme.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -460,7 +459,7 @@ export default function AboutPage() {
                 variant="outline"
                 className="bg-white/10 border-white/30 text-white hover:bg-white hover:text-[#e94491] transition-all duration-300 px-8 py-3 rounded-xl font-semibold"
               >
-                Shop Now
+                Acheter Maintenant
               </Button>
             </Link>
             <Link href="/contact">
@@ -468,7 +467,7 @@ export default function AboutPage() {
                 variant="outline"
                 className="bg-white/10 border-white/30 text-white hover:bg-white hover:text-[#e94491] transition-all duration-300 px-8 py-3 rounded-xl font-semibold"
               >
-                Get in Touch
+                Contactez-nous
               </Button>
             </Link>
           </motion.div>

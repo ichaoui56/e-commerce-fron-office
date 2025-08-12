@@ -1,10 +1,10 @@
 import { Rocket, RefreshCw, Info, Headset } from "lucide-react"
 
 const serviceItems = [
-  { icon: Rocket, title: "Free Shipping", description: "orders $50 or more" },
-  { icon: RefreshCw, title: "Free Returns", description: "within 30 days" },
-  { icon: Info, title: "Get 20% Off 1 Item", description: "When you sign up" },
-  { icon: Headset, title: "We Support", description: "24/7 amazing services" },
+  { icon: Rocket, title: "Livraison Gratuite", description: "Pour les commandes de 50 $ et plus" },
+  { icon: RefreshCw, title: "Retours Gratuits", description: "Sous 30 jours" },
+  { icon: Info, title: "-20% sur un article", description: "Lors de votre inscription" },
+  { icon: Headset, title: "Support Client", description: "Service exceptionnel 24/7" },
 ]
 
 export default function Services() {

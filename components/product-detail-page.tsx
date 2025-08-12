@@ -60,20 +60,20 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
         if (result.success) {
           setIsLiked(!isLiked)
           toast({
-            title: result.message,
+            title: !isLiked ? "Ajouté à la liste de souhaits" : "Retiré de la liste de souhaits",
             variant: "success",
           })
         } else {
           toast({
-            title: "Error",
+            title: "Erreur",
             description: result.message,
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Something went wrong",
+          title: "Erreur",
+          description: "Une erreur est survenue",
           variant: "destructive",
         })
       }
@@ -84,8 +84,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
     // Check if both color and size are selected
     if (!selectedColorId || !selectedSizeId) {
       toast({
-        title: "Error",
-        description: "Please select both color and size",
+        title: "Erreur",
+        description: "Veuillez sélectionner la couleur et la taille",
         variant: "destructive",
       })
       return
@@ -98,8 +98,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
     if (!selectedVariantForCart) {
       toast({
-        title: "Error",
-        description: "Selected variant not found",
+        title: "Erreur",
+        description: "Variante sélectionnée non trouvée",
         variant: "destructive",
       })
       return
@@ -107,8 +107,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
     if (selectedVariantForCart.stock_quantity === 0) {
       toast({
-        title: "Error",
-        description: "Selected size is out of stock",
+        title: "Erreur",
+        description: "La taille sélectionnée est en rupture de stock",
         variant: "destructive",
       })
       return
@@ -116,8 +116,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
     if (selectedVariantForCart.stock_quantity < quantity) {
       toast({
-        title: "Error",
-        description: "Not enough stock available",
+        title: "Erreur",
+        description: "Stock insuffisant",
         variant: "destructive",
       })
       return
@@ -145,8 +145,8 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to add to cart",
+          title: "Erreur",
+          description: "Échec de l'ajout au panier",
           variant: "destructive",
         })
       }
@@ -181,19 +181,23 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
       {/* Breadcrumb */}
       <div className="bg-gray-50 border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <nav className="flex items-center gap-3 text-sm">
-              <Link href="/" className="text-gray-500 hover:text-[#e94491] transition-colors">
-                Home
-              </Link>
-              <span className="text-gray-300">›</span>
-              <Link href="/shop" className="text-gray-500 hover:text-[#e94491] transition-colors">
-                Shop
-              </Link>
-              <span className="text-gray-300">›</span>
-              <span className="text-gray-800">{product.name}</span>
+          <nav className="text-sm text-gray-500">
+              <ol className="list-none p-0 inline-flex space-x-2">
+                <li>
+                  <Link href="/" className="hover:text-[#e94491]">Accueil</Link>
+                </li>
+                <li>
+                  <span>/</span>
+                </li>
+                <li>
+                  <Link href="/shop" className="hover:text-[#e94491]">Boutique</Link>
+                </li>
+                <li>
+                  <span>/</span>
+                </li>
+                <li className="text-gray-800 font-medium">{product.name}</li>
+              </ol>
             </nav>
-          </div>
         </div>
       </div>
 
@@ -213,7 +217,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
-                  <span>No image available</span>
+                  <span>Aucune image disponible</span>
                 </div>
               )}
 
@@ -265,10 +269,12 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
               <h1 className="text-3xl font-light text-gray-800 mb-4">{product.name}</h1>
 
               {/* Rating */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center">{renderStars(4)}</div>
-                <span className="text-sm text-gray-500">( 2 Reviews )</span>
+              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center">
+                {renderStars(4)}
               </div>
+              <span className="text-gray-500 text-sm">(120 Avis)</span>
+            </div>
 
               {/* Price */}
               <div className="mb-6">
@@ -289,7 +295,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
             {/* Color Selection */}
             {product.colors.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-800 mb-3">Color:</h3>
+                <h3 className="font-semibold text-gray-800 mb-3">Couleur</h3>
                 <div className="flex items-center gap-3">
                   {product.colors.map((color) => (
                     <button
@@ -309,7 +315,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
             {availableSizesForColor.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-gray-800">Size:</h3>
+                  <h3 className="text-sm font-medium text-gray-800">Taille :</h3>
                 </div>
                 <div className="flex items-center gap-3">
                   {availableSizesForColor.map((size) => {
@@ -340,12 +346,13 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
             {/* Stock Info */}
             {selectedVariant && (
-              <div className="text-sm text-gray-600">
-                {availableStock > 0 ? (
-                  <span className="text-green-600">✓ {availableStock} in stock</span>
-                ) : (
-                  <span className="text-red-600">✗ Out of stock</span>
-                )}
+              <div className="mb-6">
+                <p className="text-gray-600">
+                  <span className="font-semibold">Disponibilité :</span>
+                  <span className={`ml-2 font-medium ${availableStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {availableStock > 0 ? `${availableStock} en stock` : 'Épuisé'}
+                  </span>
+                </p>
               </div>
             )}
 
@@ -375,7 +382,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                 disabled={isPending || availableStock === 0 || !selectedVariant}
                 className="flex-1 bg-transparent border-2 border-[#e94491] text-[#e94491] hover:bg-[#e94491] hover:text-white py-3 px-8 rounded-lg font-medium tracking-wider transition-all"
               >
-                {isPending ? "ADDING..." : "ADD TO CART"}
+                {isPending ? "AJOUT..." : "AJOUTER AU PANIER"}
               </Button>
             </div>
 
@@ -387,7 +394,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
                 className="flex items-center gap-2 text-gray-600 hover:text-[#e94491] transition-colors"
               >
                 <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
-                <span>{isLiked ? "Remove from Wishlist" : "Add to Wishlist"}</span>
+                <span>{isLiked ? "Retirer de la liste de souhaits" : "Ajouter à la liste de souhaits"}</span>
               </button>
             </div>
 
@@ -395,7 +402,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
             {product.category && (
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">Category:</span>
+                  <span className="text-gray-600">Catégorie :</span>
                   <Link
                     href={`/shop?category=${product.category.slug}`}
                     className="text-gray-800 hover:text-[#e94491] transition-colors"
@@ -409,7 +416,7 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
             {/* Social Share */}
             <div className="pt-4 border-t border-gray-200">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">Share:</span>
+                <span className="text-sm text-gray-600">Partager :</span>
                 <div className="flex items-center gap-3">
                   <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-[#3b5998] hover:text-white transition-all">
                     <Facebook className="h-4 w-4" />

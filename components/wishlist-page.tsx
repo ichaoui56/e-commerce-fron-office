@@ -37,20 +37,20 @@ export default function WishlistPage({ products }: WishlistPageProps) {
         if (result.success) {
           setWishlistProducts((prev) => prev.filter((p) => p.id !== productId))
           toast({
-            title: result.message,
+            title: "Supprimé de la liste de souhaits",
             variant: "success",
           })
         } else {
           toast({
-            title: "Error",
-            description: result.message,
+            title: "Erreur",
+            description: "Échec de la suppression de la liste de souhaits",
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to remove from wishlist",
+          title: "Erreur",
+          description: "Échec de la suppression de la liste de souhaits",
           variant: "destructive",
         })
       }
@@ -63,8 +63,8 @@ export default function WishlistPage({ products }: WishlistPageProps) {
         const firstVariant = product.variants.find(v => v.stock_quantity > 0)
         if (!firstVariant) {
           toast({
-            title: "Error",
-            description: "No stock available",
+            title: "Erreur",
+            description: "Aucun stock disponible",
             variant: "destructive",
           })
           return
@@ -74,21 +74,21 @@ export default function WishlistPage({ products }: WishlistPageProps) {
   
         if (result.success) {
           toast({
-            title: result.message,
+            title: "Ajouté au panier",
             variant: "success",
           })
           window.dispatchEvent(new CustomEvent("cartUpdated")) // optional: sync cart badge
         } else {
           toast({
-            title: "Error",
-            description: result.message,
+            title: "Erreur",
+            description: "Échec de l'ajout au panier",
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to add to cart",
+          title: "Erreur",
+          description: "Échec de l'ajout au panier",
           variant: "destructive",
         })
       }
@@ -103,8 +103,8 @@ export default function WishlistPage({ products }: WishlistPageProps) {
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-light text-gray-800 mb-2">My Wishlist</h1>
-              <p className="text-gray-600">{wishlistProducts.length} items saved</p>
+              <h1 className="text-3xl font-light text-gray-800 mb-2">Ma liste de souhaits</h1>
+              <p className="text-gray-600">{wishlistProducts.length} articles enregistrés</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -132,13 +132,13 @@ export default function WishlistPage({ products }: WishlistPageProps) {
             <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
               <Heart className="w-12 h-12 text-gray-400" />
             </div>
-            <h2 className="text-2xl font-light text-gray-800 mb-4">Your wishlist is empty</h2>
+            <h2 className="text-2xl font-light text-gray-800 mb-4">Votre liste de souhaits est vide</h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Save items you love to your wishlist and they'll appear here for easy shopping later.
+              Enregistrez les articles que vous aimez dans votre liste de souhaits et ils apparaîtront ici pour faciliter vos achats plus tard.
             </p>
             <Link href="/shop">
               <Button className="bg-[#e94491] hover:bg-[#d63384] text-white px-8 py-3 rounded-lg">
-                Continue Shopping
+                Continuer vos achats
               </Button>
             </Link>
           </div>
@@ -202,11 +202,11 @@ export default function WishlistPage({ products }: WishlistPageProps) {
                         className="bg-[#e94491] hover:bg-[#d63384] text-white px-6 py-2 rounded-lg"
                       >
                         <ShoppingCart className="h-4 w-4 mr-2" />
-                        {isPending ? "Adding..." : "Add to Cart"}
+                        {isPending ? "Ajout..." : "Ajouter au panier"}
                       </Button>
                       <Link href={`/product/${product.id}`}>
                         <Button variant="outline" className="hidden md:block px-6 py-2 rounded-lg bg-transparent">
-                          View Details
+                          Voir les détails
                         </Button>
                       </Link>
                     </div>

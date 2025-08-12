@@ -55,8 +55,8 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to update cart",
+          title: "Erreur",
+          description: "Échec de la mise à jour du panier",
           variant: "destructive",
         })
       }
@@ -72,20 +72,20 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
           // Dispatch event to update navbar cart count
           window.dispatchEvent(new CustomEvent("cartUpdated"))
           toast({
-            title: result.message,
+            title: "Article supprimé",
             variant: "default",
           })
         } else {
           toast({
-            title: "Error",
+            title: "Erreur",
             description: result.message,
             variant: "destructive",
           })
         }
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to remove item",
+          title: "Erreur",
+          description: "Échec de la suppression de l'article",
           variant: "destructive",
         })
       }
@@ -103,8 +103,8 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
           <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-[#e94491] rounded-full mb-4 md:mb-6 shadow-lg">
             <ShoppingCart className="w-6 h-6 md:w-8 md:h-8 text-white" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-light text-gray-800 mb-2 md:mb-4 tracking-wide">Shopping Cart</h1>
-          <p className="text-[#e94491] font-medium text-sm md:text-lg tracking-wider">SHOP</p>
+          <h1 className="text-3xl md:text-5xl font-light text-gray-800 mb-2 md:mb-4 tracking-wide">Panier d'achats</h1>
+          <p className="text-[#e94491] font-medium text-sm md:text-lg tracking-wider">BOUTIQUE</p>
           <div className="w-16 md:w-24 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-4 md:mt-6 rounded-full"></div>
         </div>
       </div>
@@ -114,14 +114,14 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
         <div className="container mx-auto px-4 py-3 md:py-4">
           <nav className="flex items-center gap-2 md:gap-3 text-xs md:text-sm">
             <Link href="/" className="text-gray-500 hover:text-[#e94491] transition-colors font-medium">
-              Home
+              Accueil
             </Link>
             <span className="text-gray-300">›</span>
             <Link href="/shop" className="text-gray-500 hover:text-[#e94491] transition-colors font-medium">
-              Shop
+              Boutique
             </Link>
             <span className="text-gray-300">›</span>
-            <span className="text-[#e94491] font-medium">Shopping Cart</span>
+            <span className="text-[#e94491] font-medium">Panier d'achats</span>
           </nav>
         </div>
       </div>
@@ -133,13 +133,13 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
             <div className="inline-flex items-center justify-center w-16 h-16 md:w-24 md:h-24 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full mb-6 md:mb-8">
               <ShoppingCart className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
             </div>
-            <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-2 md:mb-4">Your cart is empty</h2>
+            <h2 className="text-2xl md:text-4xl font-light text-gray-800 mb-4">Votre panier est vide</h2>
             <p className="text-sm md:text-base text-gray-600 mb-6 md:mb-8 max-w-md mx-auto">
-              No products selected. Start shopping to add items to your cart and see them here!
+              Il semble que vous n'ayez encore rien ajouté à votre panier. Commencez vos achats pour le remplir !
             </p>
             <Link href="/shop">
               <Button className="bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold tracking-wider rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
-                Continue Shopping
+                Continuer vos achats
               </Button>
             </Link>
           </div>
@@ -151,11 +151,11 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                 {/* Desktop Table Header */}
                 <div className="hidden md:block bg-gradient-to-r from-gray-50 to-gray-100 px-6 md:px-8 py-4 md:py-6 border-b border-gray-200">
                   <div className="grid grid-cols-12 gap-4 font-normal text-gray-700 text-xs md:text-sm uppercase tracking-wider">
-                    <div className="col-span-5">Product Details</div>
-                    <div className="col-span-2 text-center">Price</div>
-                    <div className="col-span-3 text-center">Quantity</div>
+                    <div className="col-span-5">Détails du produit</div>
+                    <div className="col-span-2 text-center">Prix</div>
+                    <div className="col-span-3 text-center">Quantité</div>
                     <div className="col-span-1 text-center">Total</div>
-                    <div className="col-span-1 text-center">Remove</div>
+                    <div className="col-span-1 text-center">Supprimer</div>
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                           </button>
                         </div>
                         <div className="ml-3 text-xs text-gray-500 self-center">
-                          {item.variant.stock_quantity} available
+                          {item.variant.stock_quantity} disponible(s)
                         </div>
                       </div>
                       <div className="col-span-1 flex justify-center">
@@ -311,7 +311,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                               </span>
                             </div>
                           </div>
-                          <div className="mt-2 text-xs text-gray-500">{item.variant.stock_quantity} available</div>
+                          <div className="mt-2 text-xs text-gray-500">{item.variant.stock_quantity} disponible(s)</div>
                         </div>
                       </div>
                     </div>
@@ -324,21 +324,21 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 lg:sticky lg:top-8">
                 <div className="text-center mb-6 md:mb-8">
-                  <h3 className="text-base md:text-lg font-normal text-gray-800 mb-2">Cart Summary</h3>
+                  <h3 className="text-base md:text-lg font-normal text-gray-800 mb-2">Résumé du panier</h3>
                   <div className="w-12 md:w-16 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto rounded-full"></div>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600 font-medium text-sm md:text-base">
-                      Items ({cartItems.reduce((acc, item) => acc + item.quantity, 0)}):
+                      Articles ({cartItems.reduce((acc, item) => acc + item.quantity, 0)}):
                     </span>
                     <span className="font-normal text-base md:text-lg text-gray-800">${subtotal.toFixed(2)}</span>
                   </div>
 
                   {cartItems.some((item) => item.product.discount_percentage > 0) && (
                     <div className="flex justify-between items-center py-2 text-green-600">
-                      <span className="text-sm">You save:</span>
+                      <span className="text-sm">Vous économisez :</span>
                       <span className="font-medium">
                         $
                         {cartItems
@@ -354,7 +354,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
 
                 <div className="py-4 md:py-6 border-t border-gray-200">
                   <div className="flex justify-between items-center mb-4 md:mb-6">
-                    <span className="text-base md:text-lg font-semibold text-gray-800">Total:</span>
+                    <span className="text-base md:text-lg font-semibold text-gray-800">Total :</span>
                     <span className="text-xl md:text-2xl font-bold text-[#e94491]">${total.toFixed(2)}</span>
                   </div>
 
@@ -363,7 +363,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                       className="w-full bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white py-3 md:py-4 text-base md:text-lg font-semibold tracking-wider rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
                       disabled={isPending}
                     >
-                      {isPending ? "UPDATING..." : "PROCEED TO CHECKOUT"}
+                      {isPending ? "MISE À JOUR..." : "PASSER À LA CAISSE"}
                     </Button>
                   </Link>
 
@@ -373,19 +373,19 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                         variant="outline"
                         className="w-full text-[#e94491] border-[#e94491] hover:bg-[#e94491] hover:text-white bg-transparent"
                       >
-                        Continue Shopping
+                        Continuer vos achats
                       </Button>
                     </Link>
                   </div>
 
                   <p className="text-center text-xs text-gray-500 mt-3 md:mt-4">
-                    Secure checkout powered by SSL encryption
+                    Paiement sécurisé avec cryptage SSL
                   </p>
 
                   {subtotal >= 100 && (
                     <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-xs text-green-700 text-center font-medium">
-                        🎉 You qualify for free shipping!
+                        🎉 Vous bénéficiez de la livraison gratuite !
                       </p>
                     </div>
                   )}

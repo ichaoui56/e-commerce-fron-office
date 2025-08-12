@@ -130,8 +130,8 @@ export default function ShopPage({ products, wishlist, category, subCategories =
   // Generate breadcrumb path
   const generateBreadcrumb = () => {
     const breadcrumbItems = [
-      { label: "Home", href: "/" },
-      { label: "Shop", href: "/shop" }
+      { label: "Accueil", href: "/" },
+      { label: "Boutique", href: "/shop" }
     ]
 
     if (category) {
@@ -148,7 +148,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
         href: `/shop/${category.slug}`,
       })
     } else {
-      breadcrumbItems.push({ label: "All Products", href: "/shop" })
+      breadcrumbItems.push({ label: "Tous les produits", href: "/shop" })
     }
 
     return breadcrumbItems
@@ -187,7 +187,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{category.name}</h1>
               {category.parent && (
                 <p className="text-gray-600 text-sm">
-                  Category in <Link href={`/shop/${category.parent.slug}`} className="text-[#e94491] hover:underline">{category.parent.name}</Link>
+                  Catégorie dans <Link href={`/shop/${category.parent.slug}`} className="text-[#e94491] hover:underline">{category.parent.name}</Link>
                 </p>
               )}
             </div>
@@ -196,7 +196,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
           {/* Subcategories */}
           {subCategories.length > 0 && (
             <div className="mb-4 sm:mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Shop by Category</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Acheter par catégorie</h3>
               <div className="flex flex-wrap gap-2">
                 {subCategories.map((subCategory) => (
                   <Link
@@ -232,10 +232,10 @@ export default function ShopPage({ products, wishlist, category, subCategories =
         {sortedProducts.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
-              No products found {category ? `in ${category.name}` : ""} matching your filters.
+              Aucun produit trouvé {category ? `dans ${category.name}` : ""} correspondant à vos filtres.
             </p>
             <Button onClick={clearAllFilters} className="mt-4 bg-[#e94491] hover:bg-[#d63384] text-white">
-              Clear All Filters
+              Effacer tous les filtres
             </Button>
           </div>
         )}
@@ -247,7 +247,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
               variant="outline"
               className="border-2 border-gray-300 hover:border-[#e94491] hover:text-[#e94491] bg-transparent px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-medium"
             >
-              MORE PRODUCTS
+              PLUS DE PRODUITS
             </Button>
           </div>
         )}
@@ -269,13 +269,13 @@ export default function ShopPage({ products, wishlist, category, subCategories =
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
-                <h3 className="text-lg font-semibold text-gray-800">FILTERS</h3>
+                <h3 className="text-lg font-semibold text-gray-800">FILTRES</h3>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={clearAllFilters}
                     className="text-sm text-[#e94491] hover:text-[#d63384] transition-colors"
                   >
-                    Clear All
+                    Tout effacer
                   </button>
                   <button
                     onClick={() => setShowFilters(false)}
@@ -291,7 +291,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                 {/* Category Filter */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-gray-800">Category</h4>
+                    <h4 className="font-medium text-gray-800">Catégorie</h4>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="space-y-3">
@@ -327,7 +327,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                 {/* Size Filter */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-gray-800">Size</h4>
+                    <h4 className="font-medium text-gray-800">Taille</h4>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="space-y-3">
@@ -358,7 +358,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                 {/* Color Filter */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-gray-800">Colour</h4>
+                    <h4 className="font-medium text-gray-800">Couleur</h4>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="flex flex-wrap gap-3">
@@ -390,7 +390,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                 {/* Brand Filter */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-gray-800">Brand</h4>
+                    <h4 className="font-medium text-gray-800">Marque</h4>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="space-y-3">
@@ -421,12 +421,12 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                 {/* Price Filter */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-gray-800">Price</h4>
+                    <h4 className="font-medium text-gray-800">Prix</h4>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   <div className="space-y-4">
                     <div className="text-sm text-gray-600">
-                      Price Range: ${tempFilters.priceRange[0]} - ${tempFilters.priceRange[1]}
+                      Fourchette de prix : ${tempFilters.priceRange[0]} - ${tempFilters.priceRange[1]} MAD
                     </div>
                     <div className="relative px-2">
                       <input
@@ -456,10 +456,10 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                     variant="outline"
                     className="flex-1 border-gray-300 hover:border-gray-400"
                   >
-                    Cancel
+                    Annuler
                   </Button>
                   <Button onClick={applyFilters} className="flex-1 bg-[#e94491] hover:bg-[#d63384] text-white">
-                    Apply Filters
+                    Appliquer les filtres
                   </Button>
                 </div>
               </div>
