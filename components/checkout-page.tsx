@@ -16,11 +16,9 @@ import { toast } from "sonner"
 
 // Shipping options constant
 const shippingOptions = [
-  { id: "casablanca", label: "LIVRAISON CASABLANCA", price: 20, cities: "Casablanca" },
-  { id: "proche", label: "MOHMADIA / BOUSKOURA / BERRCHID", price: 39, cities: "Mohmadia, Bouskoura, Berrchid" },
-  { id: "rahma", label: "LIVRAISON RAHMA / DEROUA / TITT MELIL", price: 30, cities: "Rahma, Deroua, Titt Melil" },
-  { id: "rabat", label: "RABAT / KENITRA / SALE / TEMARA ET REGIONS", price: 35, cities: "Rabat, Kenitra, Sale, Temara" },
-  { id: "autres", label: "RESTE DES VILLES", price: 45, cities: "Autres villes" },
+  { id: "El jadida", label: "LIVRAISON EL JADIDA", price: 20, cities: "El jadida" },
+  { id: "Casablanca", label: "LIVRAISON CASABLANCA", price: 25, cities: "Casablanca" },
+  { id: "autres", label: "RESTE DES VILLES", price: 35, cities: "Autres villes" },
 ]
 
 export default function CheckoutPage() {
@@ -364,19 +362,6 @@ export default function CheckoutPage() {
                       </label>
                     ))}
                   </div>
-                </div>
-
-                {/* Order Notes */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes de commande (facultatif)
-                  </label>
-                  <Textarea
-                    placeholder="Instructions spéciales pour la livraison, message cadeau ou autres notes..."
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="border-2 border-gray-200 rounded-xl focus:border-[#e94491] min-h-[100px] transition-colors"
-                  />
                 </div>
               </div>
             </div>

@@ -1,3 +1,5 @@
+//order.ts
+
 "use server"
 
 import { PrismaClient } from "@prisma/client"
@@ -25,7 +27,7 @@ function generateOrderRef(): string {
   return `ORD-${timestamp}-${random}`
 }
 
-// Create order from cart (WRITE operation - can create session)
+// Create order from cart (WRITE operation - reserves stock, doesn't reduce)
 export async function createOrder(orderData: {
   name: string
   phone: string
@@ -58,24 +60,25 @@ export async function createOrder(orderData: {
       return { success: false, message: "Cart is empty" }
     }
 
-    // Check stock availability
+    // Check available stock (actual stock minus reserved stock)
     for (const item of cartItems) {
-      if (item.productSizeStock.stock < item.quantity) {
+      const availableStock = item.productSizeStock.stock - item.productSizeStock.reserved_stock
+      if (availableStock < item.quantity) {
         return {
           success: false,
-          message: `Insufficient stock for ${item.productSizeStock.productColor.product.name}`,
+          message: `Insufficient stock for ${item.productSizeStock.productColor.product.name}. Available: ${availableStock}, Required: ${item.quantity}`,
         }
       }
     }
 
     // Calculate subtotal
-    const subtotal = cartItems.reduce((total, item) => {
+    const subtotal = cartItems.reduce((total:any, item:any) => {
       return total + Number(item.productSizeStock.price) * item.quantity
     }, 0)
 
-    // Create order in transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // Create order with shipping cost
+    // Create order in transaction - RESERVE stock, don't reduce yet
+    const result = await prisma.$transaction(async (tx:any) => {
+      // Create order with new schema fields
       const order = await tx.order.create({
         data: {
           guest_session_id: sessionId,
@@ -86,10 +89,12 @@ export async function createOrder(orderData: {
           shipping_cost: orderData.shippingCost,
           shipping_option: orderData.shippingOption,
           status: "pending",
+          stock_reserved: true,  // Mark stock as reserved
+          stock_reduced: false,  // Stock not reduced yet (awaiting approval)
         },
       })
 
-      // Create order items and update stock
+      // Create order items and RESERVE stock (don't reduce actual stock)
       for (const item of cartItems) {
         await tx.orderItem.create({
           data: {
@@ -100,12 +105,12 @@ export async function createOrder(orderData: {
           },
         })
 
-        // Update stock
+        // Reserve stock instead of reducing it
         await tx.productSizeStock.update({
           where: { id: item.product_size_stock_id },
           data: {
-            stock: {
-              decrement: item.quantity,
+            reserved_stock: {
+              increment: item.quantity,
             },
           },
         })
@@ -121,7 +126,7 @@ export async function createOrder(orderData: {
 
     return {
       success: true,
-      message: "Order created successfully",
+      message: "Order created successfully and stock reserved",
       orderId: result.id,
       orderRef: result.ref_id,
     }
@@ -130,6 +135,92 @@ export async function createOrder(orderData: {
     return { success: false, message: "Failed to create order" }
   }
 }
+
+// Alternative order creation function compatible with dashboard
+// export async function createOrderDirect(orderData: {
+//   guest_session_id: string
+//   name: string
+//   phone: string
+//   city: string
+//   shipping_cost: number
+//   shipping_option?: string
+//   items: Array<{
+//     product_size_stock_id: string
+//     quantity: number
+//     price_at_purchase: number
+//   }>
+// }): Promise<{ success: boolean; order?: any; error?: string }> => {
+//   try {
+//     // Generate unique reference ID
+//     const refId = generateOrderRef()
+
+//     // Check stock availability before creating order
+//     for (const item of orderData.items) {
+//       const sizeStock = await prisma.productSizeStock.findUnique({
+//         where: { id: item.product_size_stock_id }
+//       })
+
+//       if (!sizeStock) {
+//         return { success: false, error: "Product variant not found" }
+//       }
+
+//       const availableStock = sizeStock.stock - sizeStock.reserved_stock
+//       if (availableStock < item.quantity) {
+//         return { 
+//           success: false, 
+//           error: `Insufficient stock. Available: ${availableStock}, Required: ${item.quantity}` 
+//         }
+//       }
+//     }
+
+//     const result = await prisma.$transaction(async (tx:any) => {
+//       // Create the order
+//       const newOrder = await tx.order.create({
+//         data: {
+//           guest_session_id: orderData.guest_session_id,
+//           ref_id: refId,
+//           name: orderData.name,
+//           phone: orderData.phone,
+//           city: orderData.city,
+//           shipping_cost: orderData.shipping_cost,
+//           shipping_option: orderData.shipping_option,
+//           status: "pending",
+//           stock_reserved: true, // Mark as reserved
+//           stock_reduced: false  // Not reduced yet
+//         }
+//       })
+
+//       // Create order items and reserve stock
+//       for (const item of orderData.items) {
+//         await tx.orderItem.create({
+//           data: {
+//             order_id: newOrder.id,
+//             product_size_stock_id: item.product_size_stock_id,
+//             quantity: item.quantity,
+//             price_at_purchase: item.price_at_purchase
+//           }
+//         })
+
+//         // Reserve stock (don't reduce actual stock yet)
+//         await tx.productSizeStock.update({
+//           where: { id: item.product_size_stock_id },
+//           data: {
+//             reserved_stock: {
+//               increment: item.quantity
+//             }
+//           }
+//         })
+//       }
+
+//       return newOrder
+//     })
+
+//     return { success: true, order: result }
+//   } catch (error) {
+//     console.error("Create order direct error:", error)
+//     return { success: false, error: "Failed to create order" }
+//   }
+// }
 
 // Get order by ID (READ operation - no session needed)
 export async function getOrderById(orderId: string) {
@@ -145,6 +236,9 @@ export async function getOrderById(orderId: string) {
                   include: {
                     product: true,
                     color: true,
+                    product_images: {
+                      orderBy: { sort_order: 'asc' }
+                    }
                   },
                 },
                 size: true,
@@ -160,7 +254,7 @@ export async function getOrderById(orderId: string) {
     }
 
     // Calculate subtotal from order items
-    const subtotal = order.orderItems.reduce((total, item) => {
+    const subtotal = order.orderItems.reduce((total:any, item:any) => {
       return total + Number(item.price_at_purchase) * item.quantity
     }, 0)
 
@@ -174,11 +268,15 @@ export async function getOrderById(orderId: string) {
       phone: order.phone,
       city: order.city,
       status: order.status,
+      stock_reserved: order.stock_reserved,
+      stock_reduced: order.stock_reduced,
       created_at: order.created_at.toISOString(),
+      confirmed_at: order.confirmed_at?.toISOString(),
+      approved_by: order.approved_by,
       shipping_cost: Number(order.shipping_cost),
       shipping_option: order.shipping_option,
       total_amount: total,
-      items: order.orderItems.map((item) => ({
+      items: order.orderItems.map((item:any) => ({
         id: item.id,
         quantity: item.quantity,
         unit_price: Number(item.price_at_purchase),
@@ -197,6 +295,7 @@ export async function getOrderById(orderId: string) {
           label: item.productSizeStock.size.label,
         },
         image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
+        image_urls: item.productSizeStock.productColor.product_images.map((img:any) => img.image_url),
       })),
     }
   } catch (error) {
@@ -206,7 +305,6 @@ export async function getOrderById(orderId: string) {
 }
 
 // Get order by reference (READ operation - no session needed)
-// In your getOrderByRef function, convert null to undefined
 export async function getOrderByRef(orderRef: string) {
   try {
     const order = await prisma.order.findUnique({
@@ -220,6 +318,9 @@ export async function getOrderByRef(orderRef: string) {
                   include: {
                     product: true,
                     color: true,
+                    product_images: {
+                      orderBy: { sort_order: 'asc' }
+                    }
                   },
                 },
                 size: true,
@@ -235,7 +336,7 @@ export async function getOrderByRef(orderRef: string) {
     }
 
     // Calculate subtotal from order items
-    const subtotal = order.orderItems.reduce((total, item) => {
+    const subtotal = order.orderItems.reduce((total:any, item:any) => {
       return total + Number(item.price_at_purchase) * item.quantity
     }, 0)
 
@@ -249,11 +350,15 @@ export async function getOrderByRef(orderRef: string) {
       phone: order.phone,
       city: order.city,
       status: order.status,
+      stock_reserved: order.stock_reserved,
+      stock_reduced: order.stock_reduced,
       created_at: order.created_at.toISOString(),
+      confirmed_at: order.confirmed_at?.toISOString(),
+      approved_by: order.approved_by,
       shipping_cost: Number(order.shipping_cost),
-      shipping_option: order.shipping_option || undefined, // Convert null to undefined
+      shipping_option: order.shipping_option || undefined,
       total_amount: total,
-      items: order.orderItems.map((item) => ({
+      items: order.orderItems.map((item:any) => ({
         id: item.id,
         quantity: item.quantity,
         unit_price: Number(item.price_at_purchase),
@@ -272,6 +377,7 @@ export async function getOrderByRef(orderRef: string) {
           label: item.productSizeStock.size.label,
         },
         image_url: item.productSizeStock.productColor.image_url || "/placeholder.svg",
+        image_urls: item.productSizeStock.productColor.product_images.map((img:any) => img.image_url),
       })),
     }
   } catch (error) {
@@ -301,6 +407,10 @@ export async function getUserOrders() {
                   include: {
                     product: true,
                     color: true,
+                    product_images: {
+                      where: { is_primary: true },
+                      take: 1
+                    }
                   },
                 },
                 size: true,
@@ -312,18 +422,22 @@ export async function getUserOrders() {
       orderBy: { created_at: "desc" },
     })
 
-    return orders.map((order) => {
-      const subtotal = order.orderItems.reduce((total, item) => {
+    return orders.map((order:any) => {
+      const subtotal = order.orderItems.reduce((total:any, item:any) => {
         return total + Number(item.price_at_purchase) * item.quantity
       }, 0)
       
       return {
         id: order.id,
         order_ref: order.ref_id,
-        status: order.status.toUpperCase() as "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+        status: order.status.toUpperCase() as "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED",
         created_at: order.created_at.toISOString(),
+        confirmed_at: order.confirmed_at?.toISOString(),
+        approved_by: order.approved_by,
+        stock_reserved: order.stock_reserved,
+        stock_reduced: order.stock_reduced,
         total_amount: subtotal + Number(order.shipping_cost),
-        items_count: order.orderItems.reduce((total, item) => total + item.quantity, 0),
+        items_count: order.orderItems.reduce((total:any, item:any) => total + item.quantity, 0),
       }
     })
   } catch (error) {
@@ -332,17 +446,246 @@ export async function getUserOrders() {
   }
 }
 
-// Update order status (admin function - WRITE operation)
-export async function updateOrderStatus(orderId: string, status: "pending" | "shipped" | "delivered" | "cancelled") {
+// Update order status (compatible with dashboard statuses)
+export async function updateOrderStatus(
+  orderId: string, 
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
+) {
   try {
-    const order = await prisma.order.update({
+    const order = await prisma.order.findUnique({
       where: { id: orderId },
-      data: { status },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: true
+          }
+        }
+      }
     })
+
+    if (!order) {
+      return { success: false, message: "Order not found" }
+    }
+
+    // If cancelling an order that has reserved stock, release the reserved stock
+    if (status === "cancelled" && order.stock_reserved && !order.stock_reduced) {
+      await prisma.$transaction(async (tx:any) => {
+        // Release reserved stock
+        for (const item of order.orderItems) {
+          await tx.productSizeStock.update({
+            where: { id: item.product_size_stock_id },
+            data: {
+              reserved_stock: {
+                decrement: item.quantity
+              }
+            }
+          })
+        }
+
+        // Update order status and stock flags
+        await tx.order.update({
+          where: { id: orderId },
+          data: { 
+            status,
+            stock_reserved: false
+          },
+        })
+      })
+    } else {
+      // Regular status update
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status },
+      })
+    }
 
     return { success: true, message: "Order status updated successfully" }
   } catch (error) {
     console.error("Update order status error:", error)
     return { success: false, message: "Failed to update order status" }
+  }
+}
+
+// Cancel order and release reserved stock
+export async function cancelOrder(orderId: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: true
+          }
+        }
+      }
+    })
+
+    if (!order) {
+      return { success: false, message: "Order not found" }
+    }
+
+    if (order.status === "cancelled") {
+      return { success: false, message: "Order is already cancelled" }
+    }
+
+    if (order.status === "delivered") {
+      return { success: false, message: "Cannot cancel delivered order" }
+    }
+
+    await prisma.$transaction(async (tx:any) => {
+      // Release reserved stock if it was reserved
+      if (order.stock_reserved && !order.stock_reduced) {
+        for (const item of order.orderItems) {
+          await tx.productSizeStock.update({
+            where: { id: item.product_size_stock_id },
+            data: {
+              reserved_stock: {
+                decrement: item.quantity
+              }
+            }
+          })
+        }
+      }
+      
+      // If stock was already reduced (order was approved), restore it
+      if (order.stock_reduced) {
+        for (const item of order.orderItems) {
+          await tx.productSizeStock.update({
+            where: { id: item.product_size_stock_id },
+            data: {
+              stock: {
+                increment: item.quantity
+              }
+            }
+          })
+        }
+      }
+
+      // Update order status
+      await tx.order.update({
+        where: { id: orderId },
+        data: { 
+          status: "cancelled",
+          stock_reserved: false,
+          // Keep stock_reduced as is for tracking purposes
+        },
+      })
+    })
+
+    return { success: true, message: "Order cancelled successfully" }
+  } catch (error) {
+    console.error("Cancel order error:", error)
+    return { success: false, message: "Failed to cancel order" }
+  }
+}
+
+// Get available stock (actual stock minus reserved stock)
+export async function getAvailableStock(productSizeStockId: string): Promise<number> {
+  try {
+    const sizeStock = await prisma.productSizeStock.findUnique({
+      where: { id: productSizeStockId }
+    })
+
+    if (!sizeStock) return 0
+
+    return Math.max(0, sizeStock.stock - sizeStock.reserved_stock)
+  } catch (error) {
+    console.error("Get available stock error:", error)
+    return 0
+  }
+}
+
+// Get detailed stock information
+export async function getStockInfo(productSizeStockId: string) {
+  try {
+    const sizeStock = await prisma.productSizeStock.findUnique({
+      where: { id: productSizeStockId }
+    })
+
+    if (!sizeStock) return null
+
+    return {
+      actualStock: sizeStock.stock,
+      reservedStock: sizeStock.reserved_stock,
+      availableStock: Math.max(0, sizeStock.stock - sizeStock.reserved_stock)
+    }
+  } catch (error) {
+    console.error("Get stock info error:", error)
+    return null
+  }
+}
+
+// Check if order can be cancelled by customer
+export async function canCancelOrder(orderId: string): Promise<boolean> {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { status: true }
+    })
+
+    if (!order) return false
+
+    // Orders can be cancelled if they're pending or confirmed but not shipped/delivered
+    return order.status === "pending" || order.status === "confirmed"
+  } catch (error) {
+    console.error("Can cancel order error:", error)
+    return false
+  }
+}
+
+// Get order summary for customer (lightweight version)
+export async function getOrderSummary(orderRef: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { ref_id: orderRef },
+      include: {
+        orderItems: {
+          include: {
+            productSizeStock: {
+              include: {
+                productColor: {
+                  include: {
+                    product: true,
+                    color: true,
+                  },
+                },
+                size: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!order) {
+      return null
+    }
+
+    // Calculate totals
+    const subtotal = order.orderItems.reduce((total:any, item:any) => {
+      return total + Number(item.price_at_purchase) * item.quantity
+    }, 0)
+
+    const total = subtotal + Number(order.shipping_cost)
+    const itemsCount = order.orderItems.reduce((count:any, item:any) => count + item.quantity, 0)
+
+    return {
+      ref_id: order.ref_id,
+      status: order.status,
+      created_at: order.created_at.toISOString(),
+      confirmed_at: order.confirmed_at?.toISOString(),
+      name: order.name,
+      phone: order.phone,
+      city: order.city,
+      shipping_option: order.shipping_option,
+      subtotal,
+      shipping_cost: Number(order.shipping_cost),
+      total_amount: total,
+      items_count: itemsCount,
+      can_cancel: order.status === "pending" || order.status === "confirmed"
+    }
+  } catch (error) {
+    console.error("Get order summary error:", error)
+    return null
   }
 }

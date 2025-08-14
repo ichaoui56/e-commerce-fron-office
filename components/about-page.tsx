@@ -123,7 +123,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Beautiful Page Header */}
-      <motion.div 
+      <motion.div
         className="relative py-20 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -138,13 +138,13 @@ export default function AboutPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#e94491]/20 to-[#f472b6]/20"></div>
         </div>
-        <motion.div 
+        <motion.div
           className="container mx-auto px-4 text-center relative z-10"
           variants={fadeInUp}
           initial="initial"
           animate="animate"
         >
-          <motion.div 
+          <motion.div
             className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-full mb-6 shadow-lg"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -152,7 +152,7 @@ export default function AboutPage() {
           >
             <Heart className="w-8 h-8 text-white" />
           </motion.div>
-          <motion.h1 
+          <motion.h1
             className="text-5xl font-light text-gray-800 mb-4 tracking-wide"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -160,7 +160,7 @@ export default function AboutPage() {
           >
             À Propos de Shahine
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-[#e94491] font-normal text-lg tracking-wider"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -168,7 +168,7 @@ export default function AboutPage() {
           >
             NOTRE HISTOIRE
           </motion.p>
-          <motion.div 
+          <motion.div
             className="w-24 h-1 bg-gradient-to-r from-[#e94491] to-[#f472b6] mx-auto mt-6 rounded-full"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
@@ -178,7 +178,7 @@ export default function AboutPage() {
       </motion.div>
 
       {/* Breadcrumb */}
-      <motion.div 
+      <motion.div
         className="bg-white shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -196,18 +196,18 @@ export default function AboutPage() {
       </motion.div>
 
       {/* Hero Story Section */}
-      <motion.div 
+      <motion.div
         className="container mx-auto px-4 py-16"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <motion.div 
+          <motion.div
             className="space-y-6"
             variants={fadeInLeft}
           >
-            <motion.div 
+            <motion.div
               className="inline-flex items-center gap-2 text-[#e94491] font-medium"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -217,7 +217,7 @@ export default function AboutPage() {
               <Sparkles className="h-5 w-5" />
               <span>Depuis 2018</span>
             </motion.div>
-            <motion.h2 
+            <motion.h2
               className="text-4xl font-light text-gray-800 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -227,27 +227,26 @@ export default function AboutPage() {
               Redéfinir la mode, <br />
               <span className="text-[#e94491]">Un style à la fois</span>
             </motion.h2>
-            <motion.p 
-              className="text-gray-600 text-lg leading-relaxed"
+            <motion.p
+              className="text-gray-600 text-md leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Née d'une passion pour la mode de luxe accessible, Shahine est passée d'un petit rêve de boutique à une
-              destination de mode mondiale. Nous croyons qu'un grand style ne devrait pas être exclusif – il devrait être pour
-              tout le monde.
+              Bienvenue sur le site officiel de Shahine – votre boutique de vêtements et accessoires pour femmes à El Jadida.
+              En tant que responsable et représentant du magasin, je suis fier de vous proposer une large sélection d’articles soigneusement choisis pour répondre à tous vos besoins : pyjamas, sous-vêtements, couvre-lits, serviettes, ensembles, vêtements pour bébé, burkinis, sandales et accessoires variés… Chez Shahine, si vous cherchez quelque chose pour une femme, vous le trouverez !
+
             </motion.p>
-            <motion.p 
+            <motion.p
               className="text-gray-600 leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              Notre voyage a commencé dans les rues animées de Casablanca, où nous avons découvert le mélange parfait de
-              l'artisanat traditionnel et du design contemporain. Aujourd'hui, nous continuons d'honorer cet héritage tout en
-              adoptant l'innovation et la durabilité.
+              Notre magasin est situé à El Jadida, avenue Allal El Fassi, Hay lmatar, près de Marjane, et nous mettons un point d’honneur à offrir à nos clientes une expérience d’achat agréable, des produits de qualité et un accueil chaleureux.
+              Nous vous remercions de votre confiance et de votre fidélité, et nous espérons que notre site vous permettra de découvrir et apprécier tout ce que Shahine a à offrir, que ce soit en ligne ou en boutique.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -263,20 +262,20 @@ export default function AboutPage() {
             </motion.div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="relative"
             variants={fadeInRight}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <motion.div 
+            <motion.div
               className="relative h-96 rounded-2xl overflow-hidden shadow-2xl"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                src="shahinestore.jpeg"
                 alt="Shahine Store"
                 fill
                 className="object-cover"
@@ -290,20 +289,20 @@ export default function AboutPage() {
       </motion.div>
 
       {/* Stats Section */}
-      <motion.div 
+      <motion.div
         className="bg-white py-16"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
       >
         <div className="container mx-auto px-4">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 lg:grid-cols-4 gap-8"
             variants={staggerContainer}
           >
             {stats.map((stat, index) => (
-              <motion.div 
-                key={index} 
+              <motion.div
+                key={index}
                 className="text-center group"
                 variants={scaleIn}
                 whileHover={{ y: -10 }}
@@ -321,7 +320,7 @@ export default function AboutPage() {
       </motion.div>
 
       {/* Mission & Vision */}
-      <motion.div 
+      <motion.div
         className="container mx-auto px-4 py-16"
         initial="initial"
         whileInView="animate"
@@ -329,7 +328,7 @@ export default function AboutPage() {
         variants={staggerContainer}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <motion.div 
+          <motion.div
             className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
             variants={fadeInLeft}
             whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
@@ -352,7 +351,7 @@ export default function AboutPage() {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
             variants={fadeInRight}
             whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
@@ -378,14 +377,14 @@ export default function AboutPage() {
       </motion.div>
 
       {/* Values Section */}
-      <motion.div 
+      <motion.div
         className="bg-gradient-to-r from-gray-50 to-white py-16"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
       >
         <div className="container mx-auto px-4">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             variants={fadeInUp}
           >
@@ -395,7 +394,7 @@ export default function AboutPage() {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             variants={staggerContainer}
           >
@@ -417,19 +416,19 @@ export default function AboutPage() {
         </div>
       </motion.div>
       {/* CTA Section */}
-      <motion.div 
+      <motion.div
         className="container mx-auto px-4 py-16"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
       >
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-r from-[#e94491] to-[#f472b6] rounded-2xl shadow-2xl p-12 text-center text-white"
           variants={fadeInUp}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.3 }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl font-light mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -438,7 +437,7 @@ export default function AboutPage() {
           >
             Prêt(e) à Rejoindre Notre Aventure Mode ?
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-white/90 mb-8 max-w-2xl mx-auto text-lg"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -447,7 +446,7 @@ export default function AboutPage() {
           >
             Découvrez nos dernières collections et rejoignez la famille Shahine. Vivez une mode qui parle à votre âme.
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -115,31 +115,35 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: "Visitez notre boutique",
-      details: ["Shahine Vêtements pour femmes", "El Jadida, Maroc"],
+      details: ["Shahine Vêtements pour femmes", "Avenue Allal Al Fassi, Hay lmatar, El Jadida"],
       color: "text-blue-500",
       bgColor: "bg-blue-50",
     },
     {
       icon: Phone,
       title: "Appelez-nous",
-      details: ["+212 523 123 456", "+212 661 234 567"],
+      details: ["+212 6 99 99 52 62 "],
       color: "text-green-500",
       bgColor: "bg-green-50",
     },
     {
       icon: Mail,
       title: "Envoyez-nous un e-mail",
-      details: ["info@shahine.com", "support@shahine.com"],
+      details: ["shahinemaga@gmail.com"],
       color: "text-[#e94491]",
       bgColor: "bg-pink-50",
     },
     {
       icon: Clock,
-      title: "Heures d'ouverture",
-      details: ["Lun - Sam : 9h00 - 20h00", "Dimanche : 10h00 - 18h00"],
+      title: "Horaires d’ouverture",
+      details: [
+        "Lundi à jeudi & dimanche : 10h00 – 22h00",
+        "Vendredi : 10h00 – 13h30, puis 15h00 – 22h00 (pause prière Al Joumoua)"
+      ],
       color: "text-purple-500",
       bgColor: "bg-purple-50",
-    },
+    }
+    
   ]
 
   const storeFeatures = [

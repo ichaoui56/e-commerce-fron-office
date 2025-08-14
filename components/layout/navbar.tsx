@@ -353,7 +353,7 @@ export default function Navbar() {
   const mainMenuItems = [
     { name: "ACCUEIL", href: "/", hasSubmenu: false },
     { name: "BOUTIQUE", href: "/shop", hasSubmenu: true, submenu: categories },
-    { name: "FAQ", href: "/faq", hasSubmenu: false },
+    // { name: "FAQ", href: "/faq", hasSubmenu: false },
     { name: "À PROPOS", href: "/about", hasSubmenu: false },
     { name: "CONTACT", href: "/contact", hasSubmenu: false },
   ]
@@ -707,7 +707,7 @@ export default function Navbar() {
                             {hoveredCategory && (
                               <div className="animate-in slide-in-from-right-2 duration-200">
                                 <h4 className="text-sm font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
-                                  Collection {hoveredCategory}
+                                  {hoveredCategory} Collection
                                 </h4>
                                 <div className="space-y-1">
                                   {categories
@@ -758,7 +758,7 @@ export default function Navbar() {
                     )}
                   </div>
 
-                  <Link
+                  {/* <Link
                     href="/faq"
                     className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/faq")
                         ? "border-[#e94491] text-[#e94491]"
@@ -766,7 +766,7 @@ export default function Navbar() {
                       }`}
                   >
                     FAQ
-                  </Link>
+                  </Link> */}
 
                   <Link
                     href="/about"
@@ -1081,7 +1081,7 @@ export default function Navbar() {
                       {categoriesLoading ? (
                         <div className="px-4 py-8 text-center text-gray-500">Chargement des catégories...</div>
                       ) : categories.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-gray-500">No categories found</div>
+                        <div className="px-4 py-8 text-center text-gray-500">Aucune catégorie trouvée</div>
                       ) : (
                         categories.map((category) => (
                           <Link
@@ -1106,7 +1106,7 @@ export default function Navbar() {
                       : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                     }`}
                 >
-                  Home
+                  Acceuil
                 </Link>
 
                 <div
@@ -1121,22 +1121,22 @@ export default function Navbar() {
                         : "border-transparent hover:border-[#e94491] hover:text-[#e94491]"
                       }`}
                   >
-                    Shop <ChevronDown className="h-4 w-4" />
+                    Boutique <ChevronDown className="h-4 w-4" />
                   </Link>
 
                   {showShopDropdown && isScrolled && (
                     <div className="absolute top-full left-0 w-[600px] bg-white shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-300 rounded-xl overflow-hidden">
                       <div className="bg-gradient-to-r from-[#e94491] to-[#f472b6] text-white px-6 py-4">
-                        <h3 className="text-lg font-semibold">Shop Categories</h3>
-                        <p className="text-sm opacity-90">Discover our amazing collection</p>
+                        <h3 className="text-lg font-semibold">Catégories de la boutique</h3>
+                        <p className="text-sm opacity-90">Découvrez notre incroyable collection</p>
                       </div>
                       <div className="flex">
                         <div className="w-1/2 p-4 border-r border-gray-200">
                           <div className="grid grid-cols-2 gap-2">
                             {categoriesLoading ? (
-                              <div className="col-span-2 text-center py-8 text-gray-500">Loading...</div>
+                              <div className="col-span-2 text-center py-8 text-gray-500">Chargement...</div>
                             ) : categories.length === 0 ? (
-                              <div className="col-span-2 text-center py-8 text-gray-500">No categories found</div>
+                              <div className="col-span-2 text-center py-8 text-gray-500">Aucune catégorie trouvée</div>
                             ) : (
                               categories.map((category) => (
                                 <div
@@ -1183,7 +1183,7 @@ export default function Navbar() {
                                   ))}
                                 {categories.find((cat) => cat.name === hoveredCategory)?.subcategories.length === 0 && (
                                   <p className="text-sm text-gray-500 italic px-3 py-2">
-                                    Explore our {hoveredCategory.toLowerCase()} collection
+                                    Découvrez notre collection pour {hoveredCategory.toLowerCase()}
                                   </p>
                                 )}
                               </div>
@@ -1217,7 +1217,7 @@ export default function Navbar() {
                   )}
                 </div>
 
-                <Link
+                {/* <Link
                   href="/faq"
                   className={`flex items-center gap-1 py-6 border-b-2 font-semibold transition-colors ${isActiveLink("/faq")
                       ? "border-[#e94491] text-[#e94491]"
@@ -1225,7 +1225,7 @@ export default function Navbar() {
                     }`}
                 >
                   FAQ
-                </Link>
+                </Link> */}
 
                 <Link
                   href="/about"
