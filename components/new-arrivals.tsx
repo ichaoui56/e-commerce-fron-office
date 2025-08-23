@@ -4,6 +4,7 @@ import { ProductWithDetails } from "@/lib/types"
 import ProductCard from "./product-card"
 import { useState, useEffect, useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface NewArrivalsProps {
   featuredProducts: ProductWithDetails[]
@@ -241,13 +242,13 @@ export default function NewArrivals({
 
         {/* View All Button */}
         <div className="text-center">
-          <a
-            href="/products"
+          <Link
+            href="/shop"
             className="inline-flex items-center px-10 py-4 bg-[#e94491] text-white font-semibold rounded-full hover:bg-[#d73d85] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Voir tous les produits
             <ChevronRight className="ml-2" size={20} />
-          </a>
+          </Link>
         </div>
       </div>
 
