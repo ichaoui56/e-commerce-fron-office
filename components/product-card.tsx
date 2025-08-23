@@ -304,11 +304,13 @@ export default function ProductCard({ product, isInWishlist = false, onWishlistC
       <div className="p-3 sm:p-4 space-y-1.5 sm:space-y-2">
         {/* Category & Status */}
         <div className="flex justify-between items-center">
-          {product.category && (
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium truncate">
-              {product.category.name}
-            </p>
-          )}
+          <Link href={`/shop/${product?.category?.slug}`}>
+            {product?.category && (
+              <p className="text-xs text-gray-500 uppercase hover:text-[#e94491] tracking-wide font-medium truncate">
+                {product?.category?.name}
+              </p>
+            )}
+          </Link>
           {/* Stock Status Indicator */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <div
