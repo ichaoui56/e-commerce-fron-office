@@ -11,6 +11,7 @@ const heroCards = [
     alt: "Man in summer shirt",
     bgColor: "bg-[#e6d7c3]",
     position: "start",
+    link: "/shop/kids",
   },
   {
     title: "ACCESSOIRES",
@@ -20,6 +21,7 @@ const heroCards = [
     alt: "Elegant silk scarf",
     bgColor: "bg-gray-200",
     position: "center",
+    link: "/shop/homme",
   },
   {
     title: "NOUVEAUTÉS",
@@ -29,6 +31,7 @@ const heroCards = [
     alt: "Woman in sportswear",
     bgColor: "bg-gray-300",
     position: "end",
+    link: "/shop/pyjamas",
   },
 ]
 
@@ -47,12 +50,15 @@ export default function Hero() {
           <div className="text-center text-white">
             <p className="text-sm font-light mb-2 tracking-wider">NOUVELLE COLLECTION</p>
             <h1 className="text-4xl md:text-6xl font-light mb-6 tracking-wide">BOUTIQUE FEMME</h1>
-            <Button
-              variant="outline"
-              className="bg-transparent font-light border-b-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300 px-8 py-3 text-sm font-light tracking-wider"
-            >
-              DÉCOUVRIR MAINTENANT
-            </Button>
+            <Link
+              href="/shop">
+              <Button
+                variant="outline"
+                className="bg-transparent font-light border-b-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300 px-8 py-3 text-sm font-light tracking-wider"
+              >
+                DÉCOUVRIR MAINTENANT
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -68,7 +74,7 @@ export default function Hero() {
                 {card.subtitle}
               </h3>
               <Link
-                href="#"
+                href={card.link}
                 className="text-xs font-light text-white border-b-2 border-white pb-1 hover:text-black hover:border-black transition-colors duration-300 tracking-wider"
               >
                 {card.buttonText}
