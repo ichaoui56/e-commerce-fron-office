@@ -135,6 +135,139 @@ export const getProductsByCategorySlug = async (categorySlug: string): Promise<P
   }
 }
 
+// New method for getting all products from main category and its subcategories
+export const getAllProductsByMainCategory = async (categorySlug: string): Promise<ProductWithDetails[]> => {
+  try {
+    // First get the main category
+    const mainCategory = await prisma.category.findUnique({
+      where: { slug: categorySlug },
+      include: {
+        children: true // Get subcategories
+      }
+    })
+
+    if (!mainCategory) {
+      return []
+    }
+
+    // Define hardcoded mappings for specific main categories
+    const mainCategoryMappings: Record<string, string[]> = {
+      'lingerie': [
+        'lingerie-nightie',
+        'lingerie-nuisette-et-peignoir-satin', 
+        'lingerie-sous-vetements',
+        'lingerie-sportswear'
+      ],
+      'pyjamas': [
+        'pyjamas-3-pieces',
+        'pyjamas-body-et-colon',
+        'pyjamas-haut-et-pantalon',
+        'pyjamas-pyjama-long',
+        'pyjamas-pyjama-short',
+        'pyjamas-pyjamas-satin'
+      ]
+    }
+
+    let categorySlugsList: string[] = [categorySlug]
+
+    // Check if this is a main category with hardcoded subcategories
+    if (mainCategoryMappings[mainCategory.name.toLowerCase()]) {
+      categorySlugsList = [
+        categorySlug, 
+        ...mainCategoryMappings[mainCategory.name.toLowerCase()]
+      ]
+    } else if (mainCategory.children && mainCategory.children.length > 0) {
+      // Dynamic approach: include all database subcategories
+      const subCategorySlugs = mainCategory.children.map(child => child.slug)
+      categorySlugsList = [categorySlug, ...subCategorySlugs]
+    }
+
+    // Fetch products from all relevant categories
+    const products = await prisma.product.findMany({
+      where: {
+        category: {
+          slug: {
+            in: categorySlugsList
+          }
+        }
+      },
+      include: {
+        category: true,
+        productColors: {
+          include: {
+            color: true,
+            productSizeStocks: {
+              include: {
+                size: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc"
+      }
+    })
+
+    // Remove duplicates based on product ID (in case a product appears in multiple categories)
+    const uniqueProducts = products.filter((product, index, self) => 
+      index === self.findIndex(p => p.id === product.id)
+    )
+
+    return transformProductsData(uniqueProducts)
+  } catch (error) {
+    console.error('Error fetching products by main category:', error)
+    return []
+  }
+}
+
+// Alternative method for fetching products with subcategory pattern matching
+export const getProductsByMainCategoryPattern = async (categorySlug: string): Promise<ProductWithDetails[]> => {
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        OR: [
+          // Direct category match
+          {
+            category: {
+              slug: categorySlug
+            }
+          },
+          // Subcategory pattern match (e.g., lingerie-*)
+          {
+            category: {
+              slug: {
+                startsWith: `${categorySlug}-`
+              }
+            }
+          }
+        ]
+      },
+      include: {
+        category: true,
+        productColors: {
+          include: {
+            color: true,
+            productSizeStocks: {
+              include: {
+                size: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc"
+      }
+    })
+
+    return transformProductsData(products)
+  } catch (error) {
+    console.error('Error fetching products by category pattern:', error)
+    return []
+  }
+}
+
 // Get latest products (New Arrivals)
 export const getLatestProducts = async (limit: number = 8): Promise<ProductWithDetails[]> => {
   try {

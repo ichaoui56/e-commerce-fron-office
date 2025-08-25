@@ -32,6 +32,18 @@ interface FilterState {
   priceRange: [number, number]
 }
 
+// Skeleton component for loading state
+const ProductCardSkeleton = () => (
+  <div className="bg-white rounded-lg overflow-hidden shadow-sm border animate-pulse">
+    <div className="aspect-square bg-gray-200"></div>
+    <div className="p-3 sm:p-4 space-y-2">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+    </div>
+  </div>
+)
+
 export default function ShopPage({ products, wishlist, category, subCategories = [] }: ShopPageProps) {
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState("most-popular")
@@ -44,6 +56,14 @@ export default function ShopPage({ products, wishlist, category, subCategories =
     priceRange: [0, 750],
   })
   const [tempFilters, setTempFilters] = useState<FilterState>(filters)
+  
+  // Pagination states
+  const [displayedProducts, setDisplayedProducts] = useState<ProductWithDetails[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [allFilteredProducts, setAllFilteredProducts] = useState<ProductWithDetails[]>([])
+  
+  const PRODUCTS_PER_PAGE = 12
 
   // Get unique categories, brands, etc. from products
   const categories = Array.from(new Set(products.map((p) => p.category?.name).filter(Boolean)))
@@ -51,33 +71,90 @@ export default function ShopPage({ products, wishlist, category, subCategories =
   const colors = Array.from(new Set(products.flatMap((p) => p.colors?.map((c) => ({ name: c.name, value: c.hex_code })) || [])))
   const brands = ["Next", "River Island", "Geox", "New Balance", "UGG", "F&F", "Nike"] // Mock brands
 
-  // Filter products based on current filters
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false
-    const matchesPrice = product.current_price >= filters.priceRange[0] && product.current_price <= filters.priceRange[1]
-    const matchesCategory = filters.categories.length === 0 || (product.category?.name && filters.categories.includes(product.category.name))
-    const matchesSize = filters.sizes.length === 0 || (product.variants && filters.sizes.some((size) => product.variants.some((v) => v.size.label === size)))
-    const matchesColor = filters.colors.length === 0 || (product.colors && filters.colors.some((color) => product.colors.some((c) => c.hex_code === color)))
-    const matchesBrand = filters.brands.length === 0 || filters.brands.includes("Next") // Mock brand matching
+  // Filter and sort products
+  const getFilteredAndSortedProducts = () => {
+    // Filter products
+    const filtered = products.filter((product) => {
+      const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false
+      const matchesPrice = product.current_price >= filters.priceRange[0] && product.current_price <= filters.priceRange[1]
+      
+      // Enhanced category matching: check both main category and subcategories
+      let matchesCategory = filters.categories.length === 0
+      if (!matchesCategory && product.category?.name) {
+        // Direct category match
+        matchesCategory = filters.categories.includes(product.category.name)
+        
+        // If not direct match, check if product's category is a subcategory of selected categories
+        if (!matchesCategory && category) {
+          // Check if product belongs to a subcategory of the current main category
+          const productCategorySlug = product.category.slug
+          const currentCategoryName = category.name.toLowerCase()
+          
+          // Check if product's category slug starts with the main category name
+          if (productCategorySlug?.includes(currentCategoryName.replace(/\s+/g, '-'))) {
+            matchesCategory = true
+          }
+          
+          // Additional check for subcategories
+          if (subCategories.some(sub => sub.slug === productCategorySlug)) {
+            matchesCategory = true
+          }
+        }
+      }
+      
+      const matchesSize = filters.sizes.length === 0 || (product.variants && filters.sizes.some((size) => product.variants.some((v) => v.size.label === size)))
+      const matchesColor = filters.colors.length === 0 || (product.colors && filters.colors.some((color) => product.colors.some((c) => c.hex_code === color)))
+      const matchesBrand = filters.brands.length === 0 || filters.brands.includes("Next") // Mock brand matching
 
-    return matchesSearch && matchesPrice && matchesCategory && matchesSize && matchesColor && matchesBrand
-  })
+      return matchesSearch && matchesPrice && matchesCategory && matchesSize && matchesColor && matchesBrand
+    })
 
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.current_price - b.current_price
-      case "price-high":
-        return b.current_price - a.current_price
-      case "rating":
-        return 5 - 4 // Mock rating sort
-      case "newest":
-        return b.id.localeCompare(a.id)
-      default:
-        return 0
-    }
-  })
+    // Sort products
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return a.current_price - b.current_price
+        case "price-high":
+          return b.current_price - a.current_price
+        case "rating":
+          return 5 - 4 // Mock rating sort
+        case "newest":
+          return b.id.localeCompare(a.id)
+        default:
+          return 0
+      }
+    })
+
+    return sorted
+  }
+
+  // Update filtered products whenever filters or sort changes
+  useEffect(() => {
+    const filteredAndSorted = getFilteredAndSortedProducts()
+    setAllFilteredProducts(filteredAndSorted)
+    setDisplayedProducts(filteredAndSorted.slice(0, PRODUCTS_PER_PAGE))
+    setCurrentPage(1)
+  }, [filters, sortBy, searchQuery, products])
+
+  // Load more products function
+  const loadMoreProducts = async () => {
+    setIsLoading(true)
+    
+    // Simulate API delay for better UX demonstration
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    const nextPage = currentPage + 1
+    const startIndex = (nextPage - 1) * PRODUCTS_PER_PAGE
+    const endIndex = startIndex + PRODUCTS_PER_PAGE
+    
+    const newProducts = allFilteredProducts.slice(startIndex, endIndex)
+    setDisplayedProducts(prev => [...prev, ...newProducts])
+    setCurrentPage(nextPage)
+    setIsLoading(false)
+  }
+
+  // Check if there are more products to load
+  const hasMoreProducts = displayedProducts.length < allFilteredProducts.length
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -211,25 +288,46 @@ export default function ShopPage({ products, wishlist, category, subCategories =
             </div>
           )}
 
-         
+          {/* Results Count */}
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-gray-600">
+              Affichage de {displayedProducts.length} sur {allFilteredProducts.length} produits
+            </p>
+            <Button
+              data-filters-trigger
+              onClick={() => setShowFilters(true)}
+              variant="outline"
+              className="flex items-center gap-2 border-gray-300 hover:border-[#e94491] hover:text-[#e94491] lg:hidden"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Filtres
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className=" mx-auto px-4 py-6 sm:py-8">
+      <div className="mx-auto px-4 py-6 sm:py-8">
         {/* Products Grid - Mobile: 2 columns, Tablet: 3 columns, Desktop: 4 columns */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-          {sortedProducts.map((product) => (
+          {displayedProducts.map((product) => (
             <ProductCard 
               key={product.id} 
               product={product} 
               isInWishlist={wishlist.includes(product.id)} 
             />
           ))}
+          
+          {/* Skeleton Loading Cards */}
+          {isLoading && (
+            Array.from({ length: PRODUCTS_PER_PAGE }).map((_, index) => (
+              <ProductCardSkeleton key={`skeleton-${index}`} />
+            ))
+          )}
         </div>
 
         {/* No Products Found */}
-        {sortedProducts.length === 0 && (
+        {displayedProducts.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
               Aucun produit trouvé {category ? `dans ${category.name}` : ""} correspondant à vos filtres.
@@ -241,14 +339,23 @@ export default function ShopPage({ products, wishlist, category, subCategories =
         )}
 
         {/* Load More Button */}
-        {sortedProducts.length > 0 && (
+        {hasMoreProducts && displayedProducts.length > 0 && (
           <div className="text-center mt-8 sm:mt-12">
             <Button
+              onClick={loadMoreProducts}
+              disabled={isLoading}
               variant="outline"
-              className="border-2 border-gray-300 hover:border-[#e94491] hover:text-[#e94491] bg-transparent px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-medium"
+              className="border-2 border-gray-300 hover:border-[#e94491] hover:text-[#e94491] bg-transparent px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              PLUS DE PRODUITS
+              {isLoading ? "CHARGEMENT..." : "PLUS DE PRODUITS"}
             </Button>
+          </div>
+        )}
+
+        {/* End of Products Message */}
+        {!hasMoreProducts && displayedProducts.length > 0 && displayedProducts.length === allFilteredProducts.length && (
+          <div className="text-center mt-8 sm:mt-12">
+            <p className="text-gray-500">Vous avez vu tous les produits disponibles</p>
           </div>
         )}
       </div>
