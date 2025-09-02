@@ -533,7 +533,7 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                   </div>
                   <div className="space-y-4">
                     <div className="text-sm text-gray-600">
-                      Fourchette de prix : ${tempFilters.priceRange[0]} - ${tempFilters.priceRange[1]} MAD
+                      Fourchette de prix : ${tempFilters.priceRange[0]} - ${tempFilters.priceRange[1]} DHS
                     </div>
                     <div className="relative px-2">
                       <input
@@ -548,8 +548,8 @@ export default function ShopPage({ products, wishlist, category, subCategories =
                       />
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 px-2">
-                      <span>0 MAD</span>
-                      <span>750 MAD</span>
+                      <span>0 DHS</span>
+                      <span>750 DHS</span>
                     </div>
                   </div>
                 </div>

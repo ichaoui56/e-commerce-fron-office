@@ -190,11 +190,11 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                       <div className="col-span-2 flex justify-center">
                         <div className="text-center">
                           <span className="text-gray-800 font-normal text-sm md:text-lg">
-                            ${item.product.base_price.toFixed(2)}
+                            {item.product.base_price.toFixed(2)} DHS
                           </span>
                           {item.product.discount_percentage > 0 && (
                             <div className="text-xs text-gray-400 line-through">
-                              ${item.product.base_price.toFixed(2)}
+                              {item.product.base_price.toFixed(2)} DHS
                             </div>
                           )}
                         </div>
@@ -225,7 +225,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                       </div>
                       <div className="col-span-1 flex justify-center">
                         <span className="text-[#e94491] font-normal text-sm md:text-lg">
-                          ${(item.product.base_price * item.quantity).toFixed(2)}
+                          {(item.product.base_price * item.quantity).toFixed(2)} DHS
                         </span>
                       </div>
                       <div className="col-span-1 flex justify-center">
@@ -340,13 +340,13 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                     <div className="flex justify-between items-center py-2 text-green-600">
                       <span className="text-sm">Vous économisez :</span>
                       <span className="font-medium">
-                        $
+                        
                         {cartItems
                           .reduce(
                             (acc, item) => acc + (item.product.base_price - item.product.base_price) * item.quantity,
                             0,
                           )
-                          .toFixed(2)}
+                          .toFixed(2)} DHS
                       </span>
                     </div>
                   )}
@@ -355,7 +355,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                 <div className="py-4 md:py-6 border-t border-gray-200">
                   <div className="flex justify-between items-center mb-4 md:mb-6">
                     <span className="text-base md:text-lg font-semibold text-gray-800">Total :</span>
-                    <span className="text-xl md:text-2xl font-bold text-[#e94491]">${total.toFixed(2)}</span>
+                    <span className="text-xl md:text-2xl font-bold text-[#e94491]">{total.toFixed(2)} DHS</span>
                   </div>
 
                   <Link href="/checkout">

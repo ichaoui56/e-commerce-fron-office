@@ -146,7 +146,7 @@ export default function Footer() {
           },
           {
             subtitle: "Prix et disponibilité",
-            text: "Les prix sont indiqués en dirhams marocains (MAD) et peuvent être modifiés sans préavis. La disponibilité des produits est mise à jour régulièrement.",
+            text: "Les prix sont indiqués en dirhams marocains (DHS) et peuvent être modifiés sans préavis. La disponibilité des produits est mise à jour régulièrement.",
             highlight: "Prix transparents"
           },
           {
@@ -225,7 +225,7 @@ export default function Footer() {
 
               <p className="text-gray-600 mb-8 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                 Rejoignez notre communauté exclusive et recevez un{" "}
-                <span className="text-[#e94491] font-semibold">coupon de 200 MAD</span>{" "}
+                <span className="text-[#e94491] font-semibold">coupon de 200 DHS</span>{" "}
                 pour votre première expérience d'achat.
               </p>
 

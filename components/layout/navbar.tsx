@@ -525,11 +525,11 @@ export default function Navbar() {
 
                                   <div className="text-right">
                                     <p className="text-sm font-medium text-[#e94491]">
-                                      ${(item.product.base_price * item.quantity).toFixed(2)}
+                                      {(item.product.base_price * item.quantity).toFixed(2)} DHS
                                     </p>
                                     {item.quantity > 1 && (
                                       <p className="text-xs text-gray-500">
-                                        ${item.product.base_price.toFixed(2)} chacun
+                                        {item.product.base_price.toFixed(2)} chacun
                                       </p>
                                     )}
                                   </div>
@@ -555,7 +555,7 @@ export default function Navbar() {
                         <div className="p-4 border-t border-gray-200 bg-gray-50">
                           <div className="flex justify-between items-center mb-4">
                             <span className="text-lg font-medium text-gray-800">TOTAL</span>
-                            <span className="text-lg font-medium text-[#e94491]">${getTotalPrice().toFixed(2)}</span>
+                            <span className="text-lg font-medium text-[#e94491]">{getTotalPrice().toFixed(2)} DHS</span>
                           </div>
                           <div className="flex gap-3">
                             <Link href="/cart" className="flex-1">

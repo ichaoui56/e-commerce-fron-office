@@ -278,9 +278,9 @@ export default function ProductDetailPage({ product, isInWishlist }: ProductDeta
 
               {/* Price */}
               <div className="mb-6">
-                <span className="text-3xl font-light text-[#e94491]">{product.current_price.toFixed(2)} MAD</span>
+                <span className="text-3xl font-light text-[#e94491]">{product.current_price.toFixed(2)} DHS</span>
                 {product.discount_percentage > 0 && (
-                  <span className="text-xl text-gray-400 line-through ml-3">{product.base_price.toFixed(2)} MAD</span>
+                  <span className="text-xl text-gray-400 line-through ml-3">{product.base_price.toFixed(2)} DHS</span>
                 )}
               </div>
             </div>

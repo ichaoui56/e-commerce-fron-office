@@ -168,7 +168,7 @@ export default function FAQPage() {
       id: 12,
       question: "Quels sont les frais de livraison ?",
       answer:
-        "Les frais de livraison dépendent de votre emplacement et du mode de livraison que vous choisissez. La livraison standard est gratuite pour les commandes de plus de 500 MAD au Maroc. Vous pouvez voir le coût exact de la livraison au moment du paiement.",
+        "Les frais de livraison dépendent de votre emplacement et du mode de livraison que vous choisissez. La livraison standard est gratuite pour les commandes de plus de 500 DHS au Maroc. Vous pouvez voir le coût exact de la livraison au moment du paiement.",
       category: "shipping",
     },
     {
