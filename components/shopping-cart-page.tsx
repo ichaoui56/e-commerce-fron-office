@@ -333,7 +333,7 @@ export default function ShoppingCartPage({ initialCartItems }: ShoppingCartPageP
                     <span className="text-gray-600 font-medium text-sm md:text-base">
                       Articles ({cartItems.reduce((acc, item) => acc + item.quantity, 0)}):
                     </span>
-                    <span className="font-normal text-base md:text-lg text-gray-800">${subtotal.toFixed(2)}</span>
+                    <span className="font-normal text-base md:text-lg text-gray-800">{subtotal.toFixed(2)} DHS</span>
                   </div>
 
                   {cartItems.some((item) => item.product.discount_percentage > 0) && (

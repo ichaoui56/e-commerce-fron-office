@@ -34,7 +34,8 @@ export default function CheckoutPage() {
     notes: "",
   })
 
-  const [selectedShipping, setSelectedShipping] = useState("casablanca")
+  // Set default shipping to "El jadida" instead of "casablanca"
+  const [selectedShipping, setSelectedShipping] = useState("El jadida")
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [couponCode, setCouponCode] = useState("")
   const [showCouponField, setShowCouponField] = useState(false)
@@ -91,6 +92,11 @@ export default function CheckoutPage() {
       newErrors.city = "La ville est requise"
     }
 
+    // Add shipping validation - this should never trigger since we have a default, but good for safety
+    if (!selectedShipping) {
+      newErrors.shipping = "Veuillez sélectionner une option de livraison"
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -112,6 +118,11 @@ export default function CheckoutPage() {
 
     if (cartItems.length === 0) {
       toast.error("Votre panier est vide")
+      return
+    }
+
+    if (!selectedShipping) {
+      toast.error("Veuillez sélectionner une option de livraison")
       return
     }
 
@@ -323,7 +334,7 @@ export default function CheckoutPage() {
                   </p>}
                 </div>
 
-                {/* Shipping Options */}
+                {/* Shipping Options - Now with enhanced mandatory styling */}
                 <div>
                   <div className="flex items-center gap-2 mb-6">
                     <Truck className="h-6 w-6 text-[#e94491]" />
@@ -331,6 +342,9 @@ export default function CheckoutPage() {
                       Choisissez une option de livraison <span className="text-red-500">*</span>
                     </label>
                   </div>
+                  {errors.shipping && <p className="text-red-500 text-sm mb-4 flex items-center gap-1">
+                    <span className="text-xs">⚠</span> {errors.shipping}
+                  </p>}
                   <div className="space-y-4">
                     {shippingOptions.map((option) => (
                       <label
@@ -347,8 +361,15 @@ export default function CheckoutPage() {
                             name="shipping"
                             value={option.id}
                             checked={selectedShipping === option.id}
-                            onChange={(e) => setSelectedShipping(e.target.value)}
+                            onChange={(e) => {
+                              setSelectedShipping(e.target.value)
+                              // Clear shipping error if it exists
+                              if (errors.shipping) {
+                                setErrors((prev) => ({ ...prev, shipping: "" }))
+                              }
+                            }}
                             className="text-[#e94491] focus:ring-[#e94491] w-5 h-5"
+                            required
                           />
                           <div>
                             <span className="text-gray-800 font-medium block">{option.label}</span>
@@ -362,6 +383,10 @@ export default function CheckoutPage() {
                       </label>
                     ))}
                   </div>
+                  {/* Additional note about shipping being required */}
+                  <p className="text-xs text-gray-500 mt-3 italic">
+                    * La sélection d'une option de livraison est obligatoire pour finaliser votre commande.
+                  </p>
                 </div>
               </div>
             </div>
@@ -454,7 +479,7 @@ export default function CheckoutPage() {
               {/* Place Order Button */}
               <Button 
                 onClick={handlePlaceOrder}
-                disabled={processing || cartItems.length === 0}
+                disabled={processing || cartItems.length === 0 || !selectedShipping}
                 className="w-full bg-gradient-to-r from-[#e94491] to-[#f472b6] hover:from-[#d63384] hover:to-[#e94491] text-white py-4 text-lg font-medium tracking-wider rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {processing ? (
